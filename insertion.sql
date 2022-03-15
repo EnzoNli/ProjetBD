@@ -21,6 +21,10 @@ values
     ("Herisson du désert", 0, "3 à 5 ans", "280 à 510 g", 1, 0, "Deserts", 'i'),
     ("Girafe", 0, "10 à 15 ans", "550 à 1 200 kg", 0, 2, "Savanes", 'h'),
     ("Lion de mer de Steller", "25 ans", "300 à 1 100 kg", 1, 1, "Nord de l'océan Pacifique", 'p'),
+    ("Ouistiti à tête jaune", "10 à 16 ans", "230 à 450 g", 1, 4, "Forêt Atlanque", 'o'),
+    ("Chouette forestiere", "jusqu'à 16 ans", "160 à 180 g", 0, 3, "Plaines et de collines du sous-continent indien", 'c'),
+    ("Panthere des neiges", "16 à 18 ans", "40 à 55 kg", 2, 2, "Montagnes escarpées et rocheuses d'Asie", 'o'),
+
     
 
 
