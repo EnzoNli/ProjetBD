@@ -4,8 +4,7 @@ pragma foreign_keys = true;
 .headers on
 .mode column
 
-insert into CategorieNourriture
-values 
+insert into CategorieNourriture values 
     ('o',"omnivore : mange des aliments d'origines végétale et animale"),
     ('h',"herbivore : se nourrit d'herbes et de plantes basses"),
     ('c',"carnivore : son régime alimentaire est principalement basé sur la consommation de chairs ou de tissus d'animaux vivants ou morts"),
@@ -13,8 +12,7 @@ values
     ('p',"piscivore : se nourrit de poissons.")
 ;
 
-insert into TypeEnclos
-values
+insert into TypeEnclos values
     ('aq', "Un aquarium est un réservoir rempli d'eau dans lequel vivent des animaux et/ou des plantes aquatiques"),
     ('ex',"blabla extérieur"),
     ('cg', "Une cage est un contenant ajouré, le plus souvent grillagé ou à barreaux, destiné à contenir un animal."),
@@ -22,8 +20,7 @@ values
     ('tr', "Un terrarium est un milieu confiné imitant le biotope de certaines espèces animales et/ou végétales. Il est l'équivalent d'un aquarium dont l'eau serait remplacée par un substrat de quelques centimètres d'épaisseur disposé sur le fond.")
 ;
 
-insert into Espece
-values
+insert into Espece values
     ("Panda geant", 0, "20 à 25 ans", "70 à 120 kg", 3, 2, "Forets de bambous", 'h', 'ex'),
     ("Herisson du désert", 0, "3 à 5 ans", "280 à 510 g", 1, 0, "Deserts", 'i', 'ex'),
     ("Girafe", 0, "10 à 15 ans", "550 à 1 200 kg", 0, 2, "Savanes", 'h', 'ex'),
@@ -38,8 +35,7 @@ values
     ("Rainette jaguar", 0, "5 à 10 ans", "3g en moyenne", 4, 0, "Forêts tropicales humides de basse altitude", 'i','tr')
 ;
     
-insert into Nourriture (description_plat)
-values
+insert into Nourriture (description_plat) values
     ('Boeuf'),
     ('Volaille'),
 
@@ -56,8 +52,7 @@ values
     ('Maquereaux')
 ;
 
-insert into Convenir
-values 
+insert into Convenir values 
     (1,'c'),(1,'o'),
     (2,'c'),(2,'o'),
 
@@ -70,13 +65,33 @@ values
     (9,'h'),(9,'o')
 ;
 
-insert into Soigneur (date_naissance_soign, nom_soign, prenom_soign, sexe_soign)
-values 
+insert into Soigneur (date_naissance_soign, nom_soign, prenom_soign, sexe_soign) values 
     ('2002-10-16','Nulli','Enzo','M'),
     ('2001-09-03','Marquis','Zoé','F')
 ;
 
-insert into Enclos
-values 
-    (0, 5, 6, 'aq', 4),
-    (0, 3, 8, 'aq', 4);
+insert into Enclos (nb_max, taille, id_type_enclos) values 
+    (5, 6, 'aq'),
+    (3, 8, 'aq'),
+    (2, 10,'vl'),
+    (1, 9,'vl'),
+    (2, 6, 'tr'),
+    (1, 8, 'tr'),
+    (2, 10,'cg'),
+    (4, 20,'cg'),
+    (3, 100,'ex'),
+    (4, 200,'ex')
+;
+
+insert into Animal values 
+    ("Eric", '2003-07-08', 'Male', '345.0', null, "Herisson du désert", 2),
+
+    ("Moussa", '1985-04-16', 'Male', '5654.5', null, "Elephant de foret d'Afrique", 1),
+    ("Camila", '1988-07-21', 'Femelle', '4378.9', null, "Elephant de foret d'Afrique", 1),
+    ("Gaby", '2008-03-04', 'Male', '3452.7', "né dans le zoo", "Elephant de foret d'Afrique", 1)
+;
+
+insert into AvoirParent values 
+    ("Moussa","Gaby"),
+    ("Camila","Gaby")
+;
