@@ -63,7 +63,7 @@ create table Animation(
 	id_soign	int		references Soignant(id_soign)
 );
 
--- coucou, associations 
+-- associations 
 
 create table AvoirParent(
 	parent		varchar(15)		references Animal(nom),
@@ -125,11 +125,11 @@ create view EnclosPlein as
 ;
 
 create view ListePlatParCategorie as
-	select id_categorie, plat
-	from CategorieNourriture natural join Nourriture
+	select id_categorie, description_plat
+	from CategorieNourriture natural join Convenir natural join Nourriture
 ;
 create view ListeNourritureParRace as
-	select race, plat
+	select race, description_plat
 	from Espece natural join ListePlatParCategorie
 ;
 
