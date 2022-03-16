@@ -87,24 +87,10 @@ create table Convenir(
 	constraint 	pkConvenir	primary key (id_plat, id_categorie)
 );
 
-create table SeNourrirDe(
-	nom 	varchar(15)		references Animal(nom),
-	id_plat 	int		references Nourriture(id_plat),
-	constraint 	pkSeNourrirDe	primary key (nom, id_plat)
-);
-
 create table Soigner(
 	id_soign 	int		references Soigneur(id_soign),
 	nom 	varchar(15)		references Animal(nom),
 	constraint	pkSoigner	primary key (id_soign, nom)
-);
-
-create table Nourrir(
-	id_soign 	int		references Soigneur(id_soign),
-	nom 	varchar(15)		references Animal(nom),
-	quantite	float 	not null,
-	heure_nourr	time,		--check ??
-	constraint	pkNourrir	primary key (id_soign, nom)
 );
 
 create table PouvoirVivre(
@@ -133,21 +119,15 @@ create table AvoirLieu(
 create view NombreAnimauxParTypeEnclos as(
 	select id_type_enclos, count(1)
 	from TypeEnclos natural join Enclos natural join Occuper natural join Animal
-	where date_fin = null
+	where date_fin != null
 	group by id_type_enclos
 );
 
 create view NombreAnimauxParEspece as(
 	select race, count(1)
 	from Espece natural join Animal natural join Occuper
-	where date_fin = null
+	where date_fin != null
 	group by race
-);
-
-create view lesOmnivores as(
-	select nom
-	from Animal natural join Espece natural join CategorieNourriture
-	where id_categorie = 'o'
 );
 
 create view EnclosVide as(
@@ -155,17 +135,15 @@ create view EnclosVide as(
 	from Enclos
 	where nb_actuel = 0
 );
-
+create view EnclosNonVide as(
+	select id_enclos
+	from Enclos
+	where nb_actuel > 0
+);
 create view EnclosPlein as(
 	select id_enclos
 	from Enclos
 	where nb_actuel = nb_max
-);
-
-create view RacesQuiCohabitentActuellement as(
-	select distinct r1.race, r2.race
-	from (Espece natural join Animal natural join Occuper natural join Enclos) as r1, (Espece natural join Animal natural join Occuper natural join Enclos) as r2
-	where r1.nom < r2.nom and r1.enclos = r2.enclos
 );
 
 create view QuiPeutMangerQuoi as (
