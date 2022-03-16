@@ -13,7 +13,8 @@ create table Espece(
 	dangerosite	int		check(0<=dangerosite and dangerosite<=5)	not null,
 	menace_extinction	int		check(0<=menace_extinction and menace_extinction<=5)	not null,
 	habitat_nat		varchar(30),
-	id_categorie	char(1)		references CategorieNourriture(id_categorie)
+	id_categorie	char(1)		references CategorieNourriture(id_categorie),
+	id_type_enclos	char(2)		references TypeEnclos(id_type_enclos)
 );
 
 create table Animal(
