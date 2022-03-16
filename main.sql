@@ -23,7 +23,8 @@ create table Animal(
 	genre	varchar(7)	check(genre in ('Male','Femelle'))  not null,
 	poids	float		check(poids>0)	not null,
 	origine	varchar(30),
-	race 	varchar(30)		references Espece(race)
+	race 	varchar(30)		references Espece(race),
+	id_soign 	int 	references Soigneur(id_soign)
 );
 
 create table Nourriture(
@@ -67,34 +68,16 @@ create table AvoirParent(
 	constraint 	pkAvoirParent	primary key (parent, enfant)
 );
 
-create table PouvoirCohabiter(
-	race_une	varchar(30)		references Espece(race),
-	race_deux	varchar(30)		references Espece(race),
-	constraint	pkPouvoirCohabiter	primary key (race_une, race_deux)
-);
-
 create table Convenir(
 	id_plat		int 	references Nourriture(id_plat),
 	id_categorie	char(1)		references CategorieNourriture(id_categorie),
 	constraint 	pkConvenir	primary key (id_plat, id_categorie)
 );
 
-create table Soigner(
-	id_soign 	int		references Soigneur(id_soign),
-	nom 	varchar(15)		references Animal(nom),
-	constraint	pkSoigner	primary key (id_soign, nom)
-);
-
-create table PouvoirVivre(
-	race	varchar(30)		references Espece(race),
-	id_type_enclos	char(2)	references TypeEnclos(id_type_enclos),
-	constraint	pkPouvoirVivre	primary key (race, id_type_enclos)
-);
-
 create table Occuper(
 	nom 	varchar(15)		references Animal(nom),
 	id_enclos 	int		references Enclos(id_enclos),
-	date_debut	date	not null, --check?
+	date_debut	date	not null, --check? now
 	date_fin	date, --check??
 	constraint	pkOccuper	primary key (nom, id_enclos)
 );
@@ -138,12 +121,34 @@ create view EnclosPlein as(
 	where nb_actuel = nb_max
 );
 
-create view QuiPeutMangerQuoi as (
-	select distinct race as qui, description_plat as quoi
-	from (Espece natural join Appartenir natural join Categorie natural join Convenir natural join Nourriture)
-	where 
+with ListePlatParCategorie as(
+	select id_categorie, plat
+	from CategorieNourriture natural join Nourriture
 )
+create view ListeNourritureParRace as(
+	select race, plat
+	from Espece natural join ListePlatParCategorie
+);
 
-create view QuiMangeVraimentQuoi as (
-	select 
-)
+create view ListeAnimalPourSoigneur as (
+	select id_soign, nom
+	from Soigneur natural join Animal
+);
+
+create view AnimationAujourdhui as (
+	select id_anim
+	from Animation natural join Animer
+	where date_anim = DATE('nom')
+);
+
+-- transaction ??
+
+-- triggers
+
+create trigger ChangementEnclos
+after insert on Occuper
+begin
+	update Occuper set date_fin = DATE('now') where nom = new.nom;
+	update Enclos set nb_actuel = nb_actuel - 1 where id_enclos = old.id_enclos;
+	update Enclos set nb_actuel = nb_actuel + 1 where id_enclos = new.id_enclos;
+end;
