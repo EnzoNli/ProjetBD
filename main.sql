@@ -1,4 +1,7 @@
+.open zoo.db
 pragma foreign_keys = true;
+.headers on
+.mode column
 
 create table CategorieNourriture( 
 	id_categorie	char(1)		primary key,
@@ -28,7 +31,7 @@ create table Animal(
 );
 
 create table Nourriture(
-	id_plat		int		primary key		auto_increment,
+	id_plat		integer		primary key		autoincrement,
 	description_plat		varchar(50)
 );
 
@@ -38,7 +41,7 @@ create table TypeEnclos(
 );
 	
 create table Soigneur(
-	id_soign	int		primary key		auto_increment,
+	id_soign	integer		primary key		autoincrement,
 	date_naissance_soign	date,	--check avant aujourdhui moins 18 ans ?
 	nom_soign	 	varchar(30)		not null,
 	prenom_soign	varchar(30)		not null,
@@ -46,7 +49,7 @@ create table Soigneur(
 );
 
 create table Enclos(
-	id_enclos	int		primary key		auto_increment,
+	id_enclos	integer		primary key		autoincrement,
 	nb_actuel	int 	check(nb_actuel >= 0 and nb_actuel<=nb_max),
 	nb_max		int		check(nb_max>0),
 	taille		int		not null,
@@ -54,7 +57,7 @@ create table Enclos(
 );
 
 create table Animation(
-	id_anim		int		primary key		auto_increment,
+	id_anim		integer		primary key		autoincrement,
 	duree		int		check(duree > 20)	not null,
 	description_anim	varchar(50),
 	id_soign	int		references Soignant(id_soign)
@@ -91,55 +94,55 @@ create table AvoirLieu(
 );
 
 -- view
-create view NombreAnimauxParTypeEnclos as(
+create view NombreAnimauxParTypeEnclos as
 	select id_type_enclos, count(1)
 	from TypeEnclos natural join Enclos natural join Occuper natural join Animal
 	where date_fin != null
 	group by id_type_enclos
-);
+;
 
-create view NombreAnimauxParEspece as(
+create view NombreAnimauxParEspece as
 	select race, count(1)
 	from Espece natural join Animal natural join Occuper
 	where date_fin != null
 	group by race
-);
+;
 
-create view EnclosVide as(
+create view EnclosVide as
 	select id_enclos
 	from Enclos
 	where nb_actuel = 0
-);
-create view EnclosNonVide as(
+;
+create view EnclosNonVide as
 	select id_enclos
 	from Enclos
 	where nb_actuel > 0
-);
-create view EnclosPlein as(
+;
+create view EnclosPlein as
 	select id_enclos
 	from Enclos
 	where nb_actuel = nb_max
-);
+;
 
-with ListePlatParCategorie as(
+create view ListePlatParCategorie as
 	select id_categorie, plat
 	from CategorieNourriture natural join Nourriture
-)
-create view ListeNourritureParRace as(
+;
+create view ListeNourritureParRace as
 	select race, plat
 	from Espece natural join ListePlatParCategorie
-);
+;
 
-create view ListeAnimalPourSoigneur as (
+create view ListeAnimalPourSoigneur as 
 	select id_soign, nom
 	from Soigneur natural join Animal
-);
+;
 
-create view AnimationAujourdhui as (
+create view AnimationAujourdhui as 
 	select id_anim
-	from Animation natural join Animer
+	from Animation
 	where date_anim = DATE('nom')
-);
+;
 
 -- transaction ??
 
