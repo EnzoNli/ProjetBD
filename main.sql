@@ -44,21 +44,12 @@ create table Soigneur(
 	sexe_soign		char(1)			check(sexe_soign in ('M', 'F'))	
 );
 
-create table Gardien(
-	id_gard		int		primary key		auto_increment,
-	date_naissance_gard		date,	--check avant aujourdhui moins 18 ans ?
-	nom_gard	 	varchar(30)		not null,
-	prenom_gard		varchar(30)		not null,
-	sexe_gard		char(1)			check(sexe_gard in ('M', 'F'))	
-);
-
 create table Enclos(
 	id_enclos	int		primary key		auto_increment,
 	nb_actuel	int 	check(nb_actuel >= 0 and nb_actuel<=nb_max),
 	nb_max		int		check(nb_max>0),
 	taille		int		not null,
-	id_type_enclos		char(2)		references TypeEnclos(id_type_enclos),
-	id_gard		int		references Gardien(id_gard)
+	id_type_enclos		char(2)		references TypeEnclos(id_type_enclos)
 );
 
 create table Animation(
