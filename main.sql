@@ -156,7 +156,6 @@ create view EnfantsDuZoo as
 create trigger ChangementEnclos
 after insert on Occuper
 begin
-	update Occuper set date_fin = DATE('now') where nom = new.nom;
-	update Enclos set nb_actuel = nb_actuel - 1 where id_enclos = old.id_enclos;
+	--update Occuper set date_fin = DATE('now') where nom = new.nom;
 	update Enclos set nb_actuel = nb_actuel + 1 where id_enclos = new.id_enclos;
 end;
