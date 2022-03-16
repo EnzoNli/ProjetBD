@@ -1,8 +1,4 @@
-.open zoo.db
-.read main.sql
 pragma foreign_keys = true;
-.headers on
-.mode column
 
 insert into CategorieNourriture values 
     ('o',"omnivore : mange des aliments d'origines végétale et animale"),
@@ -102,6 +98,8 @@ insert into Occuper values
     ("Gaby", 9, '2008-03-04', null)
 ;
 
+/*
 insert into Animation values
     (
 ;
+*/
