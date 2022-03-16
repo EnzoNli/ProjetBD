@@ -130,10 +130,18 @@ create table AvoirLieu(
 );
 
 -- view
-create view AnimauxDansAquarium as(
-	select nom
-	from TypeEnclos natural join Espece natural join Occuper natural join Animal
-	where id_type_enclos = 'aq'
+create view NombreAnimauxParTypeEnclos as(
+	select id_type_enclos, count(1)
+	from TypeEnclos natural join Enclos natural join Occuper natural join Animal
+	where date_fin = null
+	group by id_type_enclos
+);
+
+create view NombreAnimauxParEspece as(
+	select race, count(1)
+	from Espece natural join Animal natural join Occuper
+	where date_fin = null
+	group by race
 );
 
 create view lesOmnivores as(
