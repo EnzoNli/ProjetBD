@@ -41,7 +41,7 @@ create table TypeEnclos(
 );
 	
 create table Soigneur(
-	id_soign	integer		primary key		autoincrement,
+	id_soign		integer		primary key		autoincrement,
 	date_naissance_soign	date,	--check avant aujourdhui moins 18 ans ?
 	nom_soign	 	varchar(30)		not null,
 	prenom_soign	varchar(30)		not null,
@@ -50,7 +50,7 @@ create table Soigneur(
 
 create table Enclos(
 	id_enclos	integer		primary key		autoincrement,
-	nb_actuel	int 	check(nb_actuel >= 0 and nb_actuel<=nb_max),
+	nb_actuel	int 	check(nb_actuel >= 0 and nb_actuel<=nb_max) default 0,
 	nb_max		int		check(nb_max>0),
 	taille		int		not null,
 	id_type_enclos		char(2)		references TypeEnclos(id_type_enclos)
@@ -78,7 +78,7 @@ create table Convenir(
 );
 
 create table Occuper(
-	nom 	varchar(15)		references Animal(nom),
+	nom 		varchar(15)		references Animal(nom),
 	id_enclos 	int		references Enclos(id_enclos),
 	date_debut	date	not null, --check? now
 	date_fin	date, --check??
@@ -97,14 +97,14 @@ create table AvoirLieu(
 create view NombreAnimauxParTypeEnclos as
 	select id_type_enclos, count(1)
 	from TypeEnclos natural join Enclos natural join Occuper natural join Animal
-	where date_fin != null
+	where date_fin = null
 	group by id_type_enclos
 ;
 
 create view NombreAnimauxParEspece as
 	select race, count(1)
 	from Espece natural join Animal natural join Occuper
-	where date_fin != null
+	where date_fin = null
 	group by race
 ;
 
@@ -134,7 +134,7 @@ create view ListeNourritureParRace as
 ;
 
 create view ListeAnimalPourSoigneur as 
-	select id_soign, nom
+	select nom_soign, prenom_soign, nom
 	from Soigneur natural join Animal
 ;
 
@@ -142,6 +142,11 @@ create view AnimationAujourdhui as
 	select id_anim
 	from Animation
 	where date_anim = DATE('nom')
+;
+
+create view EnfantsDuZoo as 
+	select distinct enfant as noms
+	from AvoirParent
 ;
 
 -- transaction ??
