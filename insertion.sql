@@ -95,3 +95,13 @@ insert into AvoirParent values
     ("Moussa","Gaby"),
     ("Camila","Gaby")
 ;
+
+insert into Occuper values 
+    ("Moussa", 9, '2000-01-05', null),
+    ("Camila", 9, '2000-01-05', null),
+    ("Gaby", 9, '2008-03-04', null)
+;
+
+insert into Animation values
+    (
+;
