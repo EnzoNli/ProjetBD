@@ -1,0 +1,36 @@
+*{
+  overflow-y: none;
+}
+
+.navbar-brand {
+    border-spacing: 10px;
+}
+
+.banniere{
+    height: 60vh;
+    background-image: radial-gradient(#a6ff00, #679e00);
+}
+
+.panda-banniere{
+    overflow-x :hidden;
+    position: absolute;
+    text-align: right;
+    right: -5vw;
+    top: 25vh;
+    width: 50vw;
+    animation: panda 2s ease 0s 1 normal forwards;
+    
+}
+
+@keyframes panda {
+    0% {
+      opacity: 0;
+      transform: translateX(250px);
+      
+    }
+  
+    100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
