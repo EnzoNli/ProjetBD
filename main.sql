@@ -150,6 +150,16 @@ create view EnfantsDuZoo as
 	from AvoirParent
 ;
 
+create view TypeEnclosParRace as 
+    select race, id_type_enclos
+    from Espece natural join TypeEnclos
+;
+
+create view RaceParEnclos as 
+    select distinct id_enclos, race
+    from Enclos natural join Occuper natural join Animal
+;
+
 -- transaction ??
 
 -- triggers
@@ -178,11 +188,34 @@ end;
 
 
 -- ajout animal
-/*
+
 begin transaction;
-insert into Animal values ...;
 -- verif race de l'animal peut vivre dans le type d'enclos
+if (choix_enclos is not in EnclosPlein){
+    if (choix_enclos.id_enclos is in EnclosVide){
+        with TypeEnclosDeLanimal as (
+            select id_type_enclos as te
+            from TypeEnclosParRace
+            where race = choix_animal.race
+        )
+        if (choix_enclos.id_type_enclos = te.id_type_enclos){
+            insert into Animal values ();
+            insert into Occuper values (choix_animal.nom, choix_enclos.id_enclos, date('now'));
+        }
+    } else {
+        with EspeceDansLEnclos as (
+            select race as r
+            from RaceParEnclos
+            where id_enclos = choix_enclos.id_enclos
+        )
+        if (r.race = choix_animal.race){
+            insert into Animal values ();
+            insert into Occuper values (choix_animal.nom, choix_enclos.id_enclos, date('now'));
+        }
+    }
+}
 insert into Occuper values ...;
+
 */
 
 -- modifier un animal d'enclos
