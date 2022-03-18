@@ -21,14 +21,24 @@ create table Espece(
 	id_type_enclos	char(2)		references TypeEnclos(id_type_enclos)
 );
 
+create table Enclos(
+	id_enclos	integer		primary key		autoincrement,
+	nb_actuel	int 	check(nb_actuel >= 0 and nb_actuel<=nb_max) default 0,
+	nb_max		int		check(nb_max>0),
+	taille		int		not null,
+	id_type_enclos		char(2)		references TypeEnclos(id_type_enclos)
+);
+
 create table Animal(
-	nom		varchar(15)		primary key,
+	nom		varchar(30)		primary key,
 	date_naissance_anim		date  	not null,
 	genre	varchar(7)	check(genre in ('Male','Femelle'))  not null,
 	poids	float		check(poids>0)	not null,
 	origine	varchar(30),
 	race 	varchar(30)		references Espece(race),
-	id_soign 	int 	references Soigneur(id_soign)
+	id_soign 	int 	references Soigneur(id_soign),
+	enclos		int		references Enclos(id_enclos),
+	date_arrivee_zoo	date 	default(date('now'))
 );
 
 create table Nourriture(
@@ -49,13 +59,6 @@ create table Soigneur(
 	sexe_soign		char(1)			check(sexe_soign in ('M', 'F'))	
 );
 
-create table Enclos(
-	id_enclos	integer		primary key		autoincrement,
-	nb_actuel	int 	check(nb_actuel >= 0 and nb_actuel<=nb_max) default 0,
-	nb_max		int		check(nb_max>0),
-	taille		int		not null,
-	id_type_enclos		char(2)		references TypeEnclos(id_type_enclos)
-);
 
 create table Animation(
 	id_anim		integer		primary key		autoincrement,
@@ -67,8 +70,8 @@ create table Animation(
 -- associations 
 
 create table AvoirParent(
-	parent		varchar(15)		references Animal(nom),
-	enfant		varchar(15)		references Animal(nom),
+	parent		varchar(30)		references Animal(nom),
+	enfant		varchar(30)		references Animal(nom),
 	constraint 	pkAvoirParent	primary key (parent, enfant)
 );
 
@@ -76,14 +79,6 @@ create table Convenir(
 	id_plat		int 	references Nourriture(id_plat),
 	id_categorie	char(1)		references CategorieNourriture(id_categorie),
 	constraint 	pkConvenir	primary key (id_plat, id_categorie)
-);
-
-create table Occuper(
-	nom 		varchar(15)		references Animal(nom),
-	id_enclos 	int		references Enclos(id_enclos),
-	date_debut	date	not null, --check? now
-	date_fin	date, --check??
-	constraint	pkOccuper	primary key (nom, id_enclos)
 );
 
 create table AvoirLieu(
@@ -97,14 +92,14 @@ create table AvoirLieu(
 -- view
 create view NombreAnimauxParTypeEnclos as
 	select id_type_enclos, count(1)
-	from TypeEnclos natural join Enclos natural join Occuper natural join Animal
+	from TypeEnclos natural join Enclos natural join Animal
 	where date_fin = null
 	group by id_type_enclos
 ;
 
 create view NombreAnimauxParEspece as
 	select race, count(1)
-	from Espece natural join Animal natural join Occuper
+	from Espece natural join Animal
 	where date_fin = null
 	group by race
 ;
@@ -157,69 +152,18 @@ create view TypeEnclosParRace as
 
 create view RaceParEnclos as 
     select distinct id_enclos, race
-    from Enclos natural join Occuper natural join Animal
+    from Enclos natural join Animal
 ;
 
--- transaction ??
 
--- triggers
-
-create trigger AjoutAnimal
-after insert on Animal
-begin 
-	update Espece 
-	set nb_dans_zoo = nb_dans_zoo + 1
-	where race = new.race;
-end;
-
--- modifier poids animal ?
-
-create trigger AjoutEnclos
-after insert on Occuper
-begin
-	update Enclos set nb_actuel = nb_actuel + 1 where id_enclos = new.id_enclos;
-end;
-
+/*
 create trigger SupprEnclos
-after delete on Occuper
+after delete on Animal
 begin
 	update Enclos set nb_actuel = nb_actuel - 1 where id_enclos = old.id_enclos;
 end;
-
-
--- ajout animal
-
-begin transaction;
--- verif race de l'animal peut vivre dans le type d'enclos
-if (choix_enclos is not in EnclosPlein){
-    if (choix_enclos.id_enclos is in EnclosVide){
-        with TypeEnclosDeLanimal as (
-            select id_type_enclos as te
-            from TypeEnclosParRace
-            where race = choix_animal.race
-        )
-        if (choix_enclos.id_type_enclos = te.id_type_enclos){
-            insert into Animal values ();
-            insert into Occuper values (choix_animal.nom, choix_enclos.id_enclos, date('now'));
-        }
-    } else {
-        with EspeceDansLEnclos as (
-            select race as r
-            from RaceParEnclos
-            where id_enclos = choix_enclos.id_enclos
-        )
-        if (r.race = choix_animal.race){
-            insert into Animal values ();
-            insert into Occuper values (choix_animal.nom, choix_enclos.id_enclos, date('now'));
-        }
-    }
-}
-insert into Occuper values ...;
-
 */
-
--- modifier un animal d'enclos
-
+	
 -- insertions
 
 insert into CategorieNourriture values 
@@ -302,11 +246,11 @@ insert into Enclos (nb_max, taille, id_type_enclos) values
 ;
 
 insert into Animal values 
-    ("Eric", '2003-07-08', 'Male', '345.0', null, "Herisson du désert", 2),
+    ("Eric", '2003-07-08', 'Male', '345.0', null, "Herisson du désert", 2, 10, date('now')),
 
-    ("Moussa", '1985-04-16', 'Male', '5654.5', null, "Elephant de foret d'Afrique", 1),
-    ("Camila", '1988-07-21', 'Femelle', '4378.9', null, "Elephant de foret d'Afrique", 1),
-    ("Gaby", '2008-03-04', 'Male', '3452.7', "né dans le zoo", "Elephant de foret d'Afrique", 1)
+    ("Moussa", '1985-04-16', 'Male', '5654.5', null, "Elephant de foret d'Afrique", 1, 9, '2000-01-05'),
+    ("Camila", '1988-07-21', 'Femelle', '4378.9', null, "Elephant de foret d'Afrique", 1, 9, '2000-01-05'),
+    ("Gaby", '2008-03-04', 'Male', '3452.7', "né dans le zoo", "Elephant de foret d'Afrique", 1, 9, '2008-03-04')
 ;
 
 insert into AvoirParent values 
@@ -314,11 +258,6 @@ insert into AvoirParent values
     ("Camila","Gaby")
 ;
 
-insert into Occuper values 
-    ("Moussa", 9, '2000-01-05', null),
-    ("Camila", 9, '2000-01-05', null),
-    ("Gaby", 9, '2008-03-04', null)
-;
 
 /*
 insert into Animation values
@@ -329,3 +268,57 @@ insert into AvoirLieu values
 	(
 ;
 */
+
+/*
+begin transaction;
+iif (1 not in EnclosPlein, 
+  iif (1 in EnclosVide,
+        with TypeEnclosDeLanimal as (
+            select id_type_enclos as te
+            from TypeEnclosParRace
+            where race = "Beluga"
+        )
+          iif("aq" = "aq",
+            insert into Animal values ("bebert",'2020-20-20', 'Male', 23.5, null,             "Beluga",1,1);, "error3")
+        , "error2")
+    , 'error1')
+	else {
+        with EspeceDansLEnclos as (
+            select race as r
+            from RaceParEnclos
+            where id_enclos = choix_enclos.id_enclos
+        )
+        if (r.race = choix_animal.race){
+            insert into Animal values ();
+            insert into Occuper values (choix_animal.nom, choix_enclos.id_enclos, date('now'));
+        }
+    }*/
+
+
+-- triggers
+
+create trigger IncrementeEspece
+after insert on Animal
+begin 
+	update Espece 
+	set nb_dans_zoo = nb_dans_zoo + 1
+	where race = new.race;
+end;
+
+create trigger IncrementeEnclos
+after insert on Animal
+begin
+	update Enclos set nb_actuel = nb_actuel + 1 where id_enclos = new.enclos;
+end;
+
+
+begin transaction;
+insert into Animal values ("bebert",'2020-20-20', 'Male', 23.5, null,             "Beluga",1,1,'2000-01-01');
+with type_enclos_animal as (
+	select id_type_enclos
+	from Animal natural join Espece natural join TypeEnclos
+), type_enclos_enclos as (
+	select id_type_enclos
+	from Animal natural join Enclos natural join TypeEnclos
+)
+iif(type_enclos_animal=type_enclos_enclos, COMMIT, ROLLBACK);
