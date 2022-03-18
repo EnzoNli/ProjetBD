@@ -4,6 +4,11 @@ pragma foreign_keys = true;
 .mode column
 
 
+create table TypeEnclos(
+	id_type_enclos		char(2)		primary key,
+	description_type	varchar(50)
+);
+
 create table CategorieNourriture(
 	id_categorie	char(1)		primary key,
 	description_cat	varchar(50)
@@ -37,18 +42,13 @@ create table Animal(
 	origine	varchar(30),
 	race 	varchar(30)		references Espece(race),
 	id_soign 	int 	references Soigneur(id_soign),
-	enclos		int		references Enclos(id_enclos),
+	id_enclos	int		references Enclos(id_enclos),
 	date_arrivee_zoo	date 	default(date('now'))
 );
 
 create table Nourriture(
 	id_plat		integer		primary key		autoincrement,
 	description_plat		varchar(50)
-);
-
-create table TypeEnclos(
-	id_type_enclos		char(2)		primary key,
-	description_type	varchar(50)
 );
 
 create table Soigneur(
@@ -58,7 +58,6 @@ create table Soigneur(
 	prenom_soign	varchar(30)		not null,
 	sexe_soign		char(1)			check(sexe_soign in ('M', 'F'))
 );
-
 
 create table Animation(
 	id_anim		integer		primary key		autoincrement,
@@ -93,14 +92,12 @@ create table AvoirLieu(
 create view NombreAnimauxParTypeEnclos as
 	select id_type_enclos, count(1)
 	from TypeEnclos natural join Enclos natural join Animal
-	where date_fin = null
 	group by id_type_enclos
 ;
 
 create view NombreAnimauxParEspece as
 	select race, count(1)
 	from Espece natural join Animal
-	where date_fin = null
 	group by race
 ;
 
@@ -145,10 +142,12 @@ create view EnfantsDuZoo as
 	from AvoirParent
 ;
 
+/*
 create view TypeEnclosParRace as
     select race, id_type_enclos
     from Espece natural join TypeEnclos
 ;
+*/
 
 create view RaceParEnclos as
     select distinct id_enclos, race
@@ -156,13 +155,66 @@ create view RaceParEnclos as
 ;
 
 
-/*
-create trigger SupprEnclos
-after delete on Animal
+
+
+-- triggers
+
+create trigger IncrementeEspece
+after insert on Animal
 begin
-	update Enclos set nb_actuel = nb_actuel - 1 where id_enclos = old.id_enclos;
+	update Espece
+	set nb_dans_zoo = nb_dans_zoo + 1
+	where race = new.race;
 end;
-*/
+
+create trigger IncrementeEnclos
+after insert on Animal
+begin
+	update Enclos set nb_actuel = nb_actuel + 1 where id_enclos = new.id_enclos;
+end;
+
+create trigger EmpecheAjoutAnimalSiMauvaisTypeEnclos
+before insert on Animal
+begin
+    select
+        case
+            when (select id_type_enclos
+            from Animal natural join Espece natural join TypeEnclos
+            where new.race = race) <> (select id_type_enclos
+            from Enclos natural join TypeEnclos
+            where new.id_enclos = id_enclos)
+            then raise(abort,'ERREUR : cet animal ne peut pas vivre dans ce type d enclos !')
+        end;
+end;
+
+create trigger EmpecheAjoutAnimalSiEnclosPlein
+before insert on Animal
+begin
+	select
+		case 
+			when ( new.id_enclos in EnclosPlein ) 
+			then raise(abort, 'ERREUR : cet enclos est plein !')
+		end;
+end;
+
+create trigger EmpecheAjoutAnimalSiRaceDifferente
+before insert on Animal
+begin 
+	select 
+		case 
+			when (new.race <> (select race
+								from RaceParEnclos
+								where id_enclos = new.id_enclos) )
+			then raise(abort, 'ERREUR : une autre espèce habite déjà ici !')
+		end;
+end;
+
+
+
+
+
+
+
 
 -- insertions
 
@@ -247,7 +299,6 @@ insert into Enclos (nb_max, taille, id_type_enclos) values
 
 insert into Animal values
     ("Eric", '2003-07-08', 'Male', '345.0', null, "Herisson du désert", 2, 10, date('now')),
-
     ("Moussa", '1985-04-16', 'Male', '5654.5', null, "Elephant de foret d'Afrique", 1, 9, '2000-01-05'),
     ("Camila", '1988-07-21', 'Femelle', '4378.9', null, "Elephant de foret d'Afrique", 1, 9, '2000-01-05'),
     ("Gaby", '2008-03-04', 'Male', '3452.7', "né dans le zoo", "Elephant de foret d'Afrique", 1, 9, '2008-03-04')
@@ -263,75 +314,13 @@ insert into AvoirParent values
 insert into Animation values
     (
 ;
-
 insert into AvoirLieu values
 	(
 ;
 */
 
-/*
-begin transaction;
-iif (1 not in EnclosPlein,
-  iif (1 in EnclosVide,
-        with TypeEnclosDeLanimal as (
-            select id_type_enclos as te
-            from TypeEnclosParRace
-            where race = "Beluga"
-        )
-          iif("aq" = "aq",
-            insert into Animal values ("bebert",'2020-20-20', 'Male', 23.5, null,             "Beluga",1,1);, "error3")
-        , "error2")
-    , 'error1')
-	else {
-        with EspeceDansLEnclos as (
-            select race as r
-            from RaceParEnclos
-            where id_enclos = choix_enclos.id_enclos
-        )
-        if (r.race = choix_animal.race){
-            insert into Animal values ();
-            insert into Occuper values (choix_animal.nom, choix_enclos.id_enclos, date('now'));
-        }
-    }*/
 
-
--- triggers
-
-create trigger IncrementeEspece
-after insert on Animal
-begin
-	update Espece
-	set nb_dans_zoo = nb_dans_zoo + 1
-	where race = new.race;
-end;
-
-create trigger IncrementeEnclos
-after insert on Animal
-begin
-	update Enclos set nb_actuel = nb_actuel + 1 where id_enclos = new.enclos;
-end;
-
-
-create view EnclosTypeEnclos as
-    select id_enclos, id_type_enclos
-    from Enclos natural join TypeEnclos
-;
-
-
-create trigger SupprimeAnimalSiMauvaisTypeEnclos
-before insert on Animal
-begin
-    select
-        case
-            when (select id_type_enclos
-            from Animal natural join Espece natural join TypeEnclos
-            where new.race = race) <> (select id_type_enclos
-            from Enclos natural join TypeEnclos
-            where new.enclos = id_enclos)
-            then raise(abort,'invalid type enclos')
-        end;
-end;
-
-
-insert into Animal values ("bebert",'2020-20-20', 'Male', 23.5, null, "Beluga",1,1,'2000-01-01');
-    insert into Animal values ("Test",'2020-20-20', 'Male', 23.5, null, "Beluga",1,4,'2000-01-01');
+--insert into Animal values ("bebert",'2020-20-20', 'Male', 23.5, null, "Beluga",1,1,'2000-01-01');
+insert into Animal values ("Test1",'2020-20-20', 'Male', 23.5, null, "Beluga",1,4,'2000-01-01');
+--insert into Animal values ("TEST2", '1988-07-21', 'Femelle', '4378.9', null, "Elephant de foret d'Afrique", 1, 9, '2000-01-05');
+--insert into Animal values ("TEST3", '1988-07-21', 'Femelle', '4378.9', null, "Elephant de foret d'Afrique", 1, 10, '2000-01-05');
