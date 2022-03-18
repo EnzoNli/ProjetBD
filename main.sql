@@ -4,7 +4,7 @@ pragma foreign_keys = true;
 .mode column
 
 
-create table CategorieNourriture( 
+create table CategorieNourriture(
 	id_categorie	char(1)		primary key,
 	description_cat	varchar(50)
 );
@@ -50,13 +50,13 @@ create table TypeEnclos(
 	id_type_enclos		char(2)		primary key,
 	description_type	varchar(50)
 );
-	
+
 create table Soigneur(
 	id_soign		integer		primary key		autoincrement,
 	date_naissance_soign	date,	--check avant aujourdhui moins 18 ans ?
 	nom_soign	 	varchar(30)		not null,
 	prenom_soign	varchar(30)		not null,
-	sexe_soign		char(1)			check(sexe_soign in ('M', 'F'))	
+	sexe_soign		char(1)			check(sexe_soign in ('M', 'F'))
 );
 
 
@@ -67,7 +67,7 @@ create table Animation(
 	id_soign	int		references Soignant(id_soign)
 );
 
--- associations 
+-- associations
 
 create table AvoirParent(
 	parent		varchar(30)		references Animal(nom),
@@ -129,28 +129,28 @@ create view ListeNourritureParRace as
 	from Espece natural join ListePlatParCategorie
 ;
 
-create view ListeAnimalPourSoigneur as 
+create view ListeAnimalPourSoigneur as
 	select nom_soign, prenom_soign, nom
 	from Soigneur natural join Animal
 ;
 
-create view AnimationAujourdhui as 
+create view AnimationAujourdhui as
 	select id_anim
 	from Animation
 	where date_anim = DATE('nom')
 ;
 
-create view EnfantsDuZoo as 
+create view EnfantsDuZoo as
 	select distinct enfant as noms
 	from AvoirParent
 ;
 
-create view TypeEnclosParRace as 
+create view TypeEnclosParRace as
     select race, id_type_enclos
     from Espece natural join TypeEnclos
 ;
 
-create view RaceParEnclos as 
+create view RaceParEnclos as
     select distinct id_enclos, race
     from Enclos natural join Animal
 ;
@@ -163,10 +163,10 @@ begin
 	update Enclos set nb_actuel = nb_actuel - 1 where id_enclos = old.id_enclos;
 end;
 */
-	
+
 -- insertions
 
-insert into CategorieNourriture values 
+insert into CategorieNourriture values
     ('o',"omnivore : mange des aliments d'origines végétale et animale"),
     ('h',"herbivore : se nourrit d'herbes et de plantes basses"),
     ('c',"carnivore : son régime alimentaire est principalement basé sur la consommation de chairs ou de tissus d'animaux vivants ou morts"),
@@ -196,7 +196,7 @@ insert into Espece values
     ("Python royal", 0, "Environ 30 ans", "1 à 2 kg", 2, 1, "Territoire allant du Sénégal jusqu'à l'ouest de l'Ouganda et au nord de la République démocratique du Congo.", 'c','tr'),
     ("Rainette jaguar", 0, "5 à 10 ans", "3g en moyenne", 4, 0, "Forêts tropicales humides de basse altitude", 'i','tr')
 ;
-    
+
 insert into Nourriture (description_plat) values
     ('Boeuf'),
     ('Volaille'),
@@ -214,7 +214,7 @@ insert into Nourriture (description_plat) values
     ('Maquereaux')
 ;
 
-insert into Convenir values 
+insert into Convenir values
     (1,'c'),(1,'o'),
     (2,'c'),(2,'o'),
 
@@ -227,12 +227,12 @@ insert into Convenir values
     (9,'h'),(9,'o')
 ;
 
-insert into Soigneur (date_naissance_soign, nom_soign, prenom_soign, sexe_soign) values 
+insert into Soigneur (date_naissance_soign, nom_soign, prenom_soign, sexe_soign) values
     ('2002-10-16','Nulli','Enzo','M'),
     ('2001-09-03','Marquis','Zoé','F')
 ;
 
-insert into Enclos (nb_max, taille, id_type_enclos) values 
+insert into Enclos (nb_max, taille, id_type_enclos) values
     (5, 6, 'aq'),
     (3, 8, 'aq'),
     (2, 10,'vl'),
@@ -245,7 +245,7 @@ insert into Enclos (nb_max, taille, id_type_enclos) values
     (4, 200,'ex')
 ;
 
-insert into Animal values 
+insert into Animal values
     ("Eric", '2003-07-08', 'Male', '345.0', null, "Herisson du désert", 2, 10, date('now')),
 
     ("Moussa", '1985-04-16', 'Male', '5654.5', null, "Elephant de foret d'Afrique", 1, 9, '2000-01-05'),
@@ -253,7 +253,7 @@ insert into Animal values
     ("Gaby", '2008-03-04', 'Male', '3452.7', "né dans le zoo", "Elephant de foret d'Afrique", 1, 9, '2008-03-04')
 ;
 
-insert into AvoirParent values 
+insert into AvoirParent values
     ("Moussa","Gaby"),
     ("Camila","Gaby")
 ;
@@ -271,7 +271,7 @@ insert into AvoirLieu values
 
 /*
 begin transaction;
-iif (1 not in EnclosPlein, 
+iif (1 not in EnclosPlein,
   iif (1 in EnclosVide,
         with TypeEnclosDeLanimal as (
             select id_type_enclos as te
@@ -299,8 +299,8 @@ iif (1 not in EnclosPlein,
 
 create trigger IncrementeEspece
 after insert on Animal
-begin 
-	update Espece 
+begin
+	update Espece
 	set nb_dans_zoo = nb_dans_zoo + 1
 	where race = new.race;
 end;
@@ -312,13 +312,26 @@ begin
 end;
 
 
-begin transaction;
-insert into Animal values ("bebert",'2020-20-20', 'Male', 23.5, null,             "Beluga",1,1,'2000-01-01');
-with type_enclos_animal as (
-	select id_type_enclos
-	from Animal natural join Espece natural join TypeEnclos
-), type_enclos_enclos as (
-	select id_type_enclos
-	from Animal natural join Enclos natural join TypeEnclos
-)
-iif(type_enclos_animal=type_enclos_enclos, COMMIT, ROLLBACK);
+create view EnclosTypeEnclos as
+    select id_enclos, id_type_enclos
+    from Enclos natural join TypeEnclos
+;
+
+
+create trigger SupprimeAnimalSiMauvaisTypeEnclos
+before insert on Animal
+begin
+    select
+        case
+            when (select id_type_enclos
+            from Animal natural join Espece natural join TypeEnclos
+            where new.race = race) <> (select id_type_enclos
+            from Enclos natural join TypeEnclos
+            where new.enclos = id_enclos)
+            then raise(abort,'invalid type enclos')
+        end;
+end;
+
+
+insert into Animal values ("bebert",'2020-20-20', 'Male', 23.5, null, "Beluga",1,1,'2000-01-01');
+    insert into Animal values ("Test",'2020-20-20', 'Male', 23.5, null, "Beluga",1,4,'2000-01-01');
