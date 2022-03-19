@@ -1,0 +1,34 @@
+.carousel-cell{
+    width: 30vw;
+    height: 30vh;
+    margin-right: 20px;
+}
+
+.carousel{
+    margin-bottom: 10vh;
+}
+
+.carousel-img{
+    width: 30vw;
+    height: 27vh;
+}
+
+.textcell{
+    text-align: center;
+    bottom: 0vh;
+    position: relative;
+   /* font-family: */
+}
+
+#type{
+    margin-top : 1vh;
+    margin-bottom : 0vh;
+    margin-left : 1vw;
+    font-size : 3vh;
+    font-family: TypeEnclos;
+}
+
+@font-face {
+    font-family: "TypeEnclos";
+    src: url("../font/TypeEnclos.ttf");
+}

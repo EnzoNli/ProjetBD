@@ -1,8 +1,3 @@
-.open zoo.db
-.mode column 
-.headers on
-
-
 pragma foreign_keys = true;
 
 

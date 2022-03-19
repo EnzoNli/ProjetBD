@@ -1,26 +1,27 @@
-<nav class="navbar navbar-expand-sm bg-light navbar-light">
-   <a class="navbar-brand" href="#">
-   <img src="img/dino_logo.jpg" style="width:64px;">
-   </a>
+<link rel="stylesheet" href="../css/navbar.css">
 
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
-         <a class="nav-link active" href="#">Especes</a>
-      </li>
-      <li class="nav-item">
-         <a class="nav-link" href="#">Enclos</a>
-      </li>
-      <li class="nav-item">
-         <a class="nav-link" href="#">Animations</a>
-      </li>
-    </ul>
+<nav class="navbar navbar-expand-sm">
+   <a class="navbar-brand" href="/index.php">
+    <p id="titre">Zouzoo</p>
+   </a>
+   
+      <div class="menugauche">
+         <ul class="navbar-nav">
+            <li class="nav-item hover">
+               <a class="nav-link" href="/pages/animaux.php">Animaux</a>
+            </li>
+            <li class="nav-item hover">
+               <a class="nav-link" href="#">Animations</a>
+            </li>
+            <li class="nav-item hover last">
+               <a class="nav-link" href="#">Soigneurs</a>
+            </li>
+         </ul>
+      </div>
 
     <ul class="navbar-nav ml-auto">
-      <li class="nav-item">
+      <li class="nav-item hover">
         <a class="nav-link" href="#">Espace administrateur</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Contact</a>
       </li>
     </ul>
 </nav>
