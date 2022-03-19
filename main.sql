@@ -1,3 +1,8 @@
+.open zoo.db
+.mode column 
+.headers on
+
+
 pragma foreign_keys = true;
 
 
@@ -466,7 +471,7 @@ insert into AvoirParent values
 insert into Animation values
     (
 ;
-insert into AvoirLieu values
+insert into AvoirLieu valuesnimaux
 	(
 ;
 */
