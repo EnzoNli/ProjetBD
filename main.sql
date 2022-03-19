@@ -152,6 +152,10 @@ create view RaceParEnclos as
     from Enclos natural join Animal
 ;
 
+create view AnimauxParSoigneur as 
+	select nom, prenom_soign, nom_soign
+	from Animal natural join Soigneur
+;
 
 
 
