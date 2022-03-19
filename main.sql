@@ -192,6 +192,7 @@ begin
 	update Enclos set nb_actuel = nb_actuel + 1 where id_enclos = new.id_enclos;
 end;
 
+
 create trigger EmpecheAjoutAnimal
 before insert on Animal
 begin
@@ -207,13 +208,10 @@ begin
 												where new.id_enclos = id_enclos)
 			then raise(abort, 'ERREUR : cet animal ne peut pas vivre dans ce type d enclos !')
 		
-			/*
 			when (new.race <> (select race
 								from RaceParEnclos
 								where id_enclos = new.id_enclos) )
 			then raise(abort, 'ERREUR : une autre espèce habite déjà ici !')
-			*/
-					
 		end;
 end;
 
@@ -255,12 +253,8 @@ insert into Espece values
 	("Béluga", 0, "35 à 50 ans", "Environ 1 400 kg", 0, 0, "Eaux arctiques et subarctiques", 'p','aq'),
 	-- a completer
 	("Grande raie-guitare", 0, "0", "0", 0, 0, "0", 'p','aq'),
-	/*
-	("Méduse Une", 0, "0", "0", 0, 0, "0", 'p','aq'),
-	("Méduse Deux", 0, "0", "0", 0, 0, "0", 'p','aq'),
-	("Méduse Trois", 0, "0", "0", 0, 0, "0", 'p','aq'),
-	*/
-
+	("Méduse Aurélie", 0, "0", "0", 0, 0, "0", 'p','aq'),
+	("Boto", 0, "0", "0", 0, 0, "0", 'p','aq'),
 
 
     ("Panda géant", 0, "20 à 25 ans", "70 à 120 kg", 3, 2, "Forets de bambous", 'h', 'ex'),
@@ -314,33 +308,67 @@ insert into Soigneur (date_naissance_soign, nom_soign, prenom_soign, sexe_soign)
 ;
 
 insert into Enclos (nb_max, taille, id_type_enclos) values
-    (5, 6, 'aq'),
-    (3, 8, 'aq'),
-    (2, 10,'vl'),
-    (1, 9,'vl'),
-    (2, 6, 'tr'),
-    (1, 8, 'tr'),
-    (2, 10,'cg'),
-    (4, 20,'cg'),
-    (3, 100,'ex'),
-	(2, 150,'ex'),
-	(8, 200,'ex'),
-	(3, 500,'ex'),
-    (4, 200,'ex')
+    (5, 60, 'aq'), --1
+    (4, 400, 'aq'), --2
+	(2, 150, 'aq'), --3
+    (4, 200, 'aq'), --4
+	(6, 70, 'aq'), --5
+    (3, 300, 'aq'), --6
+
+	(2, 10,'vl'), --7
+    (2, 10,'vl'), --8
+    (1, 9,'vl'), --9
+
+    (2, 6, 'tr'), --10
+    (1, 8, 'tr'), --11
+
+    (2, 10,'cg'), --12
+    (4, 20,'cg'), --13
+
+    (3, 100,'ex'), --14
+	(2, 150,'ex'), --15
+	(8, 200,'ex'), --16
+	(3, 500,'ex'), --17
+    (4, 200,'ex') --18
 ;
 
 insert into Animal values
-    ("Eric", '2003-07-08', 'Male', 345.0, null, "Hérisson du désert", 2, 10, date('now')),
-    ("Moussa", '1985-04-16', 'Male', 5654.5, null, "Eléphant de forêt d'Afrique", 1, 9, '2000-01-05'),
-    ("Camila", '1988-07-21', 'Femelle', 4378.9, null, "Eléphant de forêt d'Afrique", 1, 9, '2000-01-05'),
-    ("Gaby", '2008-03-04', 'Male', 3452.7, "né dans le zoo", "Eléphant de forêt d'Afrique", 1, 9, '2008-03-04'),
-	("Bebert", '2008-03-04', 'Male', 3452.7, "né dans le zoo", "Béluga", 1, 2, '2008-03-04')
-;
 
+	("Boto1", '2003-07-08', 'Male', 345.0, null, "Boto", 2, 2, date('now')),
+	("Boto2", '2003-07-08', 'Male', 345.0, null, "Boto", 2, 2, date('now')),
+	("Boto3", '2003-07-08', 'Male', 345.0, null, "Boto", 2, 2, date('now')),
+	("Boto4", '2003-07-08', 'Male', 345.0, null, "Boto", 2, 2, date('now')),
+
+	("Raie1", '2003-07-08', 'Male', 345.0, null, "Grande raie-guitare", 2, 3, date('now')),
+	("Raie2", '2003-07-08', 'Male', 345.0, null, "Grande raie-guitare", 2, 3, date('now')),
+	
+	("Lion1", '2003-07-08', 'Male', 345.0, null, "Lion de mer de Steller", 2, 4, date('now')),
+	("Lion2", '2003-07-08', 'Male', 345.0, null, "Lion de mer de Steller", 2, 4, date('now')),
+	("Lion3", '2003-07-08', 'Male', 345.0, null, "Lion de mer de Steller", 2, 4, date('now')),
+
+	("Méduse1", '2003-07-08', 'Male', 345.0, null, "Méduse Aurélie", 2, 5, date('now')),
+	("Méduse2", '2003-07-08', 'Male', 345.0, null, "Méduse Aurélie", 2, 5, date('now')),
+	("Méduse3", '2003-07-08', 'Male', 345.0, null, "Méduse Aurélie", 2, 5, date('now')),
+	("Méduse4", '2003-07-08', 'Male', 345.0, null, "Méduse Aurélie", 2, 5, date('now')),
+	("Méduse5", '2003-07-08', 'Male', 345.0, null, "Méduse Aurélie", 2, 5, date('now')),
+
+	("Beluga1", '2003-07-08', 'Male', 345.0, null, "Boto", 2, 6, date('now')),
+	("Beluga2", '2003-07-08', 'Male', 345.0, null, "Boto", 2, 6, date('now')),
+	("Beluga3", '2003-07-08', 'Male', 345.0, null, "Boto", 2, 6, date('now')),
+
+    ("Eric", '2003-07-08', 'Male', 345.0, null, "Hérisson du désert", 2, 18, date('now')),
+    ("Moussa", '1985-04-16', 'Male', 5654.5, null, "Eléphant de forêt d'Afrique", 1, 14, '2000-01-05'),
+    ("Camila", '1988-07-21', 'Femelle', 4378.9, null, "Eléphant de forêt d'Afrique", 1, 14, '2000-01-05'),
+    ("Gaby", '2008-03-04', 'Male', 3452.7, "né dans le zoo", "Eléphant de forêt d'Afrique", 1, 14, '2008-03-04')
+
+;
+/*
 insert into AvoirParent values
     ("Moussa","Gaby"),
     ("Camila","Gaby")
 ;
+*/
+
 
 
 /*
@@ -357,10 +385,10 @@ insert into AvoirLieu values
 --TESTS ERREURS ! 
 -- vérif l'incrémentation
 -- enclos plein
-insert into Animal values ("Test1", '1988-07-21', 'Femelle', 4378.9, null, "Eléphant de forêt d'Afrique", 1, 9, '2000-01-05');
+insert into Animal values ("Test1", '1988-07-21', 'Femelle', 4378.9, null, "Eléphant de forêt d'Afrique", 1, 14, '2000-01-05');
 -- mauvais type d'enclos
 insert into Animal values ("Test2", '1988-07-21', 'Femelle', 4378.9, null, "Eléphant de forêt d'Afrique", 1, 1, '2000-01-05');
 -- autre espece y habite deja
-insert into Animal values ("Test3", '1988-07-21', 'Femelle', 4378.9, null, "Eléphant de forêt d'Afrique", 1, 10, '2000-01-05');
+insert into Animal values ("Test3", '1988-07-21', 'Femelle', 4378.9, null, "Eléphant de forêt d'Afrique", 1, 18, '2000-01-05');
 */
 
