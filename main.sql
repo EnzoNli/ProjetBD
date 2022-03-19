@@ -13,15 +13,17 @@ create table CategorieNourriture(
 );
 
 create table Espece(
-	race	varchar(30)	primary key,
-	nb_dans_zoo	int		check(nb_dans_zoo>=0),
+	race		varchar(30)	primary key,
+	nb_dans_zoo	int		check(nb_dans_zoo>=0) default(0),
 	espe_vie	varchar(30)		not null,
 	espe_poids_adulte	varchar(30)		not null,
-	dangerosite	int		check(0<=dangerosite and dangerosite<=5)	not null,
+	poids_moyen_zoo 	float	check(poids_moyen_zoo>=0) default(0),
+	dangerosite			int		check(0<=dangerosite and dangerosite<=5)	not null,
 	menace_extinction	int		check(0<=menace_extinction and menace_extinction<=5)	not null,
-	habitat_nat		varchar(30),
-	id_categorie	char(1)		references CategorieNourriture(id_categorie),
-	id_type_enclos	char(2)		references TypeEnclos(id_type_enclos)
+	habitat_nat			varchar(100),
+	id_categorie		char(1)		references CategorieNourriture(id_categorie),
+	id_type_enclos		char(2)		references TypeEnclos(id_type_enclos),
+	photo 				varchar(20)		default(null)
 );
 
 create table Enclos(
@@ -34,13 +36,13 @@ create table Enclos(
 
 create table Animal(
 	nom		varchar(30)		primary key,
+	race 	varchar(30)		references Espece(race),
+	id_enclos	int		references Enclos(id_enclos),
 	date_naissance_anim		date  	not null,
 	genre	varchar(7)	check(genre in ('Male','Femelle'))  not null,
 	poids	float		check(poids>0)	not null,
 	origine	varchar(30),
-	race 	varchar(30)		references Espece(race),
 	id_soign 	int 	references Soigneur(id_soign),
-	id_enclos	int		references Enclos(id_enclos),
 	date_arrivee_zoo	date 	default(date('now'))
 );
 
@@ -54,7 +56,7 @@ create table Soigneur(
 	date_naissance_soign	date,	--check avant aujourdhui moins 18 ans ?
 	nom_soign	 	varchar(30)		not null,
 	prenom_soign	varchar(30)		not null,
-	sexe_soign		char(1)			check(sexe_soign in ('M', 'F'))
+	genre_soign		char(1)			check(genre_soign in ('M', 'F'))
 );
 
 create table Animation(
@@ -171,6 +173,11 @@ create view NombreTotalAnimauxZoo as
 	from Animal
 ;
 
+create view NombreTypeEnclos as 
+	select count(1) as nombre
+	from TypeEnclos
+;
+
 
 
 
@@ -184,13 +191,45 @@ create view NombreTotalAnimauxZoo as
 
 -- triggers
 
-create trigger IncrementeEspeceEtEnclos
+create trigger MisAJourAjoutAnimal
 after insert on Animal
 begin
+-- incrémente espece et enclos
 	update Espece set nb_dans_zoo = nb_dans_zoo + 1 where race = new.race;
-
 	update Enclos set nb_actuel = nb_actuel + 1 where id_enclos = new.id_enclos;
+-- met à jour le poids moyen de l'espèce dans le zoo
+	update Espece set poids_moyen_zoo = (select avg(poids) 
+										from Animal natural join Espece
+										where race = new.race
+										group by race)	where race = new.race;
 end;
+
+create trigger MisAJourSupprAnimal
+after delete on Animal
+begin
+--décrémente espece et enclos
+	update Espece set nb_dans_zoo = nb_dans_zoo - 1 where race = old.race;
+	update Enclos set nb_actuel = nb_actuel - 1 where id_enclos = old.id_enclos;
+-- met à jour le poids moyen de l'expèce dans le zoo
+	update Espece set poids_moyen_zoo = (select avg(poids) 
+										from Animal natural join Espece
+										where race = old.race
+										group by race)	where race = old.race;
+end;
+
+create trigger MisAJourPoids
+after update of poids on Animal
+begin
+	-- met à jour le poids moyen dans zoo
+	update Espece set poids_moyen_zoo = (select avg(poids) 
+										from Animal natural join Espece
+										where race = old.race
+										group by race)	where race = old.race;
+end;
+
+
+	
+
 
 
 create trigger EmpecheAjoutAnimal
@@ -215,6 +254,14 @@ begin
 		end;
 end;
 
+create trigger EnleveLienParente
+after delete on Animal
+begin
+--"delete on cascade"
+	delete from AvoirParent where parent = old.nom or enfant = old.nom;
+end;
+
+
 
 
 
@@ -238,38 +285,6 @@ insert into CategorieNourriture values
     ('c',"carnivore : son régime alimentaire est principalement basé sur la consommation de chairs ou de tissus d'animaux vivants ou morts"),
     ('i',"insectivore : se nourrit d'insectes ou d'autres arthropodes."),
     ('p',"piscivore : se nourrit de poissons.")
-;
-
-insert into TypeEnclos values
-    ('aq', "Un aquarium est un réservoir rempli d'eau dans lequel vivent des animaux et/ou des plantes aquatiques","Aquarium"),
-    ('ex',"blabla extérieur","Enclos extérieur"),
-    ('cg', "Une cage est un contenant ajouré, le plus souvent grillagé ou à barreaux, destiné à contenir un animal.","Cage"),
-    ('vl', "Une volière est un enclos assez vaste ordinairement grillagé, généralement une grande cage, où l'on conserve, élève et nourrit des oiseaux d'ornement.","Volière"),
-    ('tr', "Un terrarium est un milieu confiné imitant le biotope de certaines espèces animales et/ou végétales. Il est l'équivalent d'un aquarium dont l'eau serait remplacée par un substrat de quelques centimètres d'épaisseur disposé sur le fond.","Terrarium")
-;
-
-insert into Espece values
-	("Lion de mer de Steller", 0, "25 ans", "300 à 1 100 kg", 1, 1, "Nord de l'océan Pacifique", 'p', 'aq'),
-	("Béluga", 0, "35 à 50 ans", "Environ 1 400 kg", 0, 0, "Eaux arctiques et subarctiques", 'p','aq'),
-	-- a completer
-	("Grande raie-guitare", 0, "0", "0", 0, 0, "0", 'p','aq'),
-	("Méduse Aurélie", 0, "0", "0", 0, 0, "0", 'p','aq'),
-	("Boto", 0, "0", "0", 0, 0, "0", 'p','aq'),
-
-
-    ("Panda géant", 0, "20 à 25 ans", "70 à 120 kg", 3, 2, "Forets de bambous", 'h', 'ex'),
-    ("Hérisson du désert", 0, "3 à 5 ans", "280 à 510 g", 1, 0, "Deserts", 'i', 'ex'),
-    ("Girafe", 0, "10 à 15 ans", "550 à 1 200 kg", 0, 2, "Savanes", 'h', 'ex'),
-	("Eléphant de forêt d'Afrique", 0, "60 à 70 ans", "2 700 à 6 000 kg", 1, 4, "Forêt dense d'Afrique centrale et d'Afrique de l'Ouest", 'h', 'ex'),
-    ("Panda roux", 0, "8 à 18 ans", "3 à 6 kg", 3, 3, "Présent en Asie, dans la chaîne de l’Himalaya", 'o','ex'),
-    
-    ("Ouistiti à tête jaune", 0, "10 à 16 ans", "230 à 450 g", 1, 4, "Forêt Atlanque", 'o', 'cg'),
-	("Panthère des neiges", 0, "16 à 18 ans", "40 à 55 kg", 2, 2, "Montagnes escarpées et rocheuses d'Asie", 'o', 'cg'),
-
-    ("Chouette forestière", 0, "jusqu'à 16 ans", "160 à 180 g", 0, 3, "Plaines et de collines du sous-continent indien", 'c', 'vl'),
-    
-    ("Python royal", 0, "Environ 30 ans", "1 à 2 kg", 2, 1, "Territoire allant du Sénégal jusqu'à l'ouest de l'Ouganda et au nord de la République démocratique du Congo.", 'c','tr'),
-    ("Rainette jaguar", 0, "5 à 10 ans", "3g en moyenne", 4, 0, "Forêts tropicales humides de basse altitude", 'i','tr')
 ;
 
 insert into Nourriture (description_plat) values
@@ -302,72 +317,148 @@ insert into Convenir values
     (9,'h'),(9,'o')
 ;
 
-insert into Soigneur (date_naissance_soign, nom_soign, prenom_soign, sexe_soign) values
+insert into Soigneur (date_naissance_soign, nom_soign, prenom_soign, genre_soign) values
     ('2002-10-16','Nulli','Enzo','M'),
     ('2001-09-03','Marquis','Zoé','F')
 ;
 
+insert into TypeEnclos values
+    ('aq', "Un aquarium est un réservoir rempli d'eau dans lequel vivent des animaux et/ou des plantes aquatiques","Aquarium"),
+    ('ex',"blabla extérieur","Enclos extérieur"),
+    ('cg', "Une cage est un contenant ajouré, le plus souvent grillagé ou à barreaux, destiné à contenir un animal.","Cage"),
+    ('vl', "Une volière est un enclos assez vaste ordinairement grillagé, généralement une grande cage, où l'on conserve, élève et nourrit des oiseaux d'ornement.","Volière"),
+    ('tr', "Un terrarium est un milieu confiné imitant le biotope de certaines espèces animales et/ou végétales. Il est l'équivalent d'un aquarium dont l'eau serait remplacée par un substrat de quelques centimètres d'épaisseur disposé sur le fond.","Terrarium")
+;
+
+
+
+
+
+
+
+
+insert into Espece values
+	("Lion de mer de Steller", 0, "25 ans", "300 à 1 100 kg", 0, 1, 1, "Nord de l'océan Pacifique", 'p', 'aq','lionmer.jpg'),
+	("Béluga", 0, "35 à 50 ans", "Environ 1 400 kg", 0, 0, 0, "Eaux arctiques et subarctiques", 'p','aq','beluga.jpg'),
+-- a completer
+	("Grande raie-guitare", 0, "0", "0", 0, 0, 0, "0", 'p','aq','raie.jpg'),
+	("Méduse dorée", 0, "0", "0", 0, 0, 0, "0", 'p','aq','meduse.jpg'),
+	("Boto", 0, "0", "0", 0, 0, 0, "0", 'p','aq','boto.jpg'),
+
+
+	("Python royal", 0, "Environ 30 ans", "1 à 2 kg", 0, 2, 1, "Territoire allant du Sénégal jusqu'à l'ouest de l'Ouganda et au nord de la République démocratique du Congo.", 'c','tr', null),
+    ("Rainette jaguar", 0, "5 à 10 ans", "3g en moyenne", 0, 4, 0, "Forêts tropicales humides de basse altitude", 'i','tr', null),
+-- a completer
+	("Tortue des Seychelles", 0, "0", "0", 0, 0, 0, "0", 'h','tr', null),
+
+
+    ("Panda géant", 0, "20 à 25 ans", "70 à 120 kg", 0, 3, 2, "Forets de bambous", 'h', 'ex', null),
+    ("Hérisson du désert", 0, "3 à 5 ans", "280 à 510 g", 0, 1, 0, "Deserts", 'i', 'ex', null),
+    ("Girafe", 0, "10 à 15 ans", "550 à 1 200 kg", 0, 0, 2, "Savanes", 'h', 'ex', null),
+	("Eléphant de forêt d'Afrique", 0, "60 à 70 ans", "2 700 à 6 000 kg", 0, 1, 4, "Forêt dense d'Afrique centrale et d'Afrique de l'Ouest", 'h', 'ex', null),
+    ("Panda roux", 0, "8 à 18 ans", "3 à 6 kg", 0, 3, 3, "Présent en Asie, dans la chaîne de l’Himalaya", 'o','ex', null),
+    
+    ("Ouistiti à tête jaune", 0, "10 à 16 ans", "230 à 450 g", 0, 1, 4, "Forêt Atlanque", 'o', 'cg', null),
+	("Panthère des neiges", 0, "16 à 18 ans", "40 à 55 kg", 0, 2, 2, "Montagnes escarpées et rocheuses d'Asie", 'o', 'cg', null),
+
+    ("Chouette forestière", 0, "jusqu'à 16 ans", "160 à 180 g", 0, 0, 3, "Plaines et de collines du sous-continent indien", 'c', 'vl', null)
+    
+;
+
 insert into Enclos (nb_max, taille, id_type_enclos) values
-    (5, 60, 'aq'), --1
-    (4, 400, 'aq'), --2
-	(2, 150, 'aq'), --3
-    (4, 200, 'aq'), --4
-	(6, 70, 'aq'), --5
-    (3, 300, 'aq'), --6
+    (5, 60, 'aq'), --1 ?
+    (4, 400, 'aq'), --2 Boto
+	(2, 150, 'aq'), --3 Raie
+    (4, 200, 'aq'), --4 Lion Mer
+	(6, 70, 'aq'), --5 Méduse
+    (3, 300, 'aq'), --6 Beluga
 
-	(2, 10,'vl'), --7
-    (2, 10,'vl'), --8
-    (1, 9,'vl'), --9
+	(2, 6,'tr'), --7 Python
+    (2, 3,'tr'), --8 Rainette
+    (3, 14,'tr'), --9 Tortue
 
-    (2, 6, 'tr'), --10
-    (1, 8, 'tr'), --11
+	(6, 100,'ex'), --10 Hérisson
+	(3, 150,'ex'), --11 Panda géant
+	(8, 200,'ex'), --12 Panda roux 7
+	(4, 300,'ex'), --13 Girafe 3
+    (3, 500,'ex') --14 Eléphant 3
+/*
+    (2, 6, 'vl'), --10
+    (1, 8, 'vl'), --11
 
     (2, 10,'cg'), --12
     (4, 20,'cg'), --13
-
-    (3, 100,'ex'), --14
-	(2, 150,'ex'), --15
-	(8, 200,'ex'), --16
-	(3, 500,'ex'), --17
-    (4, 200,'ex') --18
+*/
+    
 ;
 
 insert into Animal values
+--aquarium
+	("Boto1", "Boto", 2,'2003-07-08', 'Male', 300.0, null,  2, date('now')),
+	("Boto2", "Boto", 2,'2003-07-08', 'Male', 200.0, null,  2, date('now')),
+	("Boto3", "Boto", 2,'2003-07-08', 'Male', 800.0, null,  2, date('now')),
+	("Boto4", "Boto", 2,'2003-07-08', 'Male', 700.0, null,  2, date('now')),
 
-	("Boto1", '2003-07-08', 'Male', 345.0, null, "Boto", 2, 2, date('now')),
-	("Boto2", '2003-07-08', 'Male', 345.0, null, "Boto", 2, 2, date('now')),
-	("Boto3", '2003-07-08', 'Male', 345.0, null, "Boto", 2, 2, date('now')),
-	("Boto4", '2003-07-08', 'Male', 345.0, null, "Boto", 2, 2, date('now')),
-
-	("Raie1", '2003-07-08', 'Male', 345.0, null, "Grande raie-guitare", 2, 3, date('now')),
-	("Raie2", '2003-07-08', 'Male', 345.0, null, "Grande raie-guitare", 2, 3, date('now')),
+	("Raie1", "Grande raie-guitare", 3, '2003-07-08', 'Male', 345.0, null,  2, date('now')),
+	("Raie2", "Grande raie-guitare", 3, '2003-07-08', 'Male', 345.0, null,  2, date('now')),
 	
-	("Lion1", '2003-07-08', 'Male', 345.0, null, "Lion de mer de Steller", 2, 4, date('now')),
-	("Lion2", '2003-07-08', 'Male', 345.0, null, "Lion de mer de Steller", 2, 4, date('now')),
-	("Lion3", '2003-07-08', 'Male', 345.0, null, "Lion de mer de Steller", 2, 4, date('now')),
+	("Lion1", "Lion de mer de Steller", 4, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
+	("Lion2", "Lion de mer de Steller", 4,'2003-07-08', 'Male', 345.0, null, 2, date('now')),
+	("Lion3", "Lion de mer de Steller", 4,'2003-07-08', 'Male', 345.0, null, 2, date('now')),
 
-	("Méduse1", '2003-07-08', 'Male', 345.0, null, "Méduse Aurélie", 2, 5, date('now')),
-	("Méduse2", '2003-07-08', 'Male', 345.0, null, "Méduse Aurélie", 2, 5, date('now')),
-	("Méduse3", '2003-07-08', 'Male', 345.0, null, "Méduse Aurélie", 2, 5, date('now')),
-	("Méduse4", '2003-07-08', 'Male', 345.0, null, "Méduse Aurélie", 2, 5, date('now')),
-	("Méduse5", '2003-07-08', 'Male', 345.0, null, "Méduse Aurélie", 2, 5, date('now')),
+	("Méduse1", "Méduse dorée", 5,'2003-07-08', 'Male', 345.0, null, 2, date('now')),
+	("Méduse2", "Méduse dorée", 5,'2003-07-08', 'Male', 345.0, null, 2, date('now')),
+	("Méduse3", "Méduse dorée", 5,'2003-07-08', 'Male', 345.0, null, 2, date('now')),
+	("Méduse4", "Méduse dorée", 5,'2003-07-08', 'Male', 345.0, null, 2, date('now')),
+	("Méduse5", "Méduse dorée", 5,'2003-07-08', 'Male', 345.0, null, 2, date('now')),
 
-	("Beluga1", '2003-07-08', 'Male', 345.0, null, "Boto", 2, 6, date('now')),
-	("Beluga2", '2003-07-08', 'Male', 345.0, null, "Boto", 2, 6, date('now')),
-	("Beluga3", '2003-07-08', 'Male', 345.0, null, "Boto", 2, 6, date('now')),
+	("Beluga1", "Béluga", 6, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
+	("Beluga2", "Béluga", 6, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
+	("Beluga3", "Béluga", 6, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
 
-    ("Eric", '2003-07-08', 'Male', 345.0, null, "Hérisson du désert", 2, 18, date('now')),
-    ("Moussa", '1985-04-16', 'Male', 5654.5, null, "Eléphant de forêt d'Afrique", 1, 14, '2000-01-05'),
-    ("Camila", '1988-07-21', 'Femelle', 4378.9, null, "Eléphant de forêt d'Afrique", 1, 14, '2000-01-05'),
-    ("Gaby", '2008-03-04', 'Male', 3452.7, "né dans le zoo", "Eléphant de forêt d'Afrique", 1, 14, '2008-03-04')
+--terrarium
+	("Python1", "Python royal", 7, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
 
+	("Rainette1", "Rainette jaguar", 8, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
+	("Rainette2", "Rainette jaguar", 8, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
+
+	("Tortue1", "Tortue des Seychelles", 9, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
+	("Tortue2", "Tortue des Seychelles", 9, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
+	("Tortue3", "Tortue des Seychelles", 9, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
+
+-- extérieur
+	("Enzo", "Hérisson du désert", 10, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
+	("Eric", "Hérisson du désert", 10, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
+	("Edgar", "Hérisson du désert", 10, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
+	("Elsa", "Hérisson du désert", 10, '2003-07-08', 'Femelle', 345.0, null, 2, date('now')),
+	("Emilie", "Hérisson du désert", 10, '2003-07-08', 'Femelle', 345.0, null, 2, date('now')),
+
+	("Ugo", "Panda géant", 11, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
+	("Ugette", "Panda géant", 11, '2003-07-08', 'Femelle', 345.0, null, 2, date('now')),
+	("Uta", "Panda géant", 11, '2003-07-08', 'Femelle', 345.0, "née dans le zoo", 2, date('now')),
+
+	("Rémi", "Panda roux", 12, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
+	("Raoul", "Panda roux", 12, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
+	("Ron", "Panda roux", 12, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
+	("Rosie", "Panda roux", 12, '2003-07-08', 'Femelle', 345.0, null, 2, date('now')),
+	("Roxane", "Panda roux", 12, '2003-07-08', 'Femelle', 345.0, null, 2, date('now')),
+	("Raymonde", "Panda roux", 12, '2003-07-08', 'Femelle', 345.0, null, 2, date('now')),
+
+    ("Nicolas", "Girafe", 13, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
+	("Nina", "Girafe", 13, '2003-07-08', 'Femelle', 345.0, null, 2, date('now')),
+	("Naomi", "Girafe", 13, '2003-07-08', 'Femelle', 345.0, null, 2, date('now')),
+
+    ("Moussa", "Eléphant de forêt d'Afrique", 14, '1985-04-16', 'Male', 5654.5, null, 1, '2000-01-05'),
+    ("Margot", "Eléphant de forêt d'Afrique", 14, '1988-07-21', 'Femelle', 4378.9, null, 1, '2000-01-05'),
+    ("Milan", "Eléphant de forêt d'Afrique", 14, '2008-03-04', 'Male', 3452.7, "né dans le zoo", 1, '2008-03-04')
 ;
-/*
+
 insert into AvoirParent values
-    ("Moussa","Gaby"),
-    ("Camila","Gaby")
+    ("Moussa","Milan"),
+    ("Margot","Milan"),
+	("Ugo","Uta"),
+	("Ugette","Uta")
 ;
-*/
 
 
 
