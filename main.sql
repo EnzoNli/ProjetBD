@@ -338,30 +338,30 @@ insert into TypeEnclos values
 
 
 insert into Espece values
-	("Lion de mer de Steller", 0, "25 ans", "300 à 1 100 kg", 0, 1, 1, "Nord de l'océan Pacifique", 'p', 'aq','lionmer.jpg'),
+	("Lion de mer de Steller", 0, "25 ans", "300 à 1 100 kg", 0, 1, 1, "Nord de l'océan Pacifique", 'p', 'aq','beluga.jpg'),
 	("Béluga", 0, "35 à 50 ans", "Environ 1 400 kg", 0, 0, 0, "Eaux arctiques et subarctiques", 'p','aq','beluga.jpg'),
 -- a completer
-	("Grande raie-guitare", 0, "0", "0", 0, 0, 0, "0", 'p','aq','raie.jpg'),
-	("Méduse dorée", 0, "0", "0", 0, 0, 0, "0", 'p','aq','meduse.jpg'),
-	("Boto", 0, "0", "0", 0, 0, 0, "0", 'p','aq','boto.jpg'),
+	("Grande raie-guitare", 0, "0", "0", 0, 0, 0, "0", 'p','aq','beluga.jpg'),
+	("Méduse dorée", 0, "0", "0", 0, 0, 0, "0", 'p','aq','beluga.jpg'),
+	("Boto", 0, "0", "0", 0, 0, 0, "0", 'p','aq','beluga.jpg'),
 
 
-	("Python royal", 0, "Environ 30 ans", "1 à 2 kg", 0, 2, 1, "Territoire allant du Sénégal jusqu'à l'ouest de l'Ouganda et au nord de la République démocratique du Congo.", 'c','tr', null),
-    ("Rainette jaguar", 0, "5 à 10 ans", "3g en moyenne", 0, 4, 0, "Forêts tropicales humides de basse altitude", 'i','tr', null),
+	("Python royal", 0, "Environ 30 ans", "1 à 2 kg", 0, 2, 1, "Territoire allant du Sénégal jusqu'à l'ouest de l'Ouganda et au nord de la République démocratique du Congo.", 'c','tr', 'beluga.jpg'),
+    ("Rainette jaguar", 0, "5 à 10 ans", "3g en moyenne", 0, 4, 0, "Forêts tropicales humides de basse altitude", 'i','tr', 'beluga.jpg'),
 -- a completer
-	("Tortue des Seychelles", 0, "0", "0", 0, 0, 0, "0", 'h','tr', null),
+	("Tortue des Seychelles", 0, "0", "0", 0, 0, 0, "0", 'h','tr', 'beluga.jpg'),
 
 
-    ("Panda géant", 0, "20 à 25 ans", "70 à 120 kg", 0, 3, 2, "Forets de bambous", 'h', 'ex', null),
-    ("Hérisson du désert", 0, "3 à 5 ans", "280 à 510 g", 0, 1, 0, "Deserts", 'i', 'ex', null),
-    ("Girafe", 0, "10 à 15 ans", "550 à 1 200 kg", 0, 0, 2, "Savanes", 'h', 'ex', null),
-	("Eléphant de forêt d'Afrique", 0, "60 à 70 ans", "2 700 à 6 000 kg", 0, 1, 4, "Forêt dense d'Afrique centrale et d'Afrique de l'Ouest", 'h', 'ex', null),
-    ("Panda roux", 0, "8 à 18 ans", "3 à 6 kg", 0, 3, 3, "Présent en Asie, dans la chaîne de l’Himalaya", 'o','ex', null),
+    ("Panda géant", 0, "20 à 25 ans", "70 à 120 kg", 0, 3, 2, "Forets de bambous", 'h', 'ex', 'beluga.jpg'),
+    ("Hérisson du désert", 0, "3 à 5 ans", "280 à 510 g", 0, 1, 0, "Deserts", 'i', 'ex', 'beluga.jpg'),
+    ("Girafe", 0, "10 à 15 ans", "550 à 1 200 kg", 0, 0, 2, "Savanes", 'h', 'ex', 'beluga.jpg'),
+	("Eléphant de forêt d'Afrique", 0, "60 à 70 ans", "2 700 à 6 000 kg", 0, 1, 4, "Forêt dense d'Afrique centrale et d'Afrique de l'Ouest", 'h', 'ex', 'beluga.jpg'),
+    ("Panda roux", 0, "8 à 18 ans", "3 à 6 kg", 0, 3, 3, "Présent en Asie, dans la chaîne de l’Himalaya", 'o','ex', 'beluga.jpg'),
     
-    ("Ouistiti à tête jaune", 0, "10 à 16 ans", "230 à 450 g", 0, 1, 4, "Forêt Atlanque", 'o', 'cg', null),
-	("Panthère des neiges", 0, "16 à 18 ans", "40 à 55 kg", 0, 2, 2, "Montagnes escarpées et rocheuses d'Asie", 'o', 'cg', null),
+    ("Ouistiti à tête jaune", 0, "10 à 16 ans", "230 à 450 g", 0, 1, 4, "Forêt Atlanque", 'o', 'cg', 'beluga.jpg'),
+	("Panthère des neiges", 0, "16 à 18 ans", "40 à 55 kg", 0, 2, 2, "Montagnes escarpées et rocheuses d'Asie", 'o', 'cg', 'beluga.jpg'),
 
-    ("Chouette forestière", 0, "jusqu'à 16 ans", "160 à 180 g", 0, 0, 3, "Plaines et de collines du sous-continent indien", 'c', 'vl', null)
+    ("Chouette forestière", 0, "jusqu'à 16 ans", "160 à 180 g", 0, 0, 3, "Plaines et de collines du sous-continent indien", 'c', 'vl', 'beluga.jpg')
     
 ;
 
