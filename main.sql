@@ -1,12 +1,10 @@
-.open zoo.db
 pragma foreign_keys = true;
-.headers on
-.mode column
 
 
 create table TypeEnclos(
 	id_type_enclos		char(2)		primary key,
-	description_type	varchar(50)
+	description_type	varchar(200),
+	titre 				varchar(20)
 );
 
 create table CategorieNourriture(
@@ -88,6 +86,17 @@ create table AvoirLieu(
 	constraint	pkAvoirLieu	primary key (id_anim, id_enclos)
 );
 
+/*
+create table PeuventCohabiter(
+	race_une 	varchar(30)		references Espece(race),
+	race_deux	varchar(30)		references Espece(race),
+	constraint 	pkPeuventCohabiter primary key (race_une, race_deux)
+);
+*/
+
+
+
+
 -- view
 create view NombreAnimauxParTypeEnclos as
 	select id_type_enclos, count(1) as nombre
@@ -157,6 +166,20 @@ create view AnimauxParSoigneur as
 	from Animal natural join Soigneur
 ;
 
+create view NombreTotalAnimauxZoo as
+	select count(1) as nombre
+	from Animal
+;
+
+
+
+
+
+
+
+
+
+
 
 
 -- triggers
@@ -184,12 +207,24 @@ begin
 												where new.id_enclos = id_enclos)
 			then raise(abort, 'ERREUR : cet animal ne peut pas vivre dans ce type d enclos !')
 		
+			/*
 			when (new.race <> (select race
 								from RaceParEnclos
 								where id_enclos = new.id_enclos) )
 			then raise(abort, 'ERREUR : une autre espèce habite déjà ici !')
+			*/
+					
 		end;
 end;
+
+
+
+
+
+
+
+
+
 
 
 
@@ -208,24 +243,37 @@ insert into CategorieNourriture values
 ;
 
 insert into TypeEnclos values
-    ('aq', "Un aquarium est un réservoir rempli d'eau dans lequel vivent des animaux et/ou des plantes aquatiques"),
-    ('ex',"blabla extérieur"),
-    ('cg', "Une cage est un contenant ajouré, le plus souvent grillagé ou à barreaux, destiné à contenir un animal."),
-    ('vl', "Une volière est un enclos assez vaste ordinairement grillagé, généralement une grande cage, où l'on conserve, élève et nourrit des oiseaux d'ornement."),
-    ('tr', "Un terrarium est un milieu confiné imitant le biotope de certaines espèces animales et/ou végétales. Il est l'équivalent d'un aquarium dont l'eau serait remplacée par un substrat de quelques centimètres d'épaisseur disposé sur le fond.")
+    ('aq', "Un aquarium est un réservoir rempli d'eau dans lequel vivent des animaux et/ou des plantes aquatiques","Aquarium"),
+    ('ex',"blabla extérieur","Enclos extérieur"),
+    ('cg', "Une cage est un contenant ajouré, le plus souvent grillagé ou à barreaux, destiné à contenir un animal.","Cage"),
+    ('vl', "Une volière est un enclos assez vaste ordinairement grillagé, généralement une grande cage, où l'on conserve, élève et nourrit des oiseaux d'ornement.","Volière"),
+    ('tr', "Un terrarium est un milieu confiné imitant le biotope de certaines espèces animales et/ou végétales. Il est l'équivalent d'un aquarium dont l'eau serait remplacée par un substrat de quelques centimètres d'épaisseur disposé sur le fond.","Terrarium")
 ;
 
 insert into Espece values
-    ("Panda geant", 0, "20 à 25 ans", "70 à 120 kg", 3, 2, "Forets de bambous", 'h', 'ex'),
-    ("Herisson du désert", 0, "3 à 5 ans", "280 à 510 g", 1, 0, "Deserts", 'i', 'ex'),
+	("Lion de mer de Steller", 0, "25 ans", "300 à 1 100 kg", 1, 1, "Nord de l'océan Pacifique", 'p', 'aq'),
+	("Béluga", 0, "35 à 50 ans", "Environ 1 400 kg", 0, 0, "Eaux arctiques et subarctiques", 'p','aq'),
+	-- a completer
+	("Grande raie-guitare", 0, "0", "0", 0, 0, "0", 'p','aq'),
+	/*
+	("Méduse Une", 0, "0", "0", 0, 0, "0", 'p','aq'),
+	("Méduse Deux", 0, "0", "0", 0, 0, "0", 'p','aq'),
+	("Méduse Trois", 0, "0", "0", 0, 0, "0", 'p','aq'),
+	*/
+
+
+
+    ("Panda géant", 0, "20 à 25 ans", "70 à 120 kg", 3, 2, "Forets de bambous", 'h', 'ex'),
+    ("Hérisson du désert", 0, "3 à 5 ans", "280 à 510 g", 1, 0, "Deserts", 'i', 'ex'),
     ("Girafe", 0, "10 à 15 ans", "550 à 1 200 kg", 0, 2, "Savanes", 'h', 'ex'),
-    ("Lion de mer de Steller", 0, "25 ans", "300 à 1 100 kg", 1, 1, "Nord de l'océan Pacifique", 'p', 'aq'),
-    ("Ouistiti à tête jaune", 0, "10 à 16 ans", "230 à 450 g", 1, 4, "Forêt Atlanque", 'o', 'cg'),
-    ("Chouette forestiere", 0, "jusqu'à 16 ans", "160 à 180 g", 0, 3, "Plaines et de collines du sous-continent indien", 'c', 'vl'),
-    ("Panthere des neiges", 0, "16 à 18 ans", "40 à 55 kg", 2, 2, "Montagnes escarpées et rocheuses d'Asie", 'o', 'cg'),
-    ("Elephant de foret d'Afrique", 0, "60 à 70 ans", "2 700 à 6 000 kg", 1, 4, "Forêt dense d'Afrique centrale et d'Afrique de l'Ouest", 'h', 'ex'),
-    ("Beluga", 0, "35 à 50 ans", "Environ 1 400 kg", 0, 0, "Eaux arctiques et subarctiques", 'p','aq'),
+	("Eléphant de forêt d'Afrique", 0, "60 à 70 ans", "2 700 à 6 000 kg", 1, 4, "Forêt dense d'Afrique centrale et d'Afrique de l'Ouest", 'h', 'ex'),
     ("Panda roux", 0, "8 à 18 ans", "3 à 6 kg", 3, 3, "Présent en Asie, dans la chaîne de l’Himalaya", 'o','ex'),
+    
+    ("Ouistiti à tête jaune", 0, "10 à 16 ans", "230 à 450 g", 1, 4, "Forêt Atlanque", 'o', 'cg'),
+	("Panthère des neiges", 0, "16 à 18 ans", "40 à 55 kg", 2, 2, "Montagnes escarpées et rocheuses d'Asie", 'o', 'cg'),
+
+    ("Chouette forestière", 0, "jusqu'à 16 ans", "160 à 180 g", 0, 3, "Plaines et de collines du sous-continent indien", 'c', 'vl'),
+    
     ("Python royal", 0, "Environ 30 ans", "1 à 2 kg", 2, 1, "Territoire allant du Sénégal jusqu'à l'ouest de l'Ouganda et au nord de la République démocratique du Congo.", 'c','tr'),
     ("Rainette jaguar", 0, "5 à 10 ans", "3g en moyenne", 4, 0, "Forêts tropicales humides de basse altitude", 'i','tr')
 ;
@@ -275,14 +323,18 @@ insert into Enclos (nb_max, taille, id_type_enclos) values
     (2, 10,'cg'),
     (4, 20,'cg'),
     (3, 100,'ex'),
+	(2, 150,'ex'),
+	(8, 200,'ex'),
+	(3, 500,'ex'),
     (4, 200,'ex')
 ;
 
 insert into Animal values
-    ("Eric", '2003-07-08', 'Male', 345.0, null, "Herisson du désert", 2, 10, date('now')),
-    ("Moussa", '1985-04-16', 'Male', 5654.5, null, "Elephant de foret d'Afrique", 1, 9, '2000-01-05'),
-    ("Camila", '1988-07-21', 'Femelle', 4378.9, null, "Elephant de foret d'Afrique", 1, 9, '2000-01-05'),
-    ("Gaby", '2008-03-04', 'Male', 3452.7, "né dans le zoo", "Elephant de foret d'Afrique", 1, 9, '2008-03-04')
+    ("Eric", '2003-07-08', 'Male', 345.0, null, "Hérisson du désert", 2, 10, date('now')),
+    ("Moussa", '1985-04-16', 'Male', 5654.5, null, "Eléphant de forêt d'Afrique", 1, 9, '2000-01-05'),
+    ("Camila", '1988-07-21', 'Femelle', 4378.9, null, "Eléphant de forêt d'Afrique", 1, 9, '2000-01-05'),
+    ("Gaby", '2008-03-04', 'Male', 3452.7, "né dans le zoo", "Eléphant de forêt d'Afrique", 1, 9, '2008-03-04'),
+	("Bebert", '2008-03-04', 'Male', 3452.7, "né dans le zoo", "Béluga", 1, 2, '2008-03-04')
 ;
 
 insert into AvoirParent values
@@ -301,11 +353,14 @@ insert into AvoirLieu values
 */
 
 
+/*
 --TESTS ERREURS ! 
 -- vérif l'incrémentation
 -- enclos plein
-insert into Animal values ("Test1", '1988-07-21', 'Femelle', 4378.9, null, "Elephant de foret d'Afrique", 1, 9, '2000-01-05');
+insert into Animal values ("Test1", '1988-07-21', 'Femelle', 4378.9, null, "Eléphant de forêt d'Afrique", 1, 9, '2000-01-05');
 -- mauvais type d'enclos
-insert into Animal values ("Test2", '1988-07-21', 'Femelle', 4378.9, null, "Elephant de foret d'Afrique", 1, 1, '2000-01-05');
+insert into Animal values ("Test2", '1988-07-21', 'Femelle', 4378.9, null, "Eléphant de forêt d'Afrique", 1, 1, '2000-01-05');
 -- autre espece y habite deja
-insert into Animal values ("Test3", '1988-07-21', 'Femelle', 4378.9, null, "Elephant de foret d'Afrique", 1, 10, '2000-01-05');
+insert into Animal values ("Test3", '1988-07-21', 'Femelle', 4378.9, null, "Eléphant de forêt d'Afrique", 1, 10, '2000-01-05');
+*/
+
