@@ -90,13 +90,13 @@ create table AvoirLieu(
 
 -- view
 create view NombreAnimauxParTypeEnclos as
-	select id_type_enclos, count(1)
+	select id_type_enclos, count(1) as nombre
 	from TypeEnclos natural join Enclos natural join Animal
 	group by id_type_enclos
 ;
 
 create view NombreAnimauxParEspece as
-	select race, count(1)
+	select race, count(1) as nombre
 	from Espece natural join Animal
 	group by race
 ;
@@ -142,12 +142,10 @@ create view EnfantsDuZoo as
 	from AvoirParent
 ;
 
-/*
 create view TypeEnclosParRace as
     select race, id_type_enclos
     from Espece natural join TypeEnclos
 ;
-*/
 
 create view RaceParEnclos as
     select distinct id_enclos, race
@@ -173,20 +171,6 @@ begin
 	update Enclos set nb_actuel = nb_actuel + 1 where id_enclos = new.id_enclos;
 end;
 
-create trigger EmpecheAjoutAnimalSiMauvaisTypeEnclos
-before insert on Animal
-begin
-    select
-        case
-            when (select id_type_enclos
-            from Animal natural join Espece natural join TypeEnclos
-            where new.race = race) <> (select id_type_enclos
-            from Enclos natural join TypeEnclos
-            where new.id_enclos = id_enclos)
-            then raise(abort,'ERREUR : cet animal ne peut pas vivre dans ce type d enclos !')
-        end;
-end;
-
 create trigger EmpecheAjoutAnimalSiEnclosPlein
 before insert on Animal
 begin
@@ -194,21 +178,18 @@ begin
 		case 
 			when ( new.id_enclos in EnclosPlein ) 
 			then raise(abort, 'ERREUR : cet enclos est plein !')
-		end;
-end;
-
-create trigger EmpecheAjoutAnimalSiRaceDifferente
-before insert on Animal
-begin 
-	select 
-		case 
+            when (select id_type_enclos as te_anim
+            		from (Animal natural join Espece natural join TypeEnclos) as r1
+            		where new.race = r1.race) <> (select id_type_enclos as te_encl
+            									from (Enclos natural join TypeEnclos) as r2
+            									where new.id_enclos = r2.id_enclos)
+            then raise(abort,'ERREUR : mauvais type d enclos !')
 			when (new.race <> (select race
 								from RaceParEnclos
 								where id_enclos = new.id_enclos) )
 			then raise(abort, 'ERREUR : une autre espèce habite déjà ici !')
 		end;
 end;
-
 
 
 
@@ -298,10 +279,10 @@ insert into Enclos (nb_max, taille, id_type_enclos) values
 ;
 
 insert into Animal values
-    ("Eric", '2003-07-08', 'Male', '345.0', null, "Herisson du désert", 2, 10, date('now')),
-    ("Moussa", '1985-04-16', 'Male', '5654.5', null, "Elephant de foret d'Afrique", 1, 9, '2000-01-05'),
-    ("Camila", '1988-07-21', 'Femelle', '4378.9', null, "Elephant de foret d'Afrique", 1, 9, '2000-01-05'),
-    ("Gaby", '2008-03-04', 'Male', '3452.7', "né dans le zoo", "Elephant de foret d'Afrique", 1, 9, '2008-03-04')
+    ("Eric", '2003-07-08', 'Male', 345.0, null, "Herisson du désert", 2, 10, date('now')),
+    ("Moussa", '1985-04-16', 'Male', 5654.5, null, "Elephant de foret d'Afrique", 1, 9, '2000-01-05'),
+    ("Camila", '1988-07-21', 'Femelle', 4378.9, null, "Elephant de foret d'Afrique", 1, 9, '2000-01-05'),
+    ("Gaby", '2008-03-04', 'Male', 3452.7, "né dans le zoo", "Elephant de foret d'Afrique", 1, 9, '2008-03-04')
 ;
 
 insert into AvoirParent values
@@ -321,6 +302,5 @@ insert into AvoirLieu values
 
 
 --insert into Animal values ("bebert",'2020-20-20', 'Male', 23.5, null, "Beluga",1,1,'2000-01-01');
-insert into Animal values ("Test1",'2020-20-20', 'Male', 23.5, null, "Beluga",1,4,'2000-01-01');
---insert into Animal values ("TEST2", '1988-07-21', 'Femelle', '4378.9', null, "Elephant de foret d'Afrique", 1, 9, '2000-01-05');
---insert into Animal values ("TEST3", '1988-07-21', 'Femelle', '4378.9', null, "Elephant de foret d'Afrique", 1, 10, '2000-01-05');
+insert into Animal values ("Test2", '1988-07-21', 'Femelle', 4378.9, null, "Elephant de foret d'Afrique", 1, 1, '2000-01-05');
+insert into Animal values ("Test3", '1988-07-21', 'Femelle', 4378.9, null, "Elephant de foret d'Afrique", 1, 10, '2000-01-05');
