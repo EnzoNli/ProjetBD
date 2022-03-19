@@ -157,33 +157,29 @@ create view RaceParEnclos as
 
 -- triggers
 
-create trigger IncrementeEspece
+create trigger IncrementeEspeceEtEnclos
 after insert on Animal
 begin
-	update Espece
-	set nb_dans_zoo = nb_dans_zoo + 1
-	where race = new.race;
-end;
+	update Espece set nb_dans_zoo = nb_dans_zoo + 1 where race = new.race;
 
-create trigger IncrementeEnclos
-after insert on Animal
-begin
 	update Enclos set nb_actuel = nb_actuel + 1 where id_enclos = new.id_enclos;
 end;
 
-create trigger EmpecheAjoutAnimalSiEnclosPlein
+create trigger EmpecheAjoutAnimal
 before insert on Animal
 begin
 	select
 		case 
 			when ( new.id_enclos in EnclosPlein ) 
 			then raise(abort, 'ERREUR : cet enclos est plein !')
-            when (select id_type_enclos as te_anim
-            		from (Animal natural join Espece natural join TypeEnclos) as r1
-            		where new.race = r1.race) <> (select id_type_enclos as te_encl
-            									from (Enclos natural join TypeEnclos) as r2
-            									where new.id_enclos = r2.id_enclos)
-            then raise(abort,'ERREUR : mauvais type d enclos !')
+
+            when 	(select id_type_enclos 
+					from Animal natural join Espece natural join TypeEnclos
+					where new.race = race) <> (select id_type_enclos 
+												from Enclos natural join TypeEnclos
+												where new.id_enclos = id_enclos)
+			then raise(abort, 'ERREUR : cet animal ne peut pas vivre dans ce type d enclos !')
+		
 			when (new.race <> (select race
 								from RaceParEnclos
 								where id_enclos = new.id_enclos) )
@@ -301,6 +297,11 @@ insert into AvoirLieu values
 */
 
 
---insert into Animal values ("bebert",'2020-20-20', 'Male', 23.5, null, "Beluga",1,1,'2000-01-01');
+--TESTS ERREURS ! 
+-- vérif l'incrémentation
+-- enclos plein
+insert into Animal values ("Test1", '1988-07-21', 'Femelle', 4378.9, null, "Elephant de foret d'Afrique", 1, 9, '2000-01-05');
+-- mauvais type d'enclos
 insert into Animal values ("Test2", '1988-07-21', 'Femelle', 4378.9, null, "Elephant de foret d'Afrique", 1, 1, '2000-01-05');
+-- autre espece y habite deja
 insert into Animal values ("Test3", '1988-07-21', 'Femelle', 4378.9, null, "Elephant de foret d'Afrique", 1, 10, '2000-01-05');
