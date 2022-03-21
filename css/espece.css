@@ -1,0 +1,103 @@
+@font-face {
+    font-family: "race";
+    src: url("../font/banniere.otf");
+}
+
+
+@font-face {
+    font-family: "nbzoo";
+    src: url("../font/RobotoLightItalic.ttf");
+}
+
+@font-face {
+  font-family: "infos";
+  src: url("../font/RobotoMedium.ttf");
+}
+
+
+#ligne {
+  position: absolute;
+  margin-left: 5px;
+  margin-right: 5px;
+  height: 10vh;
+  width: 10px;
+  left: 2vw;
+  top: 15vh;
+  background-color: rgb(208, 255, 0);
+}
+
+#race{
+  position: absolute;
+  font-family: race;
+  font-size: 7.5vh;
+  user-select: none;
+  left: 3.5vw;
+  top: 14vh;
+}
+
+#nbzoo{
+  position: absolute;
+  font-family: nbzoo;
+  font-size: 3vh;
+  user-select: none;
+  left: 3.5vw;
+  top: 22.5vh;
+}
+
+.info{
+  position: absolute;
+  font-family: infos;
+  font-size: 3vh;
+  user-select: none;
+  left: 2vw;
+}
+
+#espe_vie{
+  top: 30vh;
+  animation: slide 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+}
+
+#espe_poids{
+  top: 34vh;
+  animation: slide 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.3s both;
+}
+
+#poids_moyen{
+  top: 38vh;
+  animation: slide 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.6s both;
+}
+
+#habitat_nat{
+  top: 42vh;
+  animation: slide 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.9s both;
+}
+
+
+#photo{
+  -webkit-user-drag: none;
+  position: absolute;
+  top: 18vh;
+  right: 2vw;
+  height: 30vh;
+  width: 25vw;
+}
+
+#ext{
+  -webkit-user-drag: none;
+  position: absolute;
+  top: 24vh;
+  left: 35vw;
+  height: 20vh;
+  width: 35vw;
+}
+
+@keyframes slide {
+  0% {
+            transform: translateX(-1000px);
+    opacity: 0;
+  }
+  100% {
+            transform: translateX(0);
+    opacity: 1;
+  }
+}
