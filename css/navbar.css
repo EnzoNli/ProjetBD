@@ -1,0 +1,75 @@
+.navbar-brand {
+    margin-left: 1vw;
+    color: black;
+}
+
+.nav-link{
+    color: black;
+    font-family: navfont;
+    font-size: 3vh;
+    text-align:center;
+}
+
+.nav-item{
+    margin-right: 1vw;
+}
+
+.last{
+    margin-right: 0;
+}
+
+
+.navbar{
+    position:sticky;
+    top: 0;
+    z-index: 1;
+    background-color: #85FFBD;
+    background-image: linear-gradient(45deg, #85FFBD 0%, #FFFB7D 100%);
+}
+
+@font-face {
+    font-family: "titre";
+    src: url("../font/titre.ttf");
+}
+
+@font-face {
+    font-family: "navfont";
+    src: url("../font/navitem.ttf");
+}
+
+#titre{
+    position: relative;
+    font-family: titre;
+    font-size: 6vh;
+    top: 1vh;
+}
+
+.hover {
+    background: 
+        linear-gradient(currentColor 0 0) 
+        var(--d, 201%) 100% /200% 3px 
+        no-repeat;
+    transition:0.5s;
+  }
+  
+.hover:hover {
+    --d: -101%;
+  }
+
+
+.menugauche {
+    display: block;
+    margin-left: 27vw;
+ }
+
+.menugauche ul { 
+    display: inline-block;
+}
+ 
+.menugauche li { 
+    display: inline-block; 
+}
+
+.menugauche li a{ 
+    display: inline-block; 
+}
