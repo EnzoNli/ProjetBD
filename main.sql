@@ -1,10 +1,4 @@
-.open zoo.db
-.mode column 
-.headers on
-
-
 pragma foreign_keys = true;
-
 
 create table TypeEnclos(
 	id_type_enclos		char(2)		primary key,
@@ -91,6 +85,12 @@ create table AvoirLieu(
 	date_anim	date, --check?
 	heure_anim	time, --check??
 	constraint	pkAvoirLieu	primary key (id_anim, id_enclos)
+); --logique ? ajouter date en clef primaire ? ou int en primary key 
+
+create table Mange(
+	race 	varchar(30) 	references Espece(race),
+	id_plat integer 	references Nourriture(id_plat),
+	constraint pkMange primary key (race, id_plat)
 );
 
 /*
@@ -101,86 +101,135 @@ create table PeuventCohabiter(
 );
 */
 
+-- lier espece et nourriture
+-- verif bonne categorie --> trigger
+
+
+
+
+
+
+
+
 
 
 
 -- view
+
+-- pour la page 'Animaux'
+create view NombreEspecesParTypeEnclos as
+	select id_type_enclos, count(1) as nombre
+	from espece natural join typeenclos
+	where nb_dans_zoo > 0
+	group by id_type_enclos
+;
+
+-- ??
 create view NombreAnimauxParTypeEnclos as
 	select id_type_enclos, count(1) as nombre
 	from TypeEnclos natural join Enclos natural join Animal
 	group by id_type_enclos
 ;
 
+-- pour la page par espece
 create view NombreAnimauxParEspece as
 	select race, count(1) as nombre
 	from Espece natural join Animal
 	group by race
 ;
 
+-- ??
 create view EnclosVide as
 	select id_enclos
 	from Enclos
 	where nb_actuel = 0
 ;
+
+-- ??
 create view EnclosNonVide as
 	select id_enclos
 	from Enclos
 	where nb_actuel > 0
 ;
+
+-- ??
 create view EnclosPlein as
 	select id_enclos
 	from Enclos
 	where nb_actuel = nb_max
 ;
 
+-- ? pour la page nourriture ?
 create view ListePlatParCategorie as
 	select id_categorie, description_plat
 	from CategorieNourriture natural join Convenir natural join Nourriture
 ;
+
+-- pour la page par espece
 create view ListeNourritureParRace as
 	select race, description_plat
 	from Espece natural join ListePlatParCategorie
 ;
 
+-- pour la page soigneur
 create view ListeAnimalPourSoigneur as
-	select nom_soign, prenom_soign, nom
+	select id_soign, nom
 	from Soigneur natural join Animal
 ;
 
+-- pour la page animation
 create view AnimationAujourdhui as
 	select id_anim
 	from Animation
 	where date_anim = DATE('nom')
 ;
 
+-- pour la page d'un animal
 create view EnfantsDuZoo as
 	select distinct enfant as noms
 	from AvoirParent
 ;
 
+-- ??
 create view TypeEnclosParRace as
     select race, id_type_enclos
     from Espece natural join TypeEnclos
 ;
 
-create view RaceParEnclos as
-    select distinct id_enclos, race
-    from Enclos natural join Animal
-;
-
-create view AnimauxParSoigneur as 
-	select nom, prenom_soign, nom_soign
-	from Animal natural join Soigneur
-;
-
+-- pour la page d'accueil
 create view NombreTotalAnimauxZoo as
 	select count(1) as nombre
 	from Animal
 ;
 
+-- pour la page 'Animaux'
 create view NombreTypeEnclos as 
 	select count(1) as nombre
 	from TypeEnclos
+;
+
+-- pour trigger EmpecheAjoutAnimal
+create view RaceParEnclos as
+    select distinct id_enclos, race
+    from Enclos natural join Animal
+;
+
+
+
+
+create view DateAnimationParSoigneur as 
+	select id_soign, date_anim, id_anim
+	from Animation natural join AvoirLieu
+;
+
+create view SoigneurParAnimation as 
+	select id_soign, id_anim
+	from Animation
+;
+
+create view SoigneurParDateAnimation as 
+	select id_soign, date_anim
+	from Animation natural join AvoirLieu
 ;
 
 
@@ -199,10 +248,10 @@ create view NombreTypeEnclos as
 create trigger MisAJourAjoutAnimal
 after insert on Animal
 begin
--- incrémente espece et enclos
+	-- incrémente espece et enclos
 	update Espece set nb_dans_zoo = nb_dans_zoo + 1 where race = new.race;
 	update Enclos set nb_actuel = nb_actuel + 1 where id_enclos = new.id_enclos;
--- met à jour le poids moyen de l'espèce dans le zoo
+	-- met à jour le poids moyen de l'espèce dans le zoo
 	update Espece set poids_moyen_zoo = (select avg(poids) 
 										from Animal natural join Espece
 										where race = new.race
@@ -212,10 +261,10 @@ end;
 create trigger MisAJourSupprAnimal
 after delete on Animal
 begin
---décrémente espece et enclos
+	--décrémente espece et enclos
 	update Espece set nb_dans_zoo = nb_dans_zoo - 1 where race = old.race;
 	update Enclos set nb_actuel = nb_actuel - 1 where id_enclos = old.id_enclos;
--- met à jour le poids moyen de l'expèce dans le zoo
+	-- met à jour le poids moyen de l'expèce dans le zoo
 	update Espece set poids_moyen_zoo = (select avg(poids) 
 										from Animal natural join Espece
 										where race = old.race
@@ -231,11 +280,6 @@ begin
 										where race = old.race
 										group by race)	where race = old.race;
 end;
-
-
-	
-
-
 
 create trigger EmpecheAjoutAnimal
 before insert on Animal
@@ -262,19 +306,82 @@ end;
 create trigger EnleveLienParente
 after delete on Animal
 begin
---"delete on cascade"
+	--"delete on cascade"
 	delete from AvoirParent where parent = old.nom or enfant = old.nom;
 end;
 
+-- ajoute une nourriture, l'associe à un/plusieurs type(s)
+
+-- ajoute une animation
+
+-- ajoute à un animal une nourriture (menu déroulant) (des plats ok pour sa catégorie et qu'il n'a pas déjà, mais quand meme faire trigger (gestion d'erreur))
+-- nourriture --> clef primaire ??
+create trigger AjouteNourritureAUneEspece
+before insert on Mange
+begin
+	select 
+		case 
+			when 	(select id_categorie
+					from Espece
+					where race = nex.race) 	not in  (select id_categorie 
+													from Nourriture
+													where id_plat = new.id_plat)
+			then raise(abort, 'ERREUR : cette espèce ne peut pas manger de cette nourriture !')
+		end;
+end;
+-- à tester !
+			
+
+-- ajout animation 
+-- vérif que soigneur pas déjà occuper dans autre animation pendant
+-- calcul date début + durée ?
+
+/*
+create trigger AjouteAnimation
+before insert on AvoirLieu
+begin 
+	select
+		case 
+			when 	(select id_soign
+					from Animation
+					where new.id_anim = id_anim) = 	(select id_soign
+													from SoigneurParDateAnimation
+													where date_anim = new.date_anim)
+			and (new.heure_anim in 
+				(select * 
+				from AvoirLieu natural join Animation
+				where 	date_anim = new.date_anim 
+						and id_soign = (select id_soign
+										from Animation
+										where new.id_anim = id_anim) 
+						and new.heure_anim between heure_anim and (SELECT heure_anim, ADDDATE(heure_anim, INTERVAL duree MINUTE) FROM Animation natural join AvoirLieu)
+				)
+			)
+			then (abort, "ERREUR : ce soigneur est déjà occupé !")
+
+			-- qui est le nouveau soigneur ?
+
+			-- a t il quelque chose à cette date ?
+
+			--chevauchement des heures
+			
+			/*(new.date 	in 	(select date_anim
+								from DateAnimationParSoigneur
+								where id_anim = new.id_anim))
+				and -- heure début comprise entre début et fin d'une déjà existante
+
+			
+			-- verif enclos pas deja anim aussi ?
+		end;
+end;
+
+*/
 
 
 
 
 
-
-
-
-
+-- ajouter un lien de parenté
 
 
 
@@ -335,17 +442,10 @@ insert into TypeEnclos values
     ('tr', "Un terrarium est un milieu confiné imitant le biotope de certaines espèces animales et/ou végétales. Il est l'équivalent d'un aquarium dont l'eau serait remplacée par un substrat de quelques centimètres d'épaisseur disposé sur le fond.","Terrarium")
 ;
 
-
-
-
-
-
-
-
 insert into Espece values
 	("Lion de mer de Steller", 0, "25 ans", "300 à 1 100 kg", 0, 1, 1, "Nord de l'océan Pacifique", 'p', 'aq','beluga.jpg'),
 	("Béluga", 0, "35 à 50 ans", "Environ 1 400 kg", 0, 0, 0, "Eaux arctiques et subarctiques", 'p','aq','beluga.jpg'),
--- a completer
+		-- a completer
 	("Grande raie-guitare", 0, "0", "0", 0, 0, 0, "0", 'p','aq','beluga.jpg'),
 	("Méduse dorée", 0, "0", "0", 0, 0, 0, "0", 'p','aq','beluga.jpg'),
 	("Boto", 0, "0", "0", 0, 0, 0, "0", 'p','aq','beluga.jpg'),
@@ -353,7 +453,7 @@ insert into Espece values
 
 	("Python royal", 0, "Environ 30 ans", "1 à 2 kg", 0, 2, 1, "Territoire allant du Sénégal jusqu'à l'ouest de l'Ouganda et au nord de la République démocratique du Congo.", 'c','tr', 'beluga.jpg'),
     ("Rainette jaguar", 0, "5 à 10 ans", "3g en moyenne", 0, 4, 0, "Forêts tropicales humides de basse altitude", 'i','tr', 'beluga.jpg'),
--- a completer
+		-- a completer
 	("Tortue des Seychelles", 0, "0", "0", 0, 0, 0, "0", 'h','tr', 'beluga.jpg'),
 
 
@@ -394,11 +494,10 @@ insert into Enclos (nb_max, taille, id_type_enclos) values
     (2, 10,'cg'), --12
     (4, 20,'cg'), --13
 */
-    
 ;
 
 insert into Animal values
---aquarium
+		--aquarium
 	("Boto1", "Boto", 2,'2003-07-08', 'Male', 300.0, null,  2, date('now')),
 	("Boto2", "Boto", 2,'2003-07-08', 'Male', 200.0, null,  2, date('now')),
 	("Boto3", "Boto", 2,'2003-07-08', 'Male', 800.0, null,  2, date('now')),
@@ -421,7 +520,7 @@ insert into Animal values
 	("Beluga2", "Béluga", 6, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
 	("Beluga3", "Béluga", 6, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
 
---terrarium
+		--terrarium
 	("Python1", "Python royal", 7, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
 
 	("Rainette1", "Rainette jaguar", 8, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
@@ -431,7 +530,7 @@ insert into Animal values
 	("Tortue2", "Tortue des Seychelles", 9, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
 	("Tortue3", "Tortue des Seychelles", 9, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
 
--- extérieur
+		-- extérieur
 	("Enzo", "Hérisson du désert", 10, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
 	("Eric", "Hérisson du désert", 10, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
 	("Edgar", "Hérisson du désert", 10, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
@@ -464,8 +563,6 @@ insert into AvoirParent values
 	("Ugo","Uta"),
 	("Ugette","Uta")
 ;
-
-
 
 /*
 insert into Animation values
