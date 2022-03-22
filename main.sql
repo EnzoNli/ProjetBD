@@ -60,9 +60,9 @@ create table Soigneur(
 
 create table Animation(
 	id_anim		integer		primary key		autoincrement,
-	duree		int		check(duree > 20)	not null,
+	duree		int		check(duree > 15)	not null,
 	description_anim	varchar(50),
-	id_soign	int		references Soignant(id_soign)
+	id_soign	int		references Soigneur(id_soign)
 );
 
 -- associations
@@ -80,11 +80,12 @@ create table Convenir(
 );
 
 create table AvoirLieu(
+	id_avoirlieu 	integer 	primary key		autoincrement,
 	id_anim 	int 	references Animation(id_anim),
 	id_enclos 	int 	references Enclos(id_enclos),
 	date_anim	date, --check?
-	heure_anim	time, --check??
-	constraint	pkAvoirLieu	primary key (id_anim, id_enclos)
+	heure_debut	time, --check??
+	heure_fin	time default(null)
 ); --logique ? ajouter date en clef primaire ? ou int en primary key 
 
 create table Mange(
@@ -93,16 +94,10 @@ create table Mange(
 	constraint pkMange primary key (race, id_plat)
 );
 
-/*
-create table PeuventCohabiter(
-	race_une 	varchar(30)		references Espece(race),
-	race_deux	varchar(30)		references Espece(race),
-	constraint 	pkPeuventCohabiter primary key (race_une, race_deux)
-);
-*/
-
 -- lier espece et nourriture
 -- verif bonne categorie --> trigger
+
+-- peuvent cohabiter ?
 
 
 
@@ -152,7 +147,7 @@ create view EnclosNonVide as
 	where nb_actuel > 0
 ;
 
--- ??
+-- pour trigger EmpecheAjoutAnimal
 create view EnclosPlein as
 	select id_enclos
 	from Enclos
@@ -216,7 +211,7 @@ create view RaceParEnclos as
 
 
 
-
+/*
 create view DateAnimationParSoigneur as 
 	select id_soign, date_anim, id_anim
 	from Animation natural join AvoirLieu
@@ -233,15 +228,58 @@ create view SoigneurParDateAnimation as
 ;
 
 
+create view DureeParAvoirLieu as 
+	select id_anim, id_avoirlieu, duree
+	from AvoirLieu natural join Animation
+;
+/*
+create view HeuresParAvoirLieu as 
+	select id_avoirlieu as id, heure_anim as heure_debut, time(heure_anim, '+' ||
+	(select duree
+	from DureeParAvoirLieu
+	where id_avoirlieu = id)
+	||' minutes') as heure_fin
+	from AvoirLieu
+;
+*/
 
+/*
+create trigger Animmmmm
+before insert on AvoirLieu
+begin
+	select 
+		case 
+			when 
+*/
+/*
+with debut_animation as (
+	select id_avoirlieu, heure_anim as heure_debut
+*/
+/*
+create view Heures as 
+	select id_avoirlieu, id_anim, heure_debut, heure_fin
+	from Animation natural join AvoirLieu
+;
 
+create view copieAvoirLieu as 
+	select * from AvoirLieu;
 
+create trigger HeureFin
+instead of insert on copieAvoirLieu
+begin
+	with heuref as (
+		select 
+	insert into Heures(id_avoirlieu, id_anim, heure_debut, heure_fin)
+	values (new.id_avoirlieu, new.id_anim, new.heure_debut,
+	time(heure_debut, '+'||
+	(select duree 
+	from Animation
+	where id_anim = new.id_anim)
+	||' minutes'));
 
+end;
 
-
-
-
-
+*/
 
 -- triggers
 
@@ -336,52 +374,93 @@ end;
 -- vérif que soigneur pas déjà occuper dans autre animation pendant
 -- calcul date début + durée ?
 
-/*
-create trigger AjouteAnimation
+-- ajout animation ? max 3 types d'animation par soigneur !
+-- ajouter un lien de parenté
+
+create trigger EmpecheAjoutAvoirLieu
 before insert on AvoirLieu
-begin 
-	select
-		case 
+begin
+	select *
+	from Animation natural join AvoirLieu
+	where 
+			case 	
 			when 	(select id_soign
 					from Animation
-					where new.id_anim = id_anim) = 	(select id_soign
-													from SoigneurParDateAnimation
-													where date_anim = new.date_anim)
-			and (new.heure_anim in 
-				(select * 
-				from AvoirLieu natural join Animation
-				where 	date_anim = new.date_anim 
-						and id_soign = (select id_soign
-										from Animation
-										where new.id_anim = id_anim) 
-						and new.heure_anim between heure_anim and (SELECT heure_anim, ADDDATE(heure_anim, INTERVAL duree MINUTE) FROM Animation natural join AvoirLieu)
-				)
-			)
-			then (abort, "ERREUR : ce soigneur est déjà occupé !")
+					where id_anim = new.id_anim)=id_soign 
+					
+					and new.date_anim = date_anim 
+					
+					and (heure_debut between (new.heure_debut) and time(new.heure_debut, '+'||(select duree
+																						from Animation
+																						where id_anim = new.id_anim)||' minutes'))
+					then raise(abort, 'erreur au debut' )
 
-			-- qui est le nouveau soigneur ?
+			when 	(select id_soign
+					from Animation
+					where id_anim = new.id_anim)=id_soign 
+					
+					and new.date_anim = date_anim 
 
-			-- a t il quelque chose à cette date ?
-
-			--chevauchement des heures
+					and (heure_fin between (new.heure_debut) and time(new.heure_debut, '+'||(select duree
+																						from Animation
+																						where id_anim = new.id_anim)||' minutes'))
+					then raise(abort, 'erreur(fin) ERREUR : le soigneur est déjà occupé sur une autre animation au moment sélectionné !')
 			
-			/*(new.date 	in 	(select date_anim
-								from DateAnimationParSoigneur
-								where id_anim = new.id_anim))
-				and -- heure début comprise entre début et fin d'une déjà existante
+	end;																				
+end;
+-- à tester
 
-			
-			-- verif enclos pas deja anim aussi ?
-		end;
+create trigger CalculeDateFinAvoirLieu
+after insert on AvoirLieu
+begin 
+	update AvoirLieu set heure_fin = time(new.heure_debut, '+'||(select duree
+																from Animation
+																where id_anim = new.id_anim)||' minutes') 
+		where new.id_avoirlieu = id_avoirlieu;
 end;
 
-*/
+-- à tester
 
 
 
 
 
--- ajouter un lien de parenté
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -564,14 +643,18 @@ insert into AvoirParent values
 	("Ugette","Uta")
 ;
 
-/*
-insert into Animation values
-    (
+
+insert into Animation(duree, description_anim, id_soign) values
+    (20, 'dancer les dauphins', 1),
+	(30, 'caresser les ouistitis', 2)
 ;
-insert into AvoirLieu valuesnimaux
-	(
+
+insert into AvoirLieu(id_anim, id_enclos, date_anim, heure_debut) values
+	(1, 1, date('now'), '12:55'),
+	(2, 9, date('now'), '12:35'),
+	(2, 1, date('now'), '13:34')
 ;
-*/
+
 
 
 /*
