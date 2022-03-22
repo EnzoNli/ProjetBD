@@ -26,29 +26,33 @@
                             <div class="col-md-12">
                                 <select class="form-select mt-3" name="race" required>
                                       <option selected disabled value="">Race</option>
-                                      <option value="jweb">Faire le php</option>
-                                      <option value="sweb">Faire le php</option>
-                                      <option value="pmanager">Faire le php</option>
+                                        <?php 
+                                        $chaqueRace = $db->query("SELECT race FROM Espece");
+
+                                        while($ligne = $chaqueRace->fetchArray()){
+                                        ?>
+
+                                        <option value=$ligne><?php echo $ligne[0]?></option>
+
+                                        <?php
+                                        }
+                                        ?>
                                </select>
                                 <div class="valid-feedback">You selected a position!</div>
                                 <div class="invalid-feedback">Please select a position!</div>
                            </div>
 
                             <div class="col-md-12">
-                                <input class="form-control" type="email" name="email" placeholder="test" required>
+                                <input class="form-control" type="text" name="poids" placeholder="Poids" required>
                                  <div class="valid-feedback">Email field is valid!</div>
                                  <div class="invalid-feedback">Email field cannot be blank!</div>
                             </div>
 
-                           
-
-
-                           <div class="col-md-12">
-                              <input class="form-control" type="password" name="password" placeholder="test2" required>
-                               <div class="valid-feedback">Password field is valid!</div>
-                               <div class="invalid-feedback">Password field cannot be blank!</div>
-                           </div>
-
+                            <div class="col-md-12">
+                                <input class="form-control" type="text" name="origine" placeholder="Origine" required>
+                                 <div class="valid-feedback">Email field is valid!</div>
+                                 <div class="invalid-feedback">Email field cannot be blank!</div>
+                            </div>
 
                            <div class="col-md-12 mt-3">
                             <label class="mb-3 mr-1" for="gender">Genre: </label>
@@ -63,10 +67,46 @@
                                 <div class="invalid-feedback mv-up">Please select a gender!</div>
                             </div>
 
-                  
+                            <div class="col-md-12">
+                                <select class="form-select mt-3" name="Soigneur" required>
+                                      <option selected disabled value="">Soigneur</option>
+                                        <?php 
+                                        $chaqueSoigneur = $db->query("SELECT nom_soign,prenom_soign FROM Soigneur");
+
+                                        while($ligne = $chaqueSoigneur->fetchArray()){
+                                        ?>
+
+                                        <option value=$ligne><?php echo $ligne[0]." ".$ligne[1]?></option>
+
+                                        <?php
+                                        }
+                                        ?>
+                               </select>
+                                <div class="valid-feedback">You selected a position!</div>
+                                <div class="invalid-feedback">Please select a position!</div>
+                           </div>
+
+                           <div class="col-md-12">
+                                <select class="form-select mt-3" name="Enclos" required>
+                                      <option selected disabled value="">Enclos</option>
+                                        <?php 
+                                        $chaqueEnclos = $db->query("SELECT titre,id_enclos FROM Enclos natural join TypeEnclos");
+
+                                        while($ligne = $chaqueEnclos->fetchArray()){
+                                        ?>
+
+                                        <option value=$ligne><?php echo $ligne[0]." - ".$ligne[1]?></option>
+
+                                        <?php
+                                        }
+                                        ?>
+                               </select>
+                                <div class="valid-feedback">You selected a position!</div>
+                                <div class="invalid-feedback">Please select a position!</div>
+                           </div>
 
                             <div class="form-button mt-3">
-                                <button id="submit" type="submit" class="btn btn-primary">Register</button>
+                                <button id="submit" type="submit" class="btn btn-primary">Enregistrer</button>
                             </div>
                         </form>
                     </div>
