@@ -114,6 +114,13 @@ create table Mange(
 
 -- view
 
+
+-- pour la page d'accueil
+create view NombreTotalAnimauxZoo as
+	select count(1) as nombre
+	from Animal
+;
+
 -- pour la page 'Animaux'
 create view NombreEspecesParTypeEnclos as
 	select id_type_enclos, count(1) as nombre
@@ -121,52 +128,26 @@ create view NombreEspecesParTypeEnclos as
 	where nb_dans_zoo > 0
 	group by id_type_enclos
 ;
-
--- ??
-create view NombreAnimauxParTypeEnclos as
-	select id_type_enclos, count(1) as nombre
-	from TypeEnclos natural join Enclos natural join Animal
-	group by id_type_enclos
+create view NombreTypeEnclos as 
+	select count(1) as nombre
+	from TypeEnclos
 ;
 
--- pour la page par espece
+-- pour la page espece
 create view NombreAnimauxParEspece as
 	select race, count(1) as nombre
 	from Espece natural join Animal
 	group by race
 ;
-
--- ??
-create view EnclosVide as
-	select id_enclos
-	from Enclos
-	where nb_actuel = 0
-;
-
--- ??
-create view EnclosNonVide as
-	select id_enclos
-	from Enclos
-	where nb_actuel > 0
-;
-
--- pour trigger EmpecheAjoutAnimal
-create view EnclosPlein as
-	select id_enclos
-	from Enclos
-	where nb_actuel = nb_max
-;
-
--- ? pour la page nourriture ?
-create view ListePlatParCategorie as
-	select id_categorie, description_plat
-	from CategorieNourriture natural join Convenir natural join Nourriture
-;
-
--- pour la page par espece
 create view ListeNourritureParRace as
 	select race, description_plat
 	from Espece natural join ListePlatParCategorie
+;
+
+-- pour la page d'un animal
+create view EnfantsDuZoo as
+	select distinct enfant as noms
+	from AvoirParent
 ;
 
 -- pour la page soigneur
@@ -182,107 +163,43 @@ create view AnimationAujourdhui as
 	where date_anim = DATE('nom')
 ;
 
--- pour la page d'un animal
-create view EnfantsDuZoo as
-	select distinct enfant as noms
-	from AvoirParent
-;
-
--- ??
-create view TypeEnclosParRace as
-    select race, id_type_enclos
-    from Espece natural join TypeEnclos
-;
-
--- pour la page d'accueil
-create view NombreTotalAnimauxZoo as
-	select count(1) as nombre
-	from Animal
-;
-
--- pour la page 'Animaux'
-create view NombreTypeEnclos as 
-	select count(1) as nombre
-	from TypeEnclos
-;
-
 -- pour trigger EmpecheAjoutAnimal
 create view RaceParEnclos as
     select distinct id_enclos, race
     from Enclos natural join Animal
 ;
-
-
-
-/*
-create view DateAnimationParSoigneur as 
-	select id_soign, date_anim, id_anim
-	from Animation natural join AvoirLieu
-;
-
-create view SoigneurParAnimation as 
-	select id_soign, id_anim
-	from Animation
-;
-
-create view SoigneurParDateAnimation as 
-	select id_soign, date_anim
-	from Animation natural join AvoirLieu
+create view EnclosPlein as
+	select id_enclos
+	from Enclos
+	where nb_actuel = nb_max
 ;
 
 
-create view DureeParAvoirLieu as 
-	select id_anim, id_avoirlieu, duree
-	from AvoirLieu natural join Animation
-;
-/*
-create view HeuresParAvoirLieu as 
-	select id_avoirlieu as id, heure_anim as heure_debut, time(heure_anim, '+' ||
-	(select duree
-	from DureeParAvoirLieu
-	where id_avoirlieu = id)
-	||' minutes') as heure_fin
-	from AvoirLieu
-;
-*/
 
-/*
-create trigger Animmmmm
-before insert on AvoirLieu
-begin
-	select 
-		case 
-			when 
-*/
-/*
-with debut_animation as (
-	select id_avoirlieu, heure_anim as heure_debut
-*/
-/*
-create view Heures as 
-	select id_avoirlieu, id_anim, heure_debut, heure_fin
-	from Animation natural join AvoirLieu
+
+
+-- ??
+create view NombreAnimauxParTypeEnclos as
+	select id_type_enclos, count(1) as nombre
+	from TypeEnclos natural join Enclos natural join Animal
+	group by id_type_enclos
 ;
 
-create view copieAvoirLieu as 
-	select * from AvoirLieu;
+-- ? pour la page nourriture ?
+create view ListePlatParCategorie as
+	select id_categorie, description_plat
+	from CategorieNourriture natural join Convenir natural join Nourriture
+;
 
-create trigger HeureFin
-instead of insert on copieAvoirLieu
-begin
-	with heuref as (
-		select 
-	insert into Heures(id_avoirlieu, id_anim, heure_debut, heure_fin)
-	values (new.id_avoirlieu, new.id_anim, new.heure_debut,
-	time(heure_debut, '+'||
-	(select duree 
-	from Animation
-	where id_anim = new.id_anim)
-	||' minutes'));
 
-end;
 
-*/
+
+
+
+
+
+
+
 
 -- triggers
 
@@ -351,11 +268,6 @@ begin
 	delete from AvoirParent where parent = old.nom or enfant = old.nom;
 end;
 
--- ajoute une nourriture, l'associe à un/plusieurs type(s)
-
--- ajoute une animation
-
--- ajoute à un animal une nourriture (menu déroulant) (des plats ok pour sa catégorie et qu'il n'a pas déjà, mais quand meme faire trigger (gestion d'erreur))
 -- nourriture --> clef primaire ??
 create trigger AjouteNourritureAUneEspece
 before insert on Mange
@@ -371,14 +283,6 @@ begin
 		end;
 end;
 -- à tester !
-			
-
--- ajout animation 
--- vérif que soigneur pas déjà occuper dans autre animation pendant
--- calcul date début + durée ?
-
--- ajout animation ? max 3 types d'animation par soigneur !
--- ajouter un lien de parenté
 
 create trigger EmpecheAjoutAvoirLieu
 before insert on AvoirLieu
