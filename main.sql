@@ -1,3 +1,6 @@
+.open zoo.db
+.mode column 
+.headers on
 pragma foreign_keys = true;
 
 create table TypeEnclos(
@@ -393,7 +396,7 @@ begin
 					and (heure_debut between (new.heure_debut) and time(new.heure_debut, '+'||(select duree
 																						from Animation
 																						where id_anim = new.id_anim)||' minutes'))
-					then raise(abort, 'erreur au debut' )
+					then raise(abort, 'ERREUR : le soigneur est déjà occupé sur une autre animation au moment sélectionné !')
 
 			when 	(select id_soign
 					from Animation
@@ -404,12 +407,25 @@ begin
 					and (heure_fin between (new.heure_debut) and time(new.heure_debut, '+'||(select duree
 																						from Animation
 																						where id_anim = new.id_anim)||' minutes'))
-					then raise(abort, 'erreur(fin) ERREUR : le soigneur est déjà occupé sur une autre animation au moment sélectionné !')
+					then raise(abort, 'ERREUR : le soigneur est déjà occupé sur une autre animation au moment sélectionné !')
 			
-	end;																				
-end;
--- à tester
+			when 	(new.id_enclos = id_enclos)
+					and new.date_anim = date_anim
+					and (heure_debut between (new.heure_debut) and time(new.heure_debut, '+'||(select duree
+																							from Animation
+																							where id_anim = new.id_anim)||' minutes'))
+					then raise(abort, 'ERREUR : il y a déjà une animation dans cet enclos au moment sélectionné !' )
 
+			when 	(new.id_enclos = id_enclos)
+					and new.date_anim = date_anim
+					and (heure_fin between (new.heure_debut) and time(new.heure_debut, '+'||(select duree
+																						from Animation
+																						where id_anim = new.id_anim)||' minutes'))
+					then raise(abort, 'ERREUR : il y a déjà une animation dans cet enclos au moment sélectionné !' )
+			end;
+																			
+end;
+ 
 create trigger CalculeDateFinAvoirLieu
 after insert on AvoirLieu
 begin 
@@ -418,10 +434,6 @@ begin
 																where id_anim = new.id_anim)||' minutes') 
 		where new.id_avoirlieu = id_avoirlieu;
 end;
-
--- à tester
-
-
 
 
 
@@ -510,7 +522,8 @@ insert into Convenir values
 
 insert into Soigneur (date_naissance_soign, nom_soign, prenom_soign, genre_soign) values
     ('2002-10-16','Nulli','Enzo','M'),
-    ('2001-09-03','Marquis','Zoé','F')
+    ('2001-09-03','Marquis','Zoé','F'),
+	('2001-09-03','M','Z','F')
 ;
 
 insert into TypeEnclos values
@@ -643,28 +656,42 @@ insert into AvoirParent values
 	("Ugette","Uta")
 ;
 
-
 insert into Animation(duree, description_anim, id_soign) values
     (20, 'dancer les dauphins', 1),
-	(30, 'caresser les ouistitis', 2)
+	(30, 'caresser les ouistitis', 2),
+	(45, 'coucou', 2)
 ;
-
-insert into AvoirLieu(id_anim, id_enclos, date_anim, heure_debut) values
-	(1, 1, date('now'), '12:55'),
-	(2, 9, date('now'), '12:35'),
-	(2, 1, date('now'), '13:34')
-;
-
-
 
 /*
+TESTS TRIGGERS ANIM
+	insert into AvoirLieu(id_anim, id_enclos, date_anim, heure_debut) values
+		(1, 1, date('now'), '12:55'),
+		(2, 9, date('now'), '13:34')
+	;
+
+	insert into AvoirLieu(id_anim, id_enclos, date_anim, heure_debut) values
+		(2, 1, date('now'), '12:50')
+	;
+	-- enclos occupé
+
+	insert into AvoirLieu(id_anim, id_enclos, date_anim, heure_debut) values
+		(1, 7, date('now'), '13:00')
+	;
+	-- déjà occupé soigneur
+
+	insert into AvoirLieu(id_anim, id_enclos, date_anim, heure_debut) values
+		(3, 9, date('now'), '13:00')
+	;
+	-- déjà occupé enclos
+*/
+/*
 --TESTS ERREURS ! 
--- vérif l'incrémentation
--- enclos plein
-insert into Animal values ("Test1", '1988-07-21', 'Femelle', 4378.9, null, "Eléphant de forêt d'Afrique", 1, 14, '2000-01-05');
--- mauvais type d'enclos
-insert into Animal values ("Test2", '1988-07-21', 'Femelle', 4378.9, null, "Eléphant de forêt d'Afrique", 1, 1, '2000-01-05');
--- autre espece y habite deja
-insert into Animal values ("Test3", '1988-07-21', 'Femelle', 4378.9, null, "Eléphant de forêt d'Afrique", 1, 18, '2000-01-05');
+	-- vérif l'incrémentation
+	-- enclos plein
+	insert into Animal values ("Test1", '1988-07-21', 'Femelle', 4378.9, null, "Eléphant de forêt d'Afrique", 1, 14, '2000-01-05');
+	-- mauvais type d'enclos
+	insert into Animal values ("Test2", '1988-07-21', 'Femelle', 4378.9, null, "Eléphant de forêt d'Afrique", 1, 1, '2000-01-05');
+	-- autre espece y habite deja
+	insert into Animal values ("Test3", '1988-07-21', 'Femelle', 4378.9, null, "Eléphant de forêt d'Afrique", 1, 18, '2000-01-05');
 */
 
