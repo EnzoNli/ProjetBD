@@ -86,8 +86,8 @@ create table AvoirLieu(
 	id_avoirlieu 	integer 	primary key		autoincrement,
 	id_anim 	int 	references Animation(id_anim),
 	id_enclos 	int 	references Enclos(id_enclos),
-	date_anim	date, --check?
-	heure_debut	time, --check??
+	date_anim	date 	not null, --check?
+	heure_debut	time	not null, --check??
 	heure_fin	time default(null)
 ); --logique ? ajouter date en clef primaire ? ou int en primary key 
 
@@ -97,10 +97,47 @@ create table Mange(
 	constraint pkMange primary key (race, id_plat)
 );
 
--- lier espece et nourriture
--- verif bonne categorie --> trigger
-
 -- peuvent cohabiter ?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -201,6 +238,45 @@ create view ListePlatParCategorie as
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 -- triggers
 
 create trigger MisAJourAjoutAnimal
@@ -268,22 +344,6 @@ begin
 	delete from AvoirParent where parent = old.nom or enfant = old.nom;
 end;
 
--- nourriture --> clef primaire ??
-create trigger AjouteNourritureAUneEspece
-before insert on Mange
-begin
-	select 
-		case 
-			when 	(select id_categorie
-					from Espece
-					where race = nex.race) 	not in  (select id_categorie 
-													from Nourriture
-													where id_plat = new.id_plat)
-			then raise(abort, 'ERREUR : cette espèce ne peut pas manger de cette nourriture !')
-		end;
-end;
--- à tester !
-
 create trigger EmpecheAjoutAvoirLieu
 before insert on AvoirLieu
 begin
@@ -338,6 +398,22 @@ begin
 																where id_anim = new.id_anim)||' minutes') 
 		where new.id_avoirlieu = id_avoirlieu;
 end;
+
+-- nourriture --> clef primaire ??
+create trigger AjouteNourritureAUneEspece
+before insert on Mange
+begin
+	select 
+		case 
+			when 	(select id_categorie
+					from Espece
+					where race = new.race) 	not in  (select id_categorie 
+													from Nourriture natural join Convenir
+													where id_plat = new.id_plat)
+			then raise(abort, 'ERREUR : cette espèce ne peut pas manger de cette nourriture !')
+		end;
+end;
+-- à tester !
 
 
 
@@ -566,12 +642,13 @@ insert into Animation(duree, description_anim, id_soign) values
 	(45, 'coucou', 2)
 ;
 
-/*
-TESTS TRIGGERS ANIM
-	insert into AvoirLieu(id_anim, id_enclos, date_anim, heure_debut) values
+insert into AvoirLieu(id_anim, id_enclos, date_anim, heure_debut) values
 		(1, 1, date('now'), '12:55'),
 		(2, 9, date('now'), '13:34')
 	;
+
+/*
+TESTS TRIGGERS ANIM
 
 	insert into AvoirLieu(id_anim, id_enclos, date_anim, heure_debut) values
 		(2, 1, date('now'), '12:50')
@@ -599,3 +676,4 @@ TESTS TRIGGERS ANIM
 	insert into Animal values ("Test3", '1988-07-21', 'Femelle', 4378.9, null, "Eléphant de forêt d'Afrique", 1, 18, '2000-01-05');
 */
 
+insert into Mange values ('Ouistiti à tête jaune',1);
