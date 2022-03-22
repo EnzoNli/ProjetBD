@@ -29,7 +29,7 @@
         <a href="#" class="dropdown-item">Modifier le poids d'un animal</a>
         <div class="dropdown-divider"></div>
         <a href="#" class="dropdown-item">Créer un type de nourriture</a>
-        <a href="#" class="dropdown-item">Associer de la nourriture à un animal</a>
+        <a href="#" class="dropdown-item">Associer de la nourriture à une espèce</a>
         <div class="dropdown-divider"></div>
         <a href="#" class="dropdown-item">Ajouter un type d'animation</a>
         <a href="#" class="dropdown-item">Planifier une animation</a>
