@@ -59,7 +59,7 @@
 
 .menugauche {
     display: block;
-    margin-left: 27vw;
+    margin-left: 30vw;
  }
 
 .menugauche ul { 
@@ -72,4 +72,9 @@
 
 .menugauche li a{ 
     display: inline-block; 
+}
+
+.deroulant{
+    color:black;
+    right: -20vw;
 }

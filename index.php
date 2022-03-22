@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Zouzoo - Accueil</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="css/flickity.css" media="screen">
     <link rel="stylesheet" href="css/index.css">
 </head>
@@ -30,12 +29,12 @@
   data-flickity-options='{ "cellAlign": "left", "contain": true, "pageDots": false , "wrapAround": true, 
     "autoPlay": 5000, "pauseAutoPlayOnHover": false, "prevNextButtons": false, "selectedAttraction": 0.01, "friction": 0.30, "draggable": false }'>
         <div class="gallery-cell">
-            <hr class="ligne">
+            <hr id="ligne1">
             <p class="msg">BIENVENUE CHEZ ZOUZOO</p>
             <img class="banniere" src="img/banniere.jpg" alt="Banniere">
         </div>
         <div class="gallery-cell">
-            <hr class="ligne" id="ligne2">
+            <hr id="ligne2">
             <p class="msg" id="msg2">IL Y A ACTUELLEMENT<br><?php echo $ligne[0] ?> ANIMAUX<br>DANS LE ZOO</p>
             <img class="banniere" src="img/banniere2.jpg" alt="Banniere">
         </div>
