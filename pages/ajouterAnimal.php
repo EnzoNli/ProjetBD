@@ -26,16 +26,16 @@
                             <div class="col-md-12">
                                 <select class="form-select mt-3" name="race" required>
                                       <option selected disabled value="">Race</option>
-                                      <option value="jweb">Junior Web Developer</option>
-                                      <option value="sweb">Senior Web Developer</option>
-                                      <option value="pmanager">Project Manager</option>
+                                      <option value="jweb">Faire le php</option>
+                                      <option value="sweb">Faire le php</option>
+                                      <option value="pmanager">Faire le php</option>
                                </select>
                                 <div class="valid-feedback">You selected a position!</div>
                                 <div class="invalid-feedback">Please select a position!</div>
                            </div>
 
                             <div class="col-md-12">
-                                <input class="form-control" type="email" name="email" placeholder="E-mail Address" required>
+                                <input class="form-control" type="email" name="email" placeholder="test" required>
                                  <div class="valid-feedback">Email field is valid!</div>
                                  <div class="invalid-feedback">Email field cannot be blank!</div>
                             </div>
@@ -44,32 +44,25 @@
 
 
                            <div class="col-md-12">
-                              <input class="form-control" type="password" name="password" placeholder="Password" required>
+                              <input class="form-control" type="password" name="password" placeholder="test2" required>
                                <div class="valid-feedback">Password field is valid!</div>
                                <div class="invalid-feedback">Password field cannot be blank!</div>
                            </div>
 
 
                            <div class="col-md-12 mt-3">
-                            <label class="mb-3 mr-1" for="gender">Gender: </label>
+                            <label class="mb-3 mr-1" for="gender">Genre: </label>
 
                             <input type="radio" class="btn-check" name="gender" id="male" autocomplete="off" required>
                             <label class="btn btn-sm btn-outline-secondary" for="male">Male</label>
 
                             <input type="radio" class="btn-check" name="gender" id="female" autocomplete="off" required>
-                            <label class="btn btn-sm btn-outline-secondary" for="female">Female</label>
+                            <label class="btn btn-sm btn-outline-secondary" for="female">Femelle</label>
 
-                            <input type="radio" class="btn-check" name="gender" id="secret" autocomplete="off" required>
-                            <label class="btn btn-sm btn-outline-secondary" for="secret">Secret</label>
                                <div class="valid-feedback mv-up">You selected a gender!</div>
                                 <div class="invalid-feedback mv-up">Please select a gender!</div>
                             </div>
 
-                        <div class="form-check">
-                          <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required>
-                          <label class="form-check-label">I confirm that all data are correct</label>
-                         <div class="invalid-feedback">Please confirm that the entered data are all correct!</div>
-                        </div>
                   
 
                             <div class="form-button mt-3">

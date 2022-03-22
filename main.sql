@@ -1,3 +1,6 @@
+.open zoo.db
+.mode column 
+.headers on
 pragma foreign_keys = true;
 
 create table TypeEnclos(
@@ -60,9 +63,9 @@ create table Soigneur(
 
 create table Animation(
 	id_anim		integer		primary key		autoincrement,
-	duree		int		check(duree > 20)	not null,
+	duree		int		check(duree > 15)	not null,
 	description_anim	varchar(50),
-	id_soign	int		references Soignant(id_soign)
+	id_soign	int		references Soigneur(id_soign)
 );
 
 -- associations
@@ -80,11 +83,12 @@ create table Convenir(
 );
 
 create table AvoirLieu(
+	id_avoirlieu 	integer 	primary key		autoincrement,
 	id_anim 	int 	references Animation(id_anim),
 	id_enclos 	int 	references Enclos(id_enclos),
-	date_anim	date, --check?
-	heure_anim	time, --check??
-	constraint	pkAvoirLieu	primary key (id_anim, id_enclos)
+	date_anim	date 	not null, --check?
+	heure_debut	time	not null, --check??
+	heure_fin	time default(null)
 ); --logique ? ajouter date en clef primaire ? ou int en primary key 
 
 create table Mange(
@@ -93,16 +97,47 @@ create table Mange(
 	constraint pkMange primary key (race, id_plat)
 );
 
-/*
-create table PeuventCohabiter(
-	race_une 	varchar(30)		references Espece(race),
-	race_deux	varchar(30)		references Espece(race),
-	constraint 	pkPeuventCohabiter primary key (race_une, race_deux)
-);
-*/
+-- peuvent cohabiter ?
 
--- lier espece et nourriture
--- verif bonne categorie --> trigger
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -116,6 +151,13 @@ create table PeuventCohabiter(
 
 -- view
 
+
+-- pour la page d'accueil
+create view NombreTotalAnimauxZoo as
+	select count(1) as nombre
+	from Animal
+;
+
 -- pour la page 'Animaux'
 create view NombreEspecesParTypeEnclos as
 	select id_type_enclos, count(1) as nombre
@@ -123,52 +165,26 @@ create view NombreEspecesParTypeEnclos as
 	where nb_dans_zoo > 0
 	group by id_type_enclos
 ;
-
--- ??
-create view NombreAnimauxParTypeEnclos as
-	select id_type_enclos, count(1) as nombre
-	from TypeEnclos natural join Enclos natural join Animal
-	group by id_type_enclos
+create view NombreTypeEnclos as 
+	select count(1) as nombre
+	from TypeEnclos
 ;
 
--- pour la page par espece
+-- pour la page espece
 create view NombreAnimauxParEspece as
 	select race, count(1) as nombre
 	from Espece natural join Animal
 	group by race
 ;
-
--- ??
-create view EnclosVide as
-	select id_enclos
-	from Enclos
-	where nb_actuel = 0
-;
-
--- ??
-create view EnclosNonVide as
-	select id_enclos
-	from Enclos
-	where nb_actuel > 0
-;
-
--- ??
-create view EnclosPlein as
-	select id_enclos
-	from Enclos
-	where nb_actuel = nb_max
-;
-
--- ? pour la page nourriture ?
-create view ListePlatParCategorie as
-	select id_categorie, description_plat
-	from CategorieNourriture natural join Convenir natural join Nourriture
-;
-
--- pour la page par espece
 create view ListeNourritureParRace as
 	select race, description_plat
 	from Espece natural join ListePlatParCategorie
+;
+
+-- pour la page d'un animal
+create view EnfantsDuZoo as
+	select distinct enfant as noms
+	from AvoirParent
 ;
 
 -- pour la page soigneur
@@ -184,53 +200,71 @@ create view AnimationAujourdhui as
 	where date_anim = DATE('nom')
 ;
 
--- pour la page d'un animal
-create view EnfantsDuZoo as
-	select distinct enfant as noms
-	from AvoirParent
-;
-
--- ??
-create view TypeEnclosParRace as
-    select race, id_type_enclos
-    from Espece natural join TypeEnclos
-;
-
--- pour la page d'accueil
-create view NombreTotalAnimauxZoo as
-	select count(1) as nombre
-	from Animal
-;
-
--- pour la page 'Animaux'
-create view NombreTypeEnclos as 
-	select count(1) as nombre
-	from TypeEnclos
-;
-
 -- pour trigger EmpecheAjoutAnimal
 create view RaceParEnclos as
     select distinct id_enclos, race
     from Enclos natural join Animal
 ;
-
-
-
-
-create view DateAnimationParSoigneur as 
-	select id_soign, date_anim, id_anim
-	from Animation natural join AvoirLieu
+create view EnclosPlein as
+	select id_enclos
+	from Enclos
+	where nb_actuel = nb_max
 ;
 
-create view SoigneurParAnimation as 
-	select id_soign, id_anim
-	from Animation
+
+
+
+
+-- ??
+create view NombreAnimauxParTypeEnclos as
+	select id_type_enclos, count(1) as nombre
+	from TypeEnclos natural join Enclos natural join Animal
+	group by id_type_enclos
 ;
 
-create view SoigneurParDateAnimation as 
-	select id_soign, date_anim
-	from Animation natural join AvoirLieu
+-- ? pour la page nourriture ?
+create view ListePlatParCategorie as
+	select id_categorie, description_plat
+	from CategorieNourriture natural join Convenir natural join Nourriture
 ;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -310,11 +344,61 @@ begin
 	delete from AvoirParent where parent = old.nom or enfant = old.nom;
 end;
 
--- ajoute une nourriture, l'associe à un/plusieurs type(s)
+create trigger EmpecheAjoutAvoirLieu
+before insert on AvoirLieu
+begin
+	select *
+	from Animation natural join AvoirLieu
+	where 
+			case 	
+			when 	(select id_soign
+					from Animation
+					where id_anim = new.id_anim)=id_soign 
+					
+					and new.date_anim = date_anim 
+					
+					and (heure_debut between (new.heure_debut) and time(new.heure_debut, '+'||(select duree
+																						from Animation
+																						where id_anim = new.id_anim)||' minutes'))
+					then raise(abort, 'ERREUR : le soigneur est déjà occupé sur une autre animation au moment sélectionné !')
 
--- ajoute une animation
+			when 	(select id_soign
+					from Animation
+					where id_anim = new.id_anim)=id_soign 
+					
+					and new.date_anim = date_anim 
 
--- ajoute à un animal une nourriture (menu déroulant) (des plats ok pour sa catégorie et qu'il n'a pas déjà, mais quand meme faire trigger (gestion d'erreur))
+					and (heure_fin between (new.heure_debut) and time(new.heure_debut, '+'||(select duree
+																						from Animation
+																						where id_anim = new.id_anim)||' minutes'))
+					then raise(abort, 'ERREUR : le soigneur est déjà occupé sur une autre animation au moment sélectionné !')
+			
+			when 	(new.id_enclos = id_enclos)
+					and new.date_anim = date_anim
+					and (heure_debut between (new.heure_debut) and time(new.heure_debut, '+'||(select duree
+																							from Animation
+																							where id_anim = new.id_anim)||' minutes'))
+					then raise(abort, 'ERREUR : il y a déjà une animation dans cet enclos au moment sélectionné !' )
+
+			when 	(new.id_enclos = id_enclos)
+					and new.date_anim = date_anim
+					and (heure_fin between (new.heure_debut) and time(new.heure_debut, '+'||(select duree
+																						from Animation
+																						where id_anim = new.id_anim)||' minutes'))
+					then raise(abort, 'ERREUR : il y a déjà une animation dans cet enclos au moment sélectionné !' )
+			end;
+																			
+end;
+ 
+create trigger CalculeDateFinAvoirLieu
+after insert on AvoirLieu
+begin 
+	update AvoirLieu set heure_fin = time(new.heure_debut, '+'||(select duree
+																from Animation
+																where id_anim = new.id_anim)||' minutes') 
+		where new.id_avoirlieu = id_avoirlieu;
+end;
+
 -- nourriture --> clef primaire ??
 create trigger AjouteNourritureAUneEspece
 before insert on Mange
@@ -323,65 +407,52 @@ begin
 		case 
 			when 	(select id_categorie
 					from Espece
-					where race = nex.race) 	not in  (select id_categorie 
-													from Nourriture
+					where race = new.race) 	not in  (select id_categorie 
+													from Nourriture natural join Convenir
 													where id_plat = new.id_plat)
 			then raise(abort, 'ERREUR : cette espèce ne peut pas manger de cette nourriture !')
 		end;
 end;
 -- à tester !
-			
-
--- ajout animation 
--- vérif que soigneur pas déjà occuper dans autre animation pendant
--- calcul date début + durée ?
-
-/*
-create trigger AjouteAnimation
-before insert on AvoirLieu
-begin 
-	select
-		case 
-			when 	(select id_soign
-					from Animation
-					where new.id_anim = id_anim) = 	(select id_soign
-													from SoigneurParDateAnimation
-													where date_anim = new.date_anim)
-			and (new.heure_anim in 
-				(select * 
-				from AvoirLieu natural join Animation
-				where 	date_anim = new.date_anim 
-						and id_soign = (select id_soign
-										from Animation
-										where new.id_anim = id_anim) 
-						and new.heure_anim between heure_anim and (SELECT heure_anim, ADDDATE(heure_anim, INTERVAL duree MINUTE) FROM Animation natural join AvoirLieu)
-				)
-			)
-			then (abort, "ERREUR : ce soigneur est déjà occupé !")
-
-			-- qui est le nouveau soigneur ?
-
-			-- a t il quelque chose à cette date ?
-
-			--chevauchement des heures
-			
-			/*(new.date 	in 	(select date_anim
-								from DateAnimationParSoigneur
-								where id_anim = new.id_anim))
-				and -- heure début comprise entre début et fin d'une déjà existante
-
-			
-			-- verif enclos pas deja anim aussi ?
-		end;
-end;
-
-*/
 
 
 
 
 
--- ajouter un lien de parenté
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -431,7 +502,8 @@ insert into Convenir values
 
 insert into Soigneur (date_naissance_soign, nom_soign, prenom_soign, genre_soign) values
     ('2002-10-16','Nulli','Enzo','M'),
-    ('2001-09-03','Marquis','Zoé','F')
+    ('2001-09-03','Marquis','Zoé','F'),
+	('2001-09-03','M','Z','F')
 ;
 
 insert into TypeEnclos values
@@ -490,7 +562,6 @@ insert into Enclos (nb_max, taille, id_type_enclos) values
 /*
     (2, 6, 'vl'), --10
     (1, 8, 'vl'), --11
-
     (2, 10,'cg'), --12
     (4, 20,'cg'), --13
 */
@@ -564,24 +635,41 @@ insert into AvoirParent values
 	("Ugette","Uta")
 ;
 
+insert into Animation(duree, description_anim, id_soign) values
+    (20, 'dancer les dauphins', 1),
+	(30, 'caresser les ouistitis', 2),
+	(45, 'coucou', 2)
+;
+
+insert into AvoirLieu(id_anim, id_enclos, date_anim, heure_debut) values
+		(1, 1, date('now'), '12:55'),
+		(2, 9, date('now'), '13:34')
+	;
+
 /*
-insert into Animation values
-    (
-;
-insert into AvoirLieu valuesnimaux
-	(
-;
+TESTS TRIGGERS ANIM
+	insert into AvoirLieu(id_anim, id_enclos, date_anim, heure_debut) values
+		(2, 1, date('now'), '12:50')
+	;
+	-- enclos occupé
+	insert into AvoirLieu(id_anim, id_enclos, date_anim, heure_debut) values
+		(1, 7, date('now'), '13:00')
+	;
+	-- déjà occupé soigneur
+	insert into AvoirLieu(id_anim, id_enclos, date_anim, heure_debut) values
+		(3, 9, date('now'), '13:00')
+	;
+	-- déjà occupé enclos
 */
-
-
 /*
 --TESTS ERREURS ! 
--- vérif l'incrémentation
--- enclos plein
-insert into Animal values ("Test1", '1988-07-21', 'Femelle', 4378.9, null, "Eléphant de forêt d'Afrique", 1, 14, '2000-01-05');
--- mauvais type d'enclos
-insert into Animal values ("Test2", '1988-07-21', 'Femelle', 4378.9, null, "Eléphant de forêt d'Afrique", 1, 1, '2000-01-05');
--- autre espece y habite deja
-insert into Animal values ("Test3", '1988-07-21', 'Femelle', 4378.9, null, "Eléphant de forêt d'Afrique", 1, 18, '2000-01-05');
+	-- vérif l'incrémentation
+	-- enclos plein
+	insert into Animal values ("Test1", '1988-07-21', 'Femelle', 4378.9, null, "Eléphant de forêt d'Afrique", 1, 14, '2000-01-05');
+	-- mauvais type d'enclos
+	insert into Animal values ("Test2", '1988-07-21', 'Femelle', 4378.9, null, "Eléphant de forêt d'Afrique", 1, 1, '2000-01-05');
+	-- autre espece y habite deja
+	insert into Animal values ("Test3", '1988-07-21', 'Femelle', 4378.9, null, "Eléphant de forêt d'Afrique", 1, 18, '2000-01-05');
 */
 
+insert into Mange values ('Ouistiti à tête jaune',1);
