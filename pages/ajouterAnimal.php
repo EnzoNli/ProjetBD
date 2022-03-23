@@ -7,7 +7,7 @@
 <body>
     <?php include_once("../includes/pourchaquepage.php")
     ?>
-    <link rel="stylesheet" href="../css/ajouterAnimal.css">
+    <link rel="stylesheet" href="../css/form.css">
     <div class="form-body">
         <div class="row">
             <div class="form-holder">
@@ -15,12 +15,10 @@
                     <div class="form-items">
                         <h3>Ajouter un animal dans le zoo</h3>
                         <p>Veuillez remplir les informations ci-dessous.</p>
-                        <form class="requires-validation" method="POST" action="modification_bd.php" novalidate>
+                        <form class="requires-validation" method="POST" action="modification_bd.php">
 
                             <div class="col-md-12">
                                <input class="form-control" type="text" name="nom" placeholder="Nom de l'animal" required>
-                               <div class="valid-feedback">Username field is valid!</div>
-                               <div class="invalid-feedback">Username field cannot be blank!</div>
                             </div>
 
                             <div class="col-md-12">
@@ -40,27 +38,19 @@
                                         }
                                         ?>
                                </select>
-                                <div class="valid-feedback">You selected a position!</div>
-                                <div class="invalid-feedback">Please select a position!</div>
                            </div>
 
                             <div class="col-md-12">
                                 <input class="form-control" type="text" name="poids" placeholder="Poids" required>
-                                 <div class="valid-feedback">Email field is valid!</div>
-                                 <div class="invalid-feedback">Email field cannot be blank!</div>
                             </div>
 
                             <div class="col-md-12">
                                 <input class="form-control" type="text" name="origine" placeholder="Origine" required>
-                                 <div class="valid-feedback">Email field is valid!</div>
-                                 <div class="invalid-feedback">Email field cannot be blank!</div>
                             </div>
 
                             <div class="col-md-12">
                                 <label for="naissance">Date de naissance :</label>
                                 <input class="form-control" id="naissance" type="date" name="naissance" value="<?php echo date('Y-m-d'); ?>" required>
-                                 <div class="valid-feedback">Email field is valid!</div>
-                                 <div class="invalid-feedback">Email field cannot be blank!</div>
                             </div>
 
                            <div class="col-md-12 mt-3">
@@ -72,8 +62,6 @@
                             <input type="radio" class="btn-check" name="genre" id="femelle" autocomplete="off" value="Femelle" required>
                             <label class="btn btn-sm btn-outline-secondary" for="femelle" value="Femelle">Femelle</label>
 
-                               <div class="valid-feedback mv-up">You selected a gender!</div>
-                                <div class="invalid-feedback mv-up">Please select a gender!</div>
                             </div>
 
                             <div class="col-md-12">
@@ -91,8 +79,6 @@
                                         }
                                         ?>
                                </select>
-                                <div class="valid-feedback">You selected a position!</div>
-                                <div class="invalid-feedback">Please select a position!</div>
                            </div>
 
                            <div class="col-md-12">
@@ -110,8 +96,6 @@
                                         }
                                         ?>
                                </select>
-                                <div class="valid-feedback">You selected a position!</div>
-                                <div class="invalid-feedback">Please select a position!</div>
                            </div>
 
                             <div class="form-button mt-3">

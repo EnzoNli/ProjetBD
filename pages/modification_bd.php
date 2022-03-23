@@ -9,20 +9,28 @@
         <?php
 
         include_once("../includes/pourchaquepage.php");
+        echo $_SERVER['HTTP_REFERER'];
 
-        $nom =  $_REQUEST['nom'];
-        $race = urldecode($_REQUEST['race']);
-        $poids =  $_REQUEST['poids'];
-        $origine = $_REQUEST['origine'];
-        $genre = $_REQUEST['genre'];
-        $naissance = $_REQUEST['naissance'];
-        $id_soigneur = $_REQUEST['Soigneur'];
-        $id_enclos = $_REQUEST['Enclos'];
+
           
 
-        $sql = "INSERT INTO Animal VALUES ('$nom', 
+        if(str_contains($_SERVER['HTTP_REFERER'], "ajouterAnimal.php")){
+            $nom =  $_REQUEST['nom'];
+            $race = urldecode($_REQUEST['race']);
+            $poids =  $_REQUEST['poids'];
+            $origine = $_REQUEST['origine'];
+            $genre = $_REQUEST['genre'];
+            $naissance = $_REQUEST['naissance'];
+            $id_soigneur = $_REQUEST['Soigneur'];
+            $id_enclos = $_REQUEST['Enclos'];
+            
+            $sql = "INSERT INTO Animal VALUES ('$nom', 
             '$race','$id_enclos','$naissance','$genre','$poids',
             '$origine','$id_soigneur')";
+        }elseif(str_contains($_SERVER['HTTP_REFERER'], "supprimerAnimal.php")){
+
+        }
+        
           
         if($db->exec($sql)){
             echo "<h3>La modification a été effectuée !</h3>";
