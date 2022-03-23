@@ -41,8 +41,7 @@ create table Animal(
 	genre	varchar(7)	check(genre in ('Male','Femelle'))  not null,
 	poids	float		check(poids>0)	not null,
 	origine	varchar(30),
-	id_soign 	int 	references Soigneur(id_soign),
-	date_arrivee_zoo	date 	default(date('now'))
+	id_soign 	int 	references Soigneur(id_soign)
 );
 
 create table Nourriture(
@@ -566,63 +565,63 @@ insert into Enclos (nb_max, taille, id_type_enclos) values
 
 insert into Animal values
 		--aquarium
-	("Boto1", "Boto", 2,'2003-07-08', 'Male', 300.0, null,  2, date('now')),
-	("Boto2", "Boto", 2,'2003-07-08', 'Male', 200.0, null,  2, date('now')),
-	("Boto3", "Boto", 2,'2003-07-08', 'Male', 800.0, null,  2, date('now')),
-	("Boto4", "Boto", 2,'2003-07-08', 'Male', 700.0, null,  2, date('now')),
+	("Boto1", "Boto", 2,'2003-07-08', 'Male', 300.0, null,  2),
+	("Boto2", "Boto", 2,'2003-07-08', 'Male', 200.0, null,  2),
+	("Boto3", "Boto", 2,'2003-07-08', 'Male', 800.0, null,  2),
+	("Boto4", "Boto", 2,'2003-07-08', 'Male', 700.0, null,  2),
 
-	("Raie1", "Grande raie-guitare", 3, '2003-07-08', 'Male', 345.0, null,  2, date('now')),
-	("Raie2", "Grande raie-guitare", 3, '2003-07-08', 'Male', 345.0, null,  2, date('now')),
+	("Raie1", "Grande raie-guitare", 3, '2003-07-08', 'Male', 345.0, null,  2),
+	("Raie2", "Grande raie-guitare", 3, '2003-07-08', 'Male', 345.0, null,  2),
 	
-	("Lion1", "Lion de mer de Steller", 4, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
-	("Lion2", "Lion de mer de Steller", 4,'2003-07-08', 'Male', 345.0, null, 2, date('now')),
-	("Lion3", "Lion de mer de Steller", 4,'2003-07-08', 'Male', 345.0, null, 2, date('now')),
+	("Lion1", "Lion de mer de Steller", 4, '2003-07-08', 'Male', 345.0, null, 2),
+	("Lion2", "Lion de mer de Steller", 4,'2003-07-08', 'Male', 345.0, null, 2),
+	("Lion3", "Lion de mer de Steller", 4,'2003-07-08', 'Male', 345.0, null, 2),
 
-	("Méduse1", "Méduse dorée", 5,'2003-07-08', 'Male', 345.0, null, 2, date('now')),
-	("Méduse2", "Méduse dorée", 5,'2003-07-08', 'Male', 345.0, null, 2, date('now')),
-	("Méduse3", "Méduse dorée", 5,'2003-07-08', 'Male', 345.0, null, 2, date('now')),
-	("Méduse4", "Méduse dorée", 5,'2003-07-08', 'Male', 345.0, null, 2, date('now')),
-	("Méduse5", "Méduse dorée", 5,'2003-07-08', 'Male', 345.0, null, 2, date('now')),
+	("Méduse1", "Méduse dorée", 5,'2003-07-08', 'Male', 345.0, null, 2),
+	("Méduse2", "Méduse dorée", 5,'2003-07-08', 'Male', 345.0, null, 2),
+	("Méduse3", "Méduse dorée", 5,'2003-07-08', 'Male', 345.0, null, 2),
+	("Méduse4", "Méduse dorée", 5,'2003-07-08', 'Male', 345.0, null, 2),
+	("Méduse5", "Méduse dorée", 5,'2003-07-08', 'Male', 345.0, null, 2),
 
-	("Beluga1", "Béluga", 6, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
-	("Beluga2", "Béluga", 6, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
-	("Beluga3", "Béluga", 6, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
+	("Beluga1", "Béluga", 6, '2003-07-08', 'Male', 345.0, null, 2),
+	("Beluga2", "Béluga", 6, '2003-07-08', 'Male', 345.0, null, 2),
+	("Beluga3", "Béluga", 6, '2003-07-08', 'Male', 345.0, null, 2),
 
 		--terrarium
-	("Python1", "Python royal", 7, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
+	("Python1", "Python royal", 7, '2003-07-08', 'Male', 345.0, null, 2),
 
-	("Rainette1", "Rainette jaguar", 8, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
-	("Rainette2", "Rainette jaguar", 8, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
+	("Rainette1", "Rainette jaguar", 8, '2003-07-08', 'Male', 345.0, null, 2),
+	("Rainette2", "Rainette jaguar", 8, '2003-07-08', 'Male', 345.0, null, 2),
 
-	("Tortue1", "Tortue des Seychelles", 9, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
-	("Tortue2", "Tortue des Seychelles", 9, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
-	("Tortue3", "Tortue des Seychelles", 9, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
+	("Tortue1", "Tortue des Seychelles", 9, '2003-07-08', 'Male', 345.0, null, 2),
+	("Tortue2", "Tortue des Seychelles", 9, '2003-07-08', 'Male', 345.0, null, 2),
+	("Tortue3", "Tortue des Seychelles", 9, '2003-07-08', 'Male', 345.0, null, 2),
 
 		-- extérieur
-	("Enzo", "Hérisson du désert", 10, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
-	("Eric", "Hérisson du désert", 10, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
-	("Edgar", "Hérisson du désert", 10, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
-	("Elsa", "Hérisson du désert", 10, '2003-07-08', 'Femelle', 345.0, null, 2, date('now')),
-	("Emilie", "Hérisson du désert", 10, '2003-07-08', 'Femelle', 345.0, null, 2, date('now')),
+	("Enzo", "Hérisson du désert", 10, '2003-07-08', 'Male', 345.0, null, 2),
+	("Eric", "Hérisson du désert", 10, '2003-07-08', 'Male', 345.0, null, 2),
+	("Edgar", "Hérisson du désert", 10, '2003-07-08', 'Male', 345.0, null, 2),
+	("Elsa", "Hérisson du désert", 10, '2003-07-08', 'Femelle', 345.0, null, 2),
+	("Emilie", "Hérisson du désert", 10, '2003-07-08', 'Femelle', 345.0, null, 2),
 
-	("Ugo", "Panda géant", 11, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
-	("Ugette", "Panda géant", 11, '2003-07-08', 'Femelle', 345.0, null, 2, date('now')),
-	("Uta", "Panda géant", 11, '2003-07-08', 'Femelle', 345.0, "née dans le zoo", 2, date('now')),
+	("Ugo", "Panda géant", 11, '2003-07-08', 'Male', 345.0, null, 2),
+	("Ugette", "Panda géant", 11, '2003-07-08', 'Femelle', 345.0, null, 2),
+	("Uta", "Panda géant", 11, '2003-07-08', 'Femelle', 345.0, "née dans le zoo", 2),
 
-	("Rémi", "Panda roux", 12, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
-	("Raoul", "Panda roux", 12, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
-	("Ron", "Panda roux", 12, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
-	("Rosie", "Panda roux", 12, '2003-07-08', 'Femelle', 345.0, null, 2, date('now')),
-	("Roxane", "Panda roux", 12, '2003-07-08', 'Femelle', 345.0, null, 2, date('now')),
-	("Raymonde", "Panda roux", 12, '2003-07-08', 'Femelle', 345.0, null, 2, date('now')),
+	("Rémi", "Panda roux", 12, '2003-07-08', 'Male', 345.0, null, 2),
+	("Raoul", "Panda roux", 12, '2003-07-08', 'Male', 345.0, null, 2),
+	("Ron", "Panda roux", 12, '2003-07-08', 'Male', 345.0, null, 2),
+	("Rosie", "Panda roux", 12, '2003-07-08', 'Femelle', 345.0, null, 2),
+	("Roxane", "Panda roux", 12, '2003-07-08', 'Femelle', 345.0, null, 2),
+	("Raymonde", "Panda roux", 12, '2003-07-08', 'Femelle', 345.0, null, 2),
 
-    ("Nicolas", "Girafe", 13, '2003-07-08', 'Male', 345.0, null, 2, date('now')),
-	("Nina", "Girafe", 13, '2003-07-08', 'Femelle', 345.0, null, 2, date('now')),
-	("Naomi", "Girafe", 13, '2003-07-08', 'Femelle', 345.0, null, 2, date('now')),
+    ("Nicolas", "Girafe", 13, '2003-07-08', 'Male', 345.0, null, 2),
+	("Nina", "Girafe", 13, '2003-07-08', 'Femelle', 345.0, null, 2),
+	("Naomi", "Girafe", 13, '2003-07-08', 'Femelle', 345.0, null, 2),
 
-    ("Moussa", "Eléphant de forêt d'Afrique", 14, '1985-04-16', 'Male', 5654.5, null, 1, '2000-01-05'),
-    ("Margot", "Eléphant de forêt d'Afrique", 14, '1988-07-21', 'Femelle', 4378.9, null, 1, '2000-01-05'),
-    ("Milan", "Eléphant de forêt d'Afrique", 14, '2008-03-04', 'Male', 3452.7, "né dans le zoo", 1, '2008-03-04')
+    ("Moussa", "Eléphant de forêt d'Afrique", 14, '1985-04-16', 'Male', 5654.5, null, 1),
+    ("Margot", "Eléphant de forêt d'Afrique", 14, '1988-07-21', 'Femelle', 4378.9, null, 1),
+    ("Milan", "Eléphant de forêt d'Afrique", 14, '2008-03-04', 'Male', 3452.7, "né dans le zoo", 1)
 ;
 
 insert into AvoirParent values

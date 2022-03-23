@@ -3,9 +3,6 @@
 *, body {
     font-family: 'Poppins', sans-serif;
     font-weight: 400;
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-    -moz-osx-font-smoothing: grayscale;
 }
 
 html, body {
@@ -21,7 +18,7 @@ html, body {
       justify-content: center;
       align-items: center;
       text-align: center;
-      min-height: 100vh;
+      min-height: 85vh;
 }
 
 .form-holder .form-content {

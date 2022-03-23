@@ -19,6 +19,7 @@
     $db = new SQLite3("zoo.db");
     $creation = file_get_contents("main.sql");
     $db->exec($creation);
+    
     $q = $db->query("SELECT * FROM nombretotalanimauxzoo");
     $ligne = $q->fetchArray();
     
