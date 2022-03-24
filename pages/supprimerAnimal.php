@@ -3,6 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <title>Zouzoo - Supprimer un animal</title>
+    <script src="../js/jquery.js"></script>
+    <script>
+        function load_new_content(){
+            var selected_option_value=$("#select1 option:selected").val();
+
+            $.post("ajouteDivPourSupprAnimal.php", {option_value: selected_option_value},
+                function(data){
+                    $("#div_animal").html(data);
+                }
+            );
+        }
+
+
+    </script>
 </head>
 <body>
     <?php include_once("../includes/pourchaquepage.php")
@@ -18,13 +32,9 @@
                         <form class="requires-validation" method="POST" action="modification_bd.php">
 
                             <div class="col-md-12">
-                               <input class="form-control" type="text" name="nom" placeholder="Nom de l'animal" required>
-                            </div>
-
-                            <div class="col-md-12">
-                                <select class="form-select mt-3" name="race" required>
+                                <select class="form-select mt-3" id="select1" name="race" onchange='load_new_content()' required>
                                       <option selected disabled value="">Race</option>
-                                        <?php 
+                                        <?php
                                         $chaqueRace = $db->query("SELECT race FROM Espece");
 
                                         while($ligne = $chaqueRace->fetchArray()){
@@ -40,62 +50,8 @@
                                </select>
                            </div>
 
-                            <div class="col-md-12">
-                                <input class="form-control" type="text" name="poids" placeholder="Poids" required>
-                            </div>
-
-                            <div class="col-md-12">
-                                <input class="form-control" type="text" name="origine" placeholder="Origine" required>
-                            </div>
-
-                            <div class="col-md-12">
-                                <label for="naissance">Date de naissance :</label>
-                                <input class="form-control" id="naissance" type="date" name="naissance" value="<?php echo date('Y-m-d'); ?>" required>
-                            </div>
-
-                           <div class="col-md-12 mt-3">
-                            <label class="mb-3 mr-1" for="genre">Genre: </label>
-
-                            <input type="radio" class="btn-check" name="genre" id="male" autocomplete="off" value="Male" required>
-                            <label class="btn btn-sm btn-outline-secondary" for="male" value="Male">Male</label>
-
-                            <input type="radio" class="btn-check" name="genre" id="femelle" autocomplete="off" value="Femelle" required>
-                            <label class="btn btn-sm btn-outline-secondary" for="femelle" value="Femelle">Femelle</label>
-
-                            </div>
-
-                            <div class="col-md-12">
-                                <select class="form-select mt-3" name="Soigneur" required>
-                                      <option selected disabled value="">Soigneur</option>
-                                        <?php 
-                                        $chaqueSoigneur = $db->query("SELECT nom_soign,prenom_soign,id_soign FROM Soigneur");
-
-                                        while($ligne = $chaqueSoigneur->fetchArray()){
-                                        ?>
-
-                                        <option value=<?php echo $ligne[2] ?>><?php echo $ligne[0]." ".$ligne[1]?></option>
-
-                                        <?php
-                                        }
-                                        ?>
-                               </select>
-                           </div>
-
-                           <div class="col-md-12">
-                                <select class="form-select mt-3" name="Enclos" required>
-                                      <option selected disabled value="">Enclos</option>
-                                        <?php 
-                                        $chaqueEnclos = $db->query("SELECT titre,id_enclos FROM Enclos natural join TypeEnclos");
-
-                                        while($ligne = $chaqueEnclos->fetchArray()){
-                                        ?>
-
-                                        <option value=<?php echo $ligne[1] ?>><?php echo $ligne[0]." - ".$ligne[1]?></option>
-
-                                        <?php
-                                        }
-                                        ?>
-                               </select>
+                           <div class="col-md-12" id="div_animal">
+                                
                            </div>
 
                             <div class="form-button mt-3">

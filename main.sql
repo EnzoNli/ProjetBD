@@ -82,9 +82,9 @@ create table AvoirLieu(
 	id_avoirlieu 	integer 	primary key		autoincrement,
 	id_anim 	int 	references Animation(id_anim),
 	id_enclos 	int 	references Enclos(id_enclos),
-	date_anim	date 	not null, --check?
+	date_anim	date 	,--check(date_anim >= date('now')), --check?
 	heure_debut	time	not null, --check??
-	heure_fin	time default(null)
+	heure_fin	time 	default(null)
 ); --logique ? ajouter date en clef primaire ? ou int en primary key 
 
 create table Mange(

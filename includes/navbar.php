@@ -25,14 +25,14 @@
       <a class="dropdown-toggle nav-link" href="#" data-bs-toggle="dropdown">Espace administrateur</a>
       <div class="dropdown-menu">
         <a href="../pages/ajouterAnimal.php" class="dropdown-item">Ajouter un animal</a>
-        <a href="#" class="dropdown-item">Supprimer un animal</a>
+        <a href="../pages/supprimerAnimal.php" class="dropdown-item">Supprimer un animal</a>
         <a href="#" class="dropdown-item">Modifier le poids d'un animal</a>
         <div class="dropdown-divider"></div>
         <a href="#" class="dropdown-item">Créer un type de nourriture</a>
         <a href="#" class="dropdown-item">Associer de la nourriture à une espèce</a>
         <div class="dropdown-divider"></div>
-        <a href="#" class="dropdown-item">Ajouter un type d'animation</a>
-        <a href="#" class="dropdown-item">Planifier une animation</a>
+        <a href="../pages/ajouterAnimation.php" class="dropdown-item">Ajouter un type d'animation</a>
+        <a href="../pages/planifierAnimation.php" class="dropdown-item">Planifier une animation</a>
     </div>
    </div>
 </nav>

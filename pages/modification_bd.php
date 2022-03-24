@@ -9,10 +9,6 @@
         <?php
 
         include_once("../includes/pourchaquepage.php");
-        echo $_SERVER['HTTP_REFERER'];
-
-
-          
 
         if(str_contains($_SERVER['HTTP_REFERER'], "ajouterAnimal.php")){
             $nom =  $_REQUEST['nom'];
@@ -27,16 +23,25 @@
             $sql = "INSERT INTO Animal VALUES ('$nom', 
             '$race','$id_enclos','$naissance','$genre','$poids',
             '$origine','$id_soigneur')";
+
         }elseif(str_contains($_SERVER['HTTP_REFERER'], "supprimerAnimal.php")){
+            $nom = urldecode($_REQUEST['animal']);
+            
+            $sql = "DELETE FROM Animal WHERE nom = '$nom'";
+
+        }elseif(str_contains($_SERVER['HTTP_REFERER'], "ajouterAnimation.php")){
+            $description_anim = $_REQUEST['descr'];
+            $duree = $_REQUEST['duree'];
+            $id_soigneur = $_REQUEST['Soigneur'];
+
+            $sql = "INSERT INTO Animation (duree, description_anim, id_soign)VALUES('$duree',
+            '$description_anim','$id_soigneur')";
 
         }
         
           
         if($db->exec($sql)){
             echo "<h3>La modification a été effectuée !</h3>";
-  
-            echo nl2br("\n$nom\n $race\n "
-                . "$poids\n $origine\n $genre\n $naissance\n $id_soigneur\n $id_enclos");
         } else{
             echo "Erreur: " 
                 . $db->lastErrorMsg()
