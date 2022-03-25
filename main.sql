@@ -1,4 +1,7 @@
 pragma foreign_keys = true;
+.open zoo.db 
+.mode column 
+.headers on
 
 create table TypeEnclos(
 	id_type_enclos		char(2)		primary key,
@@ -45,7 +48,7 @@ create table Animal(
 );
 
 create table Nourriture(
-	id_plat		integer		primary key		autoincrement,
+	id_plat	    varchar(15)	primary key,
 	description_plat		varchar(50)
 );
 
@@ -73,7 +76,7 @@ create table AvoirParent(
 );
 
 create table Convenir(
-	id_plat		int 	references Nourriture(id_plat),
+	id_plat		varchar(15)	references Nourriture(id_plat),
 	id_categorie	char(1)		references CategorieNourriture(id_categorie),
 	constraint 	pkConvenir	primary key (id_plat, id_categorie)
 );
@@ -89,11 +92,10 @@ create table AvoirLieu(
 
 create table Mange(
 	race 	varchar(30) 	references Espece(race),
-	id_plat integer 	references Nourriture(id_plat),
+	id_plat varchar(15) 	references Nourriture(id_plat),
 	constraint pkMange primary key (race, id_plat)
 );
 
--- peuvent cohabiter ?
 
 
 
@@ -466,34 +468,34 @@ insert into CategorieNourriture values
     ('p',"piscivore : se nourrit de poissons.")
 ;
 
-insert into Nourriture (description_plat) values
-    ('Boeuf'),
-    ('Volaille'),
+insert into Nourriture values
+    ('Boeuf','blabla'),
+    ('Volaille','blabla'),
 
-    ('Bambou'),
-    ('Branchages'),
-    ('Pomme'),
-    ('Poire'),
-    ('Carotte'),
-    ('Ecorces'),
-    ('Herbes'),
+    ('Bambou','blabla'),
+    ('Branchages','blabla'),
+    ('Pomme','blabla'),
+    ('Poire','blabla'),
+    ('Carotte','blabla'),
+    ('Ecorces','blabla'),
+    ('Herbes','blabla'),
 
-    ('Insectes'),
-    ('Sardines'),
-    ('Maquereaux')
+    ('Insectes','blabla'),
+    ('Sardines','blabla'),
+    ('Maquereaux','blabla')
 ;
 
 insert into Convenir values
-    (1,'c'),(1,'o'),
-    (2,'c'),(2,'o'),
+    ('Boeuf','c'),('Boeuf','o'),
+    ('Volaille','c'),('Volaille','o'),
 
-    (3,'h'),(3,'o'),
-    (4,'h'),(4,'o'),
-    (5,'h'),(5,'o'),
-    (6,'h'),(6,'o'),
-    (7,'h'),(7,'o'),
-    (8,'h'),(8,'o'),
-    (9,'h'),(9,'o')
+    ('Bambou','h'),('Bambou','o'),
+    ('Branchages','h'),('Branchages','o'),
+    ('Pomme','h'),('Pomme','o'),
+    ('Poire','h'),('Poire','o'),
+    ('Carotte','h'),('Carotte','o'),
+    ('Ecorces','h'),('Ecorces','o'),
+    ('Herbes','h'),('Herbes','o')
 ;
 
 insert into Soigneur (date_naissance_soign, nom_soign, prenom_soign, genre_soign) values
@@ -668,4 +670,4 @@ TESTS TRIGGERS ANIM
 	insert into Animal values ("Test3", '1988-07-21', 'Femelle', 4378.9, null, "Eléphant de forêt d'Afrique", 1, 18, '2000-01-05');
 */
 
-insert into Mange values ('Ouistiti à tête jaune',1);
+insert into Mange values ('Ouistiti à tête jaune','Boeuf');
