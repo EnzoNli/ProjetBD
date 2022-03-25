@@ -1,4 +1,7 @@
 pragma foreign_keys = true;
+.open zoo.db 
+.mode column 
+.headers on
 
 create table TypeEnclos(
 	id_type_enclos		char(2)		primary key,
