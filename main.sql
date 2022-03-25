@@ -37,7 +37,7 @@ create table Animal(
 	nom		varchar(30)		primary key,
 	race 	varchar(30)		references Espece(race),
 	id_enclos	int		references Enclos(id_enclos),
-	date_naissance_anim		date  	not null,
+	date_naissance_animal		date  	not null,
 	genre	varchar(7)	check(genre in ('Male','Femelle'))  not null,
 	poids	float		check(poids>0)	not null,
 	origine	varchar(30),
@@ -45,7 +45,7 @@ create table Animal(
 );
 
 create table Nourriture(
-	id_plat		integer		primary key		autoincrement,
+	id_plat	    varchar(15)	primary key,
 	description_plat		varchar(50)
 );
 
@@ -73,27 +73,26 @@ create table AvoirParent(
 );
 
 create table Convenir(
-	id_plat		int 	references Nourriture(id_plat),
+	id_plat		varchar(15)	references Nourriture(id_plat),
 	id_categorie	char(1)		references CategorieNourriture(id_categorie),
 	constraint 	pkConvenir	primary key (id_plat, id_categorie)
 );
 
-create table AvoirLieu(
-	id_avoirlieu 	integer 	primary key		autoincrement,
+create table Planning(
+	id_planning 	integer 	primary key		autoincrement,
 	id_anim 	int 	references Animation(id_anim),
 	id_enclos 	int 	references Enclos(id_enclos),
 	date_anim	date 	,--check(date_anim >= date('now')), --check?
 	heure_debut	time	not null, --check??
 	heure_fin	time 	default(null)
-); --logique ? ajouter date en clef primaire ? ou int en primary key 
+);
 
 create table Mange(
 	race 	varchar(30) 	references Espece(race),
-	id_plat integer 	references Nourriture(id_plat),
+	id_plat varchar(15) 	references Nourriture(id_plat),
 	constraint pkMange primary key (race, id_plat)
 );
 
--- peuvent cohabiter ?
 
 
 
@@ -340,11 +339,11 @@ begin
 	delete from AvoirParent where parent = old.nom or enfant = old.nom;
 end;
 
-create trigger EmpecheAjoutAvoirLieu
-before insert on AvoirLieu
+create trigger EmpecheAjoutPlanning
+before insert on Planning
 begin
 	select *
-	from Animation natural join AvoirLieu
+	from Animation natural join Planning
 	where 
 			case 	
 			when 	(select id_soign
@@ -386,13 +385,13 @@ begin
 																			
 end;
  
-create trigger CalculeDateFinAvoirLieu
-after insert on AvoirLieu
+create trigger CalculeDateFinPlanning
+after insert on Planning
 begin 
-	update AvoirLieu set heure_fin = time(new.heure_debut, '+'||(select duree
+	update Planning set heure_fin = time(new.heure_debut, '+'||(select duree
 																from Animation
 																where id_anim = new.id_anim)||' minutes') 
-		where new.id_avoirlieu = id_avoirlieu;
+		where new.id_planning = id_planning;
 end;
 
 -- nourriture --> clef primaire ??
@@ -410,6 +409,31 @@ begin
 		end;
 end;
 -- à tester !
+
+create trigger AjoutLienParente
+before insert on AvoirParent
+begin 
+	select 
+		case 
+-- différentes espèces
+			when 	(select race from Animal where new.enfant = nom) <> (select race from Animal where new.parent = nom)
+			then raise(abort, 'ERREUR : ces animaux ne sont pas de la même espèce !')
+
+-- déjà un parent de ce genre
+			when 	(select genre
+					from Animal
+					where nom = new.parent) = 	(select genre 
+												from Animal
+												where nom = (select parent
+															from AvoirParent natural join Animal
+															where new.enfant = enfant))
+			then raise(abort, 'ERREUR : cet enfant a déjà un parent de ce genre')
+
+-- date naissance inférieur ?
+			when 	(select date_naissance_animal from Animal where new.enfant = nom) <= (select date_naissance_animal from Animal where new.parent = nom)
+			then raise(abort, "ERREUR : l'enfant ne peut pas être plus vieux que son parent !")
+		end;
+end;
 
 
 
@@ -466,34 +490,34 @@ insert into CategorieNourriture values
     ('p',"piscivore : se nourrit de poissons.")
 ;
 
-insert into Nourriture (description_plat) values
-    ('Boeuf'),
-    ('Volaille'),
+insert into Nourriture values
+    ('Boeuf','blabla'),
+    ('Volaille','blabla'),
 
-    ('Bambou'),
-    ('Branchages'),
-    ('Pomme'),
-    ('Poire'),
-    ('Carotte'),
-    ('Ecorces'),
-    ('Herbes'),
+    ('Bambou','blabla'),
+    ('Branchages','blabla'),
+    ('Pomme','blabla'),
+    ('Poire','blabla'),
+    ('Carotte','blabla'),
+    ('Ecorces','blabla'),
+    ('Herbes','blabla'),
 
-    ('Insectes'),
-    ('Sardines'),
-    ('Maquereaux')
+    ('Insectes','blabla'),
+    ('Sardines','blabla'),
+    ('Maquereaux','blabla')
 ;
 
 insert into Convenir values
-    (1,'c'),(1,'o'),
-    (2,'c'),(2,'o'),
+    ('Boeuf','c'),('Boeuf','o'),
+    ('Volaille','c'),('Volaille','o'),
 
-    (3,'h'),(3,'o'),
-    (4,'h'),(4,'o'),
-    (5,'h'),(5,'o'),
-    (6,'h'),(6,'o'),
-    (7,'h'),(7,'o'),
-    (8,'h'),(8,'o'),
-    (9,'h'),(9,'o')
+    ('Bambou','h'),('Bambou','o'),
+    ('Branchages','h'),('Branchages','o'),
+    ('Pomme','h'),('Pomme','o'),
+    ('Poire','h'),('Poire','o'),
+    ('Carotte','h'),('Carotte','o'),
+    ('Ecorces','h'),('Ecorces','o'),
+    ('Herbes','h'),('Herbes','o')
 ;
 
 insert into Soigneur (date_naissance_soign, nom_soign, prenom_soign, genre_soign) values
@@ -599,13 +623,13 @@ insert into Animal values
 
 		-- extérieur
 	("Enzo", "Hérisson du désert", 10, '2003-07-08', 'Male', 345.0, null, 2),
-	("Eric", "Hérisson du désert", 10, '2003-07-08', 'Male', 345.0, null, 2),
+	("Eric", "Hérisson du désert", 10, '2008-07-08', 'Male', 345.0, null, 2),
 	("Edgar", "Hérisson du désert", 10, '2003-07-08', 'Male', 345.0, null, 2),
 	("Elsa", "Hérisson du désert", 10, '2003-07-08', 'Femelle', 345.0, null, 2),
 	("Emilie", "Hérisson du désert", 10, '2003-07-08', 'Femelle', 345.0, null, 2),
 
-	("Ugo", "Panda géant", 11, '2003-07-08', 'Male', 345.0, null, 2),
-	("Ugette", "Panda géant", 11, '2003-07-08', 'Femelle', 345.0, null, 2),
+	("Ugo", "Panda géant", 11, '2000-07-08', 'Male', 345.0, null, 2),
+	("Ugette", "Panda géant", 11, '2000-07-08', 'Femelle', 345.0, null, 2),
 	("Uta", "Panda géant", 11, '2003-07-08', 'Femelle', 345.0, "née dans le zoo", 2),
 
 	("Rémi", "Panda roux", 12, '2003-07-08', 'Male', 345.0, null, 2),
@@ -637,22 +661,22 @@ insert into Animation(duree, description_anim, id_soign) values
 	(45, 'coucou', 2)
 ;
 
-insert into AvoirLieu(id_anim, id_enclos, date_anim, heure_debut) values
+insert into Planning(id_anim, id_enclos, date_anim, heure_debut) values
 		(1, 1, date('now'), '12:55'),
 		(2, 9, date('now'), '13:34')
 	;
 
 /*
 TESTS TRIGGERS ANIM
-	insert into AvoirLieu(id_anim, id_enclos, date_anim, heure_debut) values
+	insert into Planning(id_anim, id_enclos, date_anim, heure_debut) values
 		(2, 1, date('now'), '12:50')
 	;
 	-- enclos occupé
-	insert into AvoirLieu(id_anim, id_enclos, date_anim, heure_debut) values
+	insert into Planning(id_anim, id_enclos, date_anim, heure_debut) values
 		(1, 7, date('now'), '13:00')
 	;
 	-- déjà occupé soigneur
-	insert into AvoirLieu(id_anim, id_enclos, date_anim, heure_debut) values
+	insert into Planning(id_anim, id_enclos, date_anim, heure_debut) values
 		(3, 9, date('now'), '13:00')
 	;
 	-- déjà occupé enclos
@@ -668,4 +692,4 @@ TESTS TRIGGERS ANIM
 	insert into Animal values ("Test3", '1988-07-21', 'Femelle', 4378.9, null, "Eléphant de forêt d'Afrique", 1, 18, '2000-01-05');
 */
 
-insert into Mange values ('Ouistiti à tête jaune',1);
+insert into Mange values ('Ouistiti à tête jaune','Boeuf');

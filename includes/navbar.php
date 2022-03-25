@@ -26,10 +26,10 @@
       <div class="dropdown-menu">
         <a href="../pages/ajouterAnimal.php" class="dropdown-item">Ajouter un animal</a>
         <a href="../pages/supprimerAnimal.php" class="dropdown-item">Supprimer un animal</a>
-        <a href="#" class="dropdown-item">Modifier le poids d'un animal</a>
+        <a href="../pages/modifierPoids.php" class="dropdown-item">Modifier le poids d'un animal</a>
         <div class="dropdown-divider"></div>
-        <a href="#" class="dropdown-item">Créer un type de nourriture</a>
-        <a href="#" class="dropdown-item">Associer de la nourriture à une espèce</a>
+        <a href="../pages/creerNourriture.php" class="dropdown-item">Créer un type de nourriture</a>
+        <a href="" class="dropdown-item">Associer de la nourriture<br>à un régime alimentaire</a>
         <div class="dropdown-divider"></div>
         <a href="../pages/ajouterAnimation.php" class="dropdown-item">Ajouter un type d'animation</a>
         <a href="../pages/planifierAnimation.php" class="dropdown-item">Planifier une animation</a>

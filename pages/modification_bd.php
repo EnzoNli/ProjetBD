@@ -37,6 +37,27 @@
             $sql = "INSERT INTO Animation (duree, description_anim, id_soign)VALUES('$duree',
             '$description_anim','$id_soigneur')";
 
+        }elseif(str_contains($_SERVER['HTTP_REFERER'], "planifierAnimation.php")){
+            $id_anim = $_REQUEST['anim'];
+            $id_enclos = $_REQUEST['Enclos'];
+            $date_anim = $_REQUEST['date'];
+            $heure_debut = $_REQUEST['heure'];
+
+            $sql = "INSERT INTO Planning(id_anim, id_enclos, date_anim, heure_debut) VALUES
+            ('$id_anim','$id_enclos','$date_anim','$heure_debut')";
+
+        }elseif(str_contains($_SERVER['HTTP_REFERER'], "modifierPoids.php")){
+            $poids = $_REQUEST['poids'];
+            $nom = urldecode($_REQUEST['animal']);
+
+            $sql = "UPDATE Animal SET poids = $poids WHERE nom = '$nom'";
+
+        }elseif(str_contains($_SERVER['HTTP_REFERER'], "creerNourriture.php")){
+            $nom = $_REQUEST['nom'];
+            $description = $_REQUEST['description'];
+
+            $sql = "INSERT INTO Nourriture(id_plat, description_plat) VALUES
+            ('$nom', '$description')";
         }
         
           

@@ -40,8 +40,9 @@
                                </select>
                            </div>
 
+                           <br>
                             <div class="col-md-12">
-                                <input class="form-control" type="text" name="poids" placeholder="Poids" required>
+                                <input class="form-control" type="number" name="poids" placeholder="Poids" required>
                             </div>
 
                             <div class="col-md-12">
