@@ -1,7 +1,4 @@
 pragma foreign_keys = true;
-.open zoo.db 
-.mode column 
-.headers on
 
 create table TypeEnclos(
 	id_type_enclos		char(2)		primary key,
@@ -11,6 +8,7 @@ create table TypeEnclos(
 
 create table CategorieNourriture(
 	id_categorie	char(1)		primary key,
+	titre_categorie varchar(20),
 	description_cat	varchar(50)
 );
 
@@ -90,10 +88,10 @@ create table Planning(
 	heure_fin	time 	default(null)
 );
 
-create table Mange(
+create table Manger(
 	race 	varchar(30) 	references Espece(race),
 	id_plat varchar(15) 	references Nourriture(id_plat),
-	constraint pkMange primary key (race, id_plat)
+	constraint pkManger primary key (race, id_plat)
 );
 
 
@@ -399,7 +397,7 @@ end;
 
 -- nourriture --> clef primaire ??
 create trigger AjouteNourritureAUneEspece
-before insert on Mange
+before insert on Manger
 begin
 	select 
 		case 
@@ -486,11 +484,11 @@ end;
 -- insertions
 
 insert into CategorieNourriture values
-    ('o',"omnivore : mange des aliments d'origines végétale et animale"),
-    ('h',"herbivore : se nourrit d'herbes et de plantes basses"),
-    ('c',"carnivore : son régime alimentaire est principalement basé sur la consommation de chairs ou de tissus d'animaux vivants ou morts"),
-    ('i',"insectivore : se nourrit d'insectes ou d'autres arthropodes."),
-    ('p',"piscivore : se nourrit de poissons.")
+    ('o',"Omnivore", "Mange des aliments d'origines végétale et animale"),
+    ('h',"Herbivore", "Se nourrit d'herbes et de plantes basses"),
+    ('c',"Carnivore", "Son régime alimentaire est principalement basé sur la consommation de chairs ou de tissus d'animaux vivants ou morts"),
+    ('i',"Insectivore", "Se nourrit d'insectes ou d'autres arthropodes."),
+    ('p',"Piscivore", "Se nourrit de poissons.")
 ;
 
 insert into Nourriture values
@@ -526,7 +524,16 @@ insert into Convenir values
 insert into Soigneur (date_naissance_soign, nom_soign, prenom_soign, genre_soign) values
     ('2002-10-16','Nulli','Enzo','M'),
     ('2001-09-03','Marquis','Zoé','F'),
-	('2001-09-03','M','Z','F')
+	('1979-06-30','Desjardins','Capucine','F'),
+	('1979-05-14','Bérubé','Olivier','M'),
+	('1998-08-14','Lamy','Arnaud','M'),
+	('1987-07-20','Rouleau','Jérôme','M'),
+	('1966-02-13','Adler','Bernadette','F'),
+	('1977-05-14','Allaire','Gilles','M'),
+	('2002-09-23','Fresne','Blanche','F'),
+	('1987-01-04','Daigle','Adèle','F'),
+	('1995-11-24','Bernier','Margaux','F'),
+	('1980-09-04','Babin','Luc','M')
 ;
 
 insert into TypeEnclos values
@@ -695,4 +702,4 @@ TESTS TRIGGERS ANIM
 	insert into Animal values ("Test3", '1988-07-21', 'Femelle', 4378.9, null, "Eléphant de forêt d'Afrique", 1, 18, '2000-01-05');
 */
 
-insert into Mange values ('Ouistiti à tête jaune','Boeuf');
+insert into Manger values ('Ouistiti à tête jaune','Boeuf');

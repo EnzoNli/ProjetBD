@@ -29,7 +29,7 @@
         <a href="../pages/modifierPoids.php" class="dropdown-item">Modifier le poids d'un animal</a>
         <div class="dropdown-divider"></div>
         <a href="../pages/creerNourriture.php" class="dropdown-item">Créer un type de nourriture</a>
-        <a href="" class="dropdown-item">Associer de la nourriture<br>à un régime alimentaire</a>
+        <a href="../pages/associerNourriture.php" class="dropdown-item">Associer de la nourriture<br>à une espèce</a>
         <div class="dropdown-divider"></div>
         <a href="../pages/ajouterAnimation.php" class="dropdown-item">Ajouter un type d'animation</a>
         <a href="../pages/planifierAnimation.php" class="dropdown-item">Planifier une animation</a>

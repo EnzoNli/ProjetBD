@@ -58,11 +58,29 @@
 
             $sql = "INSERT INTO Nourriture(id_plat, description_plat) VALUES
             ('$nom', '$description')";
+            
+            foreach($_POST['checkbox'] as $value) {
+                $requete = ("INSERT INTO Convenir(id_plat, id_categorie) VALUES ('$nom', '$value')");
+                if($db->exec($requete)){
+                    echo "<h1>Ajout dans $value !</h1>";
+                } else{
+                    echo "Erreur: " 
+                        . $db->lastErrorMsg()
+                        . $requete;
+                }
+            }
+            
+        }elseif(str_contains($_SERVER['HTTP_REFERER'], "associerNourriture.php")){
+            $plat = $_REQUEST['nourriture'];
+            $race = $_REQUEST['race'];
+
+            $sql = "INSERT INTO Manger(race, id_plat) VALUES
+            ('$race', '$plat')";
         }
         
           
         if($db->exec($sql)){
-            echo "<h3>La modification a été effectuée !</h3>";
+            echo "<br><h1>La modification a été effectuée !</h1>";
         } else{
             echo "Erreur: " 
                 . $db->lastErrorMsg()
