@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Zouzoo - Ajouter une animation</title>
+    <title>Zouzoo - Ajouter un lien de parenté</title>
 </head>
 <body>
     <?php include_once("../includes/pourchaquepage.php")
@@ -13,29 +13,22 @@
             <div class="form-holder">
                 <div class="form-content">
                     <div class="form-items">
-                        <h3>Ajouter une animation dans le zoo</h3>
+                        <h3>Ajouter un lien de parenté</h3>
                         <p>Veuillez remplir les informations ci-dessous.</p>
                         <form class="requires-validation" method="POST" action="modification_bd.php">
 
                             <div class="col-md-12">
-                               <input class="form-control" type="text" name="descr" placeholder="Description de l'animation" required>
-                            </div>
-
-                            <div class="col-md-12">
-                               <input class="form-control" type="text" name="duree" placeholder="Durée en minutes" required>
-                            </div>
-
-                            <div class="col-md-12">
-                                <select class="form-select mt-3" name="race" required>
-                                      <option selected disabled value="">Race</option>
+                                <select class="form-select mt-3" name="enfant" required>
+                                      <option selected disabled value="">Choisissez l'enfant</option>
                                         <?php 
-                                        $chaqueRace = $db->query("SELECT race FROM Espece");
+                                        $chaqueAnim = $db->query("SELECT nom, race FROM Animal");
 
-                                        while($ligne = $chaqueRace->fetchArray()){
+                                        while($ligne = $chaqueAnim->fetchArray()){
                                             $param = urlencode($ligne[0]);
+
                                         ?>
 
-                                        <option value=<?php echo $param ?>><?php echo $ligne[0]?></option>
+                                        <option value=<?php echo $param ?>><?php echo $ligne[0]." (".$ligne[1].")" ?></option>
 
                                         <?php
                                         }
@@ -43,22 +36,26 @@
                                </select>
                            </div>
 
-                            <div class="col-md-12">
-                                <select class="form-select mt-3" name="Soigneur" required>
-                                      <option selected disabled value="">Soigneur</option>
+                           <div class="col-md-12">
+                                <select class="form-select mt-3" name="parent" required>
+                                      <option selected disabled value="">Choisissez le parent</option>
                                         <?php 
-                                        $chaqueSoigneur = $db->query("SELECT nom_soign,prenom_soign,id_soign FROM Soigneur");
+                                        $chaqueAnim = $db->query("SELECT nom, race FROM Animal");
 
-                                        while($ligne = $chaqueSoigneur->fetchArray()){
+                                        while($ligne = $chaqueAnim->fetchArray()){
+                                            $param = urlencode($ligne[0]);
+
                                         ?>
 
-                                        <option value=<?php echo $ligne[2] ?>><?php echo $ligne[0]." ".$ligne[1]?></option>
+                                        <option value=<?php echo $param ?>><?php echo $ligne[0]." (".$ligne[1].")" ?></option>
 
                                         <?php
                                         }
                                         ?>
                                </select>
                            </div>
+                           
+                            <br/>
 
                             <div class="form-button mt-3">
                                 <button id="submit" type="submit" class="btn btn-primary">Enregistrer</button>

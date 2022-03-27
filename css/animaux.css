@@ -4,6 +4,11 @@
     margin-right: 20px;
 }
 
+body{
+    background: linear-gradient(45deg, #7A7265, #8E6E53);
+	background-attachment: fixed;
+}
+
 .carousel{
     margin-bottom: 10vh;
 }

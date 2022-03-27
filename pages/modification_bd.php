@@ -33,12 +33,13 @@
             $description_anim = $_REQUEST['descr'];
             $duree = $_REQUEST['duree'];
             $id_soigneur = $_REQUEST['Soigneur'];
+            $race = urldecode($_REQUEST['race']);
 
             $sql = "INSERT INTO Animation (duree, description_anim, id_soign)VALUES('$duree',
             '$description_anim','$id_soigneur')";
 
         }elseif(str_contains($_SERVER['HTTP_REFERER'], "planifierAnimation.php")){
-            $id_anim = $_REQUEST['anim'];
+            $id_anim = urldecode($_REQUEST['anim']);
             $id_enclos = $_REQUEST['Enclos'];
             $date_anim = $_REQUEST['date'];
             $heure_debut = $_REQUEST['heure'];
@@ -71,20 +72,24 @@
             }
             
         }elseif(str_contains($_SERVER['HTTP_REFERER'], "associerNourriture.php")){
-            $plat = $_REQUEST['nourriture'];
-            $race = $_REQUEST['race'];
+            $plat = urldecode($_REQUEST['nourriture']); //encoder
+            $race = urldecode($_REQUEST['race']); //encoder
 
             $sql = "INSERT INTO Manger(race, id_plat) VALUES
             ('$race', '$plat')";
+        }elseif(str_contains($_SERVER['HTTP_REFERER'], "ajouterLienParente.php")){
+            $enfant = urldecode($_REQUEST['enfant']);
+            $parent = urldecode($_REQUEST['parent']);
+            $sql = "INSERT INTO AvoirParent(parent, enfant) VALUES
+            ('$parent', '$enfant')";
         }
+        
         
           
         if($db->exec($sql)){
             echo "<br><h1>La modification a été effectuée !</h1>";
         } else{
-            echo "Erreur: " 
-                . $db->lastErrorMsg()
-                . $sql;
+            echo $db->lastErrorMsg() . $sql;
         }
 
         $db->close();

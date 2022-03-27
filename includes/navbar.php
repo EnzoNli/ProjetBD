@@ -13,10 +13,10 @@
                <a class="nav-link" href="/pages/animaux.php">Animaux</a>
             </li>
             <li class="nav-item hover">
-               <a class="nav-link" href="#">Animations</a>
+               <a class="nav-link" href="/pages/animations.php">Animations</a>
             </li>
             <li class="nav-item hover last">
-               <a class="nav-link" href="#">Soigneurs</a>
+               <a class="nav-link" href="../pages/soigneurs.php">Soigneurs</a>
             </li>
          </ul>
       </div>
@@ -27,6 +27,7 @@
         <a href="../pages/ajouterAnimal.php" class="dropdown-item">Ajouter un animal</a>
         <a href="../pages/supprimerAnimal.php" class="dropdown-item">Supprimer un animal</a>
         <a href="../pages/modifierPoids.php" class="dropdown-item">Modifier le poids d'un animal</a>
+        <a href="../pages/ajouterLienParente.php" class="dropdown-item">Ajouter un lien de parenté</a>
         <div class="dropdown-divider"></div>
         <a href="../pages/creerNourriture.php" class="dropdown-item">Créer un type de nourriture</a>
         <a href="../pages/associerNourriture.php" class="dropdown-item">Associer de la nourriture<br>à une espèce</a>

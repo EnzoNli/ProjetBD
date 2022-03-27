@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Zouzoo - Ajouter un animal</title>
+    <title>Zouzoo - Créer une nourriture</title>
     <script src="../js/jquery.js"></script>
 </head>
 <body>

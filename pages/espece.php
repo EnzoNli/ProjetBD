@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="../css/flickity.css" media="screen">
     <link rel="stylesheet" href="../css/espece.css">
     
     <title>Zouzoo - <?php echo $_GET['nom'] ?></title>

@@ -1,0 +1,57 @@
+html{
+    overflow-x: hidden;
+}
+
+
+.separation {
+    border-left: 2px solid black;
+    height: 100vh;
+    position: absolute;
+    left: 50%;
+    margin-left: -3px;
+    top: 0;
+  }
+
+  #titre_soigneur{
+      font-size: 4vh;
+  }
+
+  .gauche{
+      position: absolute;
+      height: 85.5vh;
+      width: 50vw;
+  }
+
+  .droite{
+    position: absolute;
+    height: 85.5vh;
+    width: 50vw;
+    right: 0;
+    text-align: right;
+}
+
+  .soigneurs{
+      text-align: center;
+      font-size: large;
+  }
+
+  .soigneurs a{
+    text-decoration: none;
+    color: black;
+  }
+
+  .droite{
+    padding-right: 20px;
+  }
+
+  .droite > * {
+      margin-bottom: 2px;
+  }
+
+  #nomcomp{
+      padding-top: 10px;
+  }
+
+  #genre{
+      
+  }
