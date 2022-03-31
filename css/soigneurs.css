@@ -7,7 +7,7 @@ html{
     border-left: 2px solid black;
     height: 100vh;
     position: absolute;
-    left: 50%;
+    left: 50vw;
     margin-left: -3px;
     top: 0;
   }
@@ -50,8 +50,4 @@ html{
 
   #nomcomp{
       padding-top: 10px;
-  }
-
-  #genre{
-      
   }

@@ -16,12 +16,14 @@
     $nomTypeEnclos = $db->query("SELECT id_type_enclos, titre_type_enclos FROM TypeEnclos");
 
     while($ligne = $nomTypeEnclos->fetchArray()){
+        $nombreAnimauxParTypeEnclos = $db->querySingle("SELECT nombre FROM NombreAnimauxParTypeEnclos WHERE id_type_enclos = '$ligne[0]'");
+
         $getImage = $db->query("SELECT race, photo FROM Espece NATURAL JOIN TypeEnclos WHERE nb_dans_zoo > 0 AND id_type_enclos = '$ligne[0]'");
         $nbEspeceTypeEnclos = $db->querySingle("SELECT nombre FROM NombreEspecesParTypeEnclos WHERE id_type_enclos = '$ligne[0]'");
         $nbEspeceTypeEnclos = ($nbEspeceTypeEnclos == 0) ? 0 : $nbEspeceTypeEnclos;
     ?>
 
-    <p id="type"> <?php echo $ligne[1] . " - " . $nbEspeceTypeEnclos . " espèces"  ?> </p>
+    <p id="type"> <?php echo $ligne[1] . " - " . $nbEspeceTypeEnclos . " espèces - " . $nombreAnimauxParTypeEnclos .  " animaux"  ?> </p>
 
     <div class="carousel" data-flickity='{ "wrapAround": true }'>
         <?php

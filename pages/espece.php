@@ -33,7 +33,7 @@
 
     <hr id="sep">
     <div id="animaux">
-        <h1 id="test">Animaux de cette espèce : </h1>  
+        <h1 class="nom_cat">Animaux de cette espèce dans le zoo : </h1>  
     <?php
         $race = $_GET['nom'];
         $requete = $db->prepare("SELECT * FROM Animal WHERE race = :get");
@@ -49,10 +49,24 @@
         ?>
     </div>
 
-
     
     <hr id="sep2">
 
+    <div id="nourriture">
+        <h1 class="nom_cat">Nourriture : </h1>
+        <?php
+        $race = $_GET['nom'];
+        $requete = $db->prepare("SELECT * FROM Manger WHERE race = :get");
+        $requete->bindValue(':get', $race, SQLITE3_TEXT);
+        $res2 = $requete->execute();
+        while($ligne = $res2->fetchArray()){
+        ?>
+        <p class="nou"><?php echo $ligne[1]?></p>
+
+        <?php
+        }
+        ?>
+    </div>
     
 
     

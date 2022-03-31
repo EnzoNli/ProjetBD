@@ -1,3 +1,7 @@
+body{
+  overflow-y: hidden;
+}
+
 @font-face {
     font-family: "race";
     src: url("../font/banniere.otf");
@@ -14,30 +18,43 @@
   src: url("../font/RobotoMedium.ttf");
 }
 
-#test{
+.nom_cat{
   font-family: race;
   font-size: 5vh;
 }
 
+.nou{
+  margin-bottom: 1px;
+}
+
 #animaux{
-  left: 2vw;
-  top: 56vh;
-  width: 47vw;
-  height: 40vh;
   position: absolute;
+  left: 2vw;
+  top: 61vh;
+  width: 47vw;
+  height: 35vh;
+}
+
+#nourriture{
+  position: absolute;
+  left: 52vw;
+  top: 61vh;
+  width: 47vw;
+  height: 35vh;
+  
 }
 
 #sep{
   position: relative;
-  top: 40vh;
+  top: 45vh;
 }
 
 #sep2{
   position: relative;
-  height: 40vh;
+  height: 35vh;
   width: 1px;
   left: 50vw;
-  top: 40vh;
+  top: 45vh;
 }
 
 #ligne {

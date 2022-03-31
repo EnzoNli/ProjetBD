@@ -145,51 +145,32 @@ create table Manger(
 
 
 
--- view
-
-
--- pour la page d'accueil
+-- pour la page d'accueil ok
 create view NombreTotalAnimauxZoo as
 	select count(1) as nombre
 	from Animal
 ;
 
--- pour la page 'Animaux'
+-- pour la page 'Animaux' ok 2
 create view NombreEspecesParTypeEnclos as
 	select id_type_enclos, count(1) as nombre
-	from espece natural join typeenclos
+	from Espece natural join TypeEnclos
 	where nb_dans_zoo > 0
 	group by id_type_enclos
 ;
-create view NombreTypeEnclos as 
-	select count(1) as nombre
-	from TypeEnclos
+create view NombreAnimauxParTypeEnclos as
+	select id_type_enclos, count(1) as nombre
+	from TypeEnclos natural join Enclos natural join Animal
+	group by id_type_enclos
 ;
 
--- pour la page espece
-create view NombreAnimauxParEspece as
-	select race, count(1) as nombre
-	from Espece natural join Animal
-	group by race
-;
-create view ListeNourritureParRace as
-	select race, description_plat
-	from Espece natural join ListePlatParCategorie
-;
-
--- pour la page d'un animal
-create view EnfantsDuZoo as
-	select distinct enfant as noms
-	from AvoirParent
-;
-
--- pour la page soigneur
+-- pour la page soigneur ok 3
 create view ListeAnimalPourSoigneur as
 	select id_soign, nom
 	from Soigneur natural join Animal
 ;
 
--- pour trigger EmpecheAjoutAnimal
+-- pour triggers
 create view RaceParEnclos as
     select distinct id_enclos, race
     from Enclos natural join Animal
@@ -199,23 +180,28 @@ create view EnclosPlein as
 	from Enclos
 	where nb_actuel = nb_max
 ;
-
-
-
-
-
--- ??
-create view NombreAnimauxParTypeEnclos as
-	select id_type_enclos, count(1) as nombre
-	from TypeEnclos natural join Enclos natural join Animal
-	group by id_type_enclos
+create view NourritureParCategorie as
+	select id_categorie, id_plat
+	from Convenir natural join Nourriture
 ;
 
--- ? pour la page nourriture ?
-create view ListePlatParCategorie as
-	select id_categorie, description_plat
-	from CategorieNourriture natural join Convenir natural join Nourriture
+
+
+
+
+-- pour la page d'un animal
+create view EnfantsDuZoo as
+	select distinct enfant as noms
+	from AvoirParent
 ;
+create view ParentsDuZoo as 
+	select distinct parent as noms
+	from AvoirParent
+;
+
+
+
+
 
 
 
@@ -271,10 +257,8 @@ create view ListePlatParCategorie as
 create trigger MisAJourAjoutAnimal
 after insert on Animal
 begin
-	-- incrémente espece et enclos
 	update Espece set nb_dans_zoo = nb_dans_zoo + 1 where race = new.race;
 	update Enclos set nb_actuel = nb_actuel + 1 where id_enclos = new.id_enclos;
-	-- met à jour le poids moyen de l'espèce dans le zoo
 	update Espece set poids_moyen_zoo = (select avg(poids) 
 										from Animal natural join Espece
 										where race = new.race
@@ -284,10 +268,8 @@ end;
 create trigger MisAJourSupprAnimal
 after delete on Animal
 begin
-	--décrémente espece et enclos
 	update Espece set nb_dans_zoo = nb_dans_zoo - 1 where race = old.race;
 	update Enclos set nb_actuel = nb_actuel - 1 where id_enclos = old.id_enclos;
-	-- met à jour le poids moyen de l'expèce dans le zoo
 	update Espece set poids_moyen_zoo = (select avg(poids) 
 										from Animal natural join Espece
 										where race = old.race
@@ -297,7 +279,6 @@ end;
 create trigger MisAJourPoids
 after update of poids on Animal
 begin
-	-- met à jour le poids moyen dans zoo
 	update Espece set poids_moyen_zoo = (select avg(poids) 
 										from Animal natural join Espece
 										where race = old.race
@@ -329,7 +310,6 @@ end;
 create trigger EnleveLienParente
 after delete on Animal
 begin
-	--"delete on cascade"
 	delete from AvoirParent where parent = old.nom or enfant = old.nom;
 end;
 
@@ -343,7 +323,7 @@ begin
 			when 	(select nb_actuel from Enclos where id_enclos = new.id_enclos)=0
 					then raise(abort, 'ERREUR : cet enclos est vide !')
 
-			when 	(select race from Enclos natural join Animal where id_enclos = new.id_enclos)
+			when 	(select race from RaceParEnclos where id_enclos = new.id_enclos)
 					<> (select race from Animation where id_anim = new.id_anim)
 					then raise(abort, "ERREUR : cette animation ne peut pas avoir lieu avec les animaux dans cet enclos !" )	
 
@@ -386,7 +366,7 @@ begin
 																			
 end;
  
-create trigger CalculeDateFinPlanning
+create trigger CalculeHeureFinPlanning
 after insert on Planning
 begin 
 	update Planning set heure_fin = time(new.heure_debut, '+'||(select duree
@@ -395,8 +375,7 @@ begin
 		where new.id_planning = id_planning;
 end;
 
--- nourriture --> clef primaire ??
-create trigger AjouteNourritureAUneEspece
+create trigger EmpecheAjoutNourritureAUneEspece
 before insert on Manger
 begin
 	select 
@@ -404,33 +383,31 @@ begin
 			when 	(select id_categorie
 					from Espece
 					where race = new.race) 	not in  (select id_categorie 
-													from Nourriture natural join Convenir
+													from NourritureParCategorie
 													where id_plat = new.id_plat)
 			then raise(abort, 'ERREUR : cette espèce ne peut pas manger de cette nourriture !')
 		end;
 end;
--- à tester !
 
-create trigger AjoutLienParente
+
+
+create trigger EmpecheAjoutLienParente
 before insert on AvoirParent
 begin 
 	select 
 		case 
--- différentes espèces
 			when 	(select race from Animal where new.enfant = nom) <> (select race from Animal where new.parent = nom)
 			then raise(abort, 'ERREUR : ces animaux ne sont pas de la même espèce !')
 
--- déjà un parent de ce genre
 			when 	(select genre
 					from Animal
 					where nom = new.parent) = 	(select genre 
 												from Animal
 												where nom = (select parent
-															from AvoirParent natural join Animal
+															from AvoirParent
 															where new.enfant = enfant))
 			then raise(abort, 'ERREUR : cet enfant a déjà un parent de ce genre')
 
--- date naissance inférieur ?
 			when 	(select date_naissance_animal from Animal where new.enfant = nom) <= (select date_naissance_animal from Animal where new.parent = nom)
 			then raise(abort, "ERREUR : l'enfant ne peut pas être plus vieux que son parent !")
 		end;
@@ -747,96 +724,70 @@ insert into Animation(duree, description_anim, id_soign, race) values
 	(15, 'Le chant de la rainette', 7, "Rainette verte d'Amérique"),
 	(15, 'Le chant de la rainette', 7, 'Rainette criarde')
 ;
-/*
-TESTS TRIGGERS ANIM
-	insert into Planning(id_anim, id_enclos, date_anim, heure_debut) values
-		(2, 1, date('now'), '12:50')
-	;
-	-- enclos occupé
-	insert into Planning(id_anim, id_enclos, date_anim, heure_debut) values
-		(1, 7, date('now'), '13:00')
-	;
-	-- déjà occupé soigneur
-	insert into Planning(id_anim, id_enclos, date_anim, heure_debut) values
-		(3, 9, date('now'), '13:00')
-	;
-	-- déjà occupé enclos
-*/
-/*
---TESTS ERREURS ! 
-	-- vérif l'incrémentation
-	-- enclos plein
-	insert into Animal values ("Test1", '1988-07-21', 'Femelle', 4378.9, null, "Eléphant de forêt d'Afrique", 1, 14, '2000-01-05');
-	-- mauvais type d'enclos
-	insert into Animal values ("Test2", '1988-07-21', 'Femelle', 4378.9, null, "Eléphant de forêt d'Afrique", 1, 1, '2000-01-05');
-	-- autre espece y habite deja
-	insert into Animal values ("Test3", '1988-07-21', 'Femelle', 4378.9, null, "Eléphant de forêt d'Afrique", 1, 18, '2000-01-05');
-*/
-
 
 insert into Nourriture values
-    ('hareng'),
-    ('maquereau'),
-	('esturgeon'),
-    ('saumon'),
-	('mollusques'),
-    ('morue'),
-	('crevette'),
-    ('calmar'),
-	('crustacés'),
-    ('invertébrés'),
-	('bivalve'),
-    ('crabe'),
-	('tortue de rivière'),
-    ('piranha'),
-	('larves de hareng'),
-    ('zooplancton')
+    ('Hareng'),
+    ('Maquereau'),
+	('Esturgeon'),
+    ('Saumon'),
+	('Mollusques'),
+    ('Morue'),
+	('Crevette'),
+    ('Calmar'),
+	('Crustacés'),
+    ('Invertébrés'),
+	('Bivalve'),
+    ('Crabe'),
+	('Tortue de rivière'),
+    ('Piranha'),
+	('Larves de hareng'),
+    ('Zooplancton')
 ;
 
 insert into Convenir values
-    ('hareng','p'),
-    ('maquereau','p'),
-	('esturgeon','p'),
-    ('saumon','p'),
-	('mollusques','p'),
-    ('morue','p'),
-	('crevette','p'),
-    ('calmar','p'),
-	('crustacés','p'), ('crustacés','c'),
-    ('invertébrés','p'),
-	('bivalve','p'),
-    ('crabe','p'),
-	('tortue de rivière','p'),
-    ('piranha','p'),
+    ('Hareng','p'),
+    ('Maquereau','p'),
+	('Esturgeon','p'),
+    ('Saumon','p'),
+	('Mollusques','p'),
+    ('Morue','p'),
+	('Crevette','p'),
+    ('Calmar','p'),
+	('Crustacés','p'), ('Crustacés','c'),
+    ('Invertébrés','p'),
+	('Bivalve','p'),
+    ('Crabe','p'),
+	('Tortue de rivière','p'),
+    ('Piranha','p'),
 
-	('larves de hareng','c'),
-    ('zooplancton','c')
+	('Larves de hareng','c'),
+    ('Zooplancton','c')
 ;
 
 insert into Manger values 
-	("Lion de mer de Steller", 'hareng'),
-	("Lion de mer de Steller", 'maquereau'),
-	("Lion de mer de Steller", 'esturgeon'),
-	("Lion de mer de Steller", 'saumon'),
-	("Lion de mer de Steller", 'mollusques'),
+	("Lion de mer de Steller", 'Hareng'),
+	("Lion de mer de Steller", 'Maquereau'),
+	("Lion de mer de Steller", 'Esturgeon'),
+	("Lion de mer de Steller", 'Saumon'),
+	("Lion de mer de Steller", 'Mollusques'),
 
-	("Béluga", 'morue'),
-	("Béluga", 'hareng'),
-	("Béluga", 'saumon'),
-	("Béluga", 'crevette'),
-	("Béluga", 'calmar'),
+	("Béluga", 'Morue'),
+	("Béluga", 'Hareng'),
+	("Béluga", 'Saumon'),
+	("Béluga", 'Crevette'),
+	("Béluga", 'Calmar'),
 	
-	("Grande raie-guitare", 'crustacés'),
-	("Grande raie-guitare", 'invertébrés'),
-	("Grande raie-guitare", 'bivalve'),
+	("Grande raie-guitare", 'Crustacés'),
+	("Grande raie-guitare", 'Invertébrés'),
+	("Grande raie-guitare", 'Bivalve'),
 	
-	("Méduse dorée", 'zooplancton'),
-	("Méduse dorée", 'crustacés'),
-	("Méduse dorée", 'larves de hareng'),
+	("Méduse dorée", 'Zooplancton'),
+	("Méduse dorée", 'Crustacés'),
+	("Méduse dorée", 'Larves de hareng'),
 
-	("Boto", 'piranha'),
-	("Boto", 'crabe'),
-	("Boto", 'tortue de rivière')
+	("Boto", 'Piranha'),
+	("Boto", 'Crabe'),
+	("Boto", 'Tortue de rivière')
 ;
 
 insert into Planning (id_anim, id_enclos, date_anim, heure_debut) values 
@@ -971,3 +922,29 @@ insert into Planning (id_anim, id_enclos, date_anim, heure_debut) values
 ;
 	-- <3
 
+
+/*
+TESTS TRIGGERS ANIM
+	insert into Planning(id_anim, id_enclos, date_anim, heure_debut) values
+		(2, 1, date('now'), '12:50')
+	;
+	-- enclos occupé
+	insert into Planning(id_anim, id_enclos, date_anim, heure_debut) values
+		(1, 7, date('now'), '13:00')
+	;
+	-- déjà occupé soigneur
+	insert into Planning(id_anim, id_enclos, date_anim, heure_debut) values
+		(3, 9, date('now'), '13:00')
+	;
+	-- déjà occupé enclos
+*/
+/*
+--TESTS ERREURS ! 
+	-- vérif l'incrémentation
+	-- enclos plein
+	insert into Animal values ("Test1", '1988-07-21', 'Femelle', 4378.9, null, "Eléphant de forêt d'Afrique", 1, 14, '2000-01-05');
+	-- mauvais type d'enclos
+	insert into Animal values ("Test2", '1988-07-21', 'Femelle', 4378.9, null, "Eléphant de forêt d'Afrique", 1, 1, '2000-01-05');
+	-- autre espece y habite deja
+	insert into Animal values ("Test3", '1988-07-21', 'Femelle', 4378.9, null, "Eléphant de forêt d'Afrique", 1, 18, '2000-01-05');
+*/
