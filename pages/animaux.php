@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="../css/flickity.css" media="screen">
     <link rel="stylesheet" href="../css/animaux.css">
+    <link rel="icon" type="image/png" href="../img/logo.png"/>
     <title>Zouzoo - Espèces</title>
 </head>
 <body>
@@ -12,7 +13,7 @@
     
     <?php include_once("../includes/pourchaquepage.php");
 
-    $nomTypeEnclos = $db->query("SELECT id_type_enclos, titre FROM TypeEnclos");
+    $nomTypeEnclos = $db->query("SELECT id_type_enclos, titre_type_enclos FROM TypeEnclos");
 
     while($ligne = $nomTypeEnclos->fetchArray()){
         $getImage = $db->query("SELECT race, photo FROM Espece NATURAL JOIN TypeEnclos WHERE nb_dans_zoo > 0 AND id_type_enclos = '$ligne[0]'");

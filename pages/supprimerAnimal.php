@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Zouzoo - Supprimer un animal</title>
+    <link rel="icon" type="image/png" href="../img/logo.png"/>
     <script src="../js/jquery.js"></script>
     <script>
         function load_new_content(){

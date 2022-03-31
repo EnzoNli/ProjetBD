@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Zouzoo - Créer une nourriture</title>
+    <link rel="icon" type="image/png" href="../img/logo.png"/>
     <script src="../js/jquery.js"></script>
 </head>
 <body>
@@ -36,10 +37,6 @@
                                <input class="form-control" type="text" name="nom" placeholder="Nom de la nourriture" required>
                             </div>
                             <br>
-
-                            <div class="col-md-12">
-                               <textarea class="form-control" name="description" placeholder="Description de la nourriture" required></textarea>
-                            </div>
 
                             <?php
                             $q = $db->query("SELECT id_categorie, titre_categorie FROM CategorieNourriture");

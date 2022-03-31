@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Zouzoo - Ajouter un animal</title>
+    <link rel="icon" type="image/png" href="../img/logo.png"/>
 </head>
 <body>
     <?php include_once("../includes/pourchaquepage.php")
@@ -86,7 +87,7 @@
                                 <select class="form-select mt-3" name="Enclos" required>
                                       <option selected disabled value="">Enclos</option>
                                         <?php 
-                                        $chaqueEnclos = $db->query("SELECT titre,id_enclos FROM Enclos natural join TypeEnclos");
+                                        $chaqueEnclos = $db->query("SELECT titre_type_enclos,id_enclos FROM Enclos natural join TypeEnclos");
 
                                         while($ligne = $chaqueEnclos->fetchArray()){
                                         ?>

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <script src="../js/jquery.js"></script>
     <link rel="stylesheet" href="../css/animations.css">
+    <link rel="icon" type="image/png" href="../img/logo.png"/>
     <title>Zouzoo - Animations</title>
 </head>
 <body>
@@ -55,7 +56,7 @@
                 NATURAL JOIN Animation WHERE id_planning = '$ligne_id[0]'");
                 echo $enclos; 
                 ?> ( <?php 
-                $typeenclos = $db->querySingle("SELECT titre FROM TypeEnclos
+                $typeenclos = $db->querySingle("SELECT titre_type_enclos FROM TypeEnclos
                 NATURAL JOIN Enclos NATURAL JOIN Planning WHERE id_planning = '$ligne_id[0]'");
                 echo $typeenclos; 
                 ?> )

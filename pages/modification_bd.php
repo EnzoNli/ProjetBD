@@ -3,6 +3,7 @@
   
 <head>
     <title>Zouzoo - Modification de la base</title>
+    <link rel="icon" type="image/png" href="../img/logo.png"/>
 </head>
   
 <body>  
@@ -55,10 +56,9 @@
 
         }elseif(str_contains($_SERVER['HTTP_REFERER'], "creerNourriture.php")){
             $nom = $_REQUEST['nom'];
-            $description = $_REQUEST['description'];
 
-            $sql = "INSERT INTO Nourriture(id_plat, description_plat) VALUES
-            ('$nom', '$description')";
+            $sql = "INSERT INTO Nourriture(id_plat) VALUES
+            ('$nom')";
             
             foreach($_POST['checkbox'] as $value) {
                 $requete = ("INSERT INTO Convenir(id_plat, id_categorie) VALUES ('$nom', '$value')");

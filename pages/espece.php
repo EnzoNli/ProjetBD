@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="../css/espece.css">
+    <link rel="icon" type="image/png" href="../img/logo.png"/>
     
     <title>Zouzoo - <?php echo $_GET['nom'] ?></title>
 </head>
@@ -30,7 +31,27 @@
     <img id="photo" src="../img/img_zoo/<?php echo $res['photo'] ?>">
     
 
+    <hr id="sep">
+    <div id="animaux">
+        <h1 id="test">Animaux de cette espèce : </h1>  
+    <?php
+        $race = $_GET['nom'];
+        $requete = $db->prepare("SELECT * FROM Animal WHERE race = :get");
+        $requete->bindValue(':get', $race, SQLITE3_TEXT);
+        $res2 = $requete->execute();
+        while($ligne = $res2->fetchArray()){
+        ?>
+        <a href="../pages/animal.php?nom=<?php echo $ligne[0] ?>"><?php echo $ligne[0] ?></a>
+        <br>
+
+        <?php
+        }
+        ?>
+    </div>
+
+
     
+    <hr id="sep2">
 
     
 

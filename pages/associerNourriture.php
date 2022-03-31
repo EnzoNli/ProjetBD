@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Zouzoo - Associer un plat à une espèce</title>
+    <link rel="icon" type="image/png" href="../img/logo.png"/>
 </head>
 <body>
     <?php include_once("../includes/pourchaquepage.php")

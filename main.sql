@@ -3,7 +3,7 @@ pragma foreign_keys = true;
 create table TypeEnclos(
 	id_type_enclos		char(2)		primary key,
 	description_type	varchar(200),
-	titre 				varchar(20)
+	titre_type_enclos 				varchar(20)
 );
 
 create table CategorieNourriture(
@@ -46,8 +46,7 @@ create table Animal(
 );
 
 create table Nourriture(
-	id_plat	    varchar(15)	primary key,
-	description_plat		varchar(50)
+	id_plat	    varchar(15)	primary key
 );
 
 create table Soigneur(
@@ -188,13 +187,6 @@ create view EnfantsDuZoo as
 create view ListeAnimalPourSoigneur as
 	select id_soign, nom
 	from Soigneur natural join Animal
-;
-
--- pour la page animation
-create view AnimationAujourdhui as
-	select id_anim
-	from Animation
-	where date_anim = DATE('nom')
 ;
 
 -- pour trigger EmpecheAjoutAnimal
@@ -783,22 +775,22 @@ TESTS TRIGGERS ANIM
 
 
 insert into Nourriture values
-    ('hareng','blabla'),
-    ('maquereau','blabla'),
-	('esturgeon','blabla'),
-    ('saumon','blabla'),
-	('mollusques','blabla'),
-    ('morue','blabla'),
-	('crevette','blabla'),
-    ('calmar','blabla'),
-	('crustacés','blabla'),
-    ('invertébrés','blabla'),
-	('bivalve','blabla'),
-    ('crabe','blabla'),
-	('tortue de rivière','blabla'),
-    ('piranha','blabla'),
-	('larves de hareng','blabla'),
-    ('zooplancton','blabla')
+    ('hareng'),
+    ('maquereau'),
+	('esturgeon'),
+    ('saumon'),
+	('mollusques'),
+    ('morue'),
+	('crevette'),
+    ('calmar'),
+	('crustacés'),
+    ('invertébrés'),
+	('bivalve'),
+    ('crabe'),
+	('tortue de rivière'),
+    ('piranha'),
+	('larves de hareng'),
+    ('zooplancton')
 ;
 
 insert into Convenir values

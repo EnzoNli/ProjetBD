@@ -5,6 +5,7 @@
     <title>Zouzoo - Accueil</title>
     <link rel="stylesheet" href="css/flickity.css" media="screen">
     <link rel="stylesheet" href="css/index.css">
+    <link rel="icon" type="image/png" href="../img/logo.png"/>
 </head>
 <body>
 

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Zouzoo - Modifier le poids d'un animal</title>
+    <link rel="icon" type="image/png" href="../img/logo.png"/>
     <script src="../js/jquery.js"></script>
     <script>
         $(document).ready(function(){

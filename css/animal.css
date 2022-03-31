@@ -1,0 +1,99 @@
+@font-face {
+    font-family: "font_nom";
+    src: url("../font/banniere.otf");
+}
+
+
+@font-face {
+    font-family: "espece";
+    src: url("../font/RobotoLightItalic.ttf");
+}
+
+@font-face {
+  font-family: "infos";
+  src: url("../font/RobotoMedium.ttf");
+}
+
+
+#ligne {
+  position: absolute;
+  margin-left: 5px;
+  margin-right: 5px;
+  height: 10vh;
+  width: 10px;
+  left: 2vw;
+  top: 20vh;
+  background-color: rgb(208, 255, 0);
+  opacity: 1;
+}
+
+#photo{
+    -webkit-user-drag: none;
+    position: absolute;
+    top: 23vh;
+    right: 2vw;
+    height: 30vh;
+    width: 25vw;
+  }
+
+#nom_animal{
+  position: absolute;
+  font-family: font_nom;
+  font-size: 7.5vh;
+  user-select: none;
+  left: 3.5vw;
+  top: 19vh;
+}
+
+#espece{
+  position: absolute;
+  font-family: espece;
+  font-size: 3vh;
+  user-select: none;
+  left: 3.5vw;
+  top: 27.5vh;
+}
+
+#espe_vie{
+    top: 40vh;
+    animation: slide 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+  }
+  
+  #espe_poids{
+    top: 44vh;
+    animation: slide 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.3s both;
+  }
+  
+  #poids_moyen{
+    top: 48vh;
+    animation: slide 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.6s both;
+  }
+  
+  #habitat_nat{
+    top: 52vh;
+    animation: slide 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.9s both;
+  }
+
+  #nom_soigneur{
+    top: 56vh;
+    animation: slide 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.5s both;
+  }
+
+.info{
+  position: absolute;
+  font-family: infos;
+  font-size: 3vh;
+  user-select: none;
+  left: 2vw;
+}
+
+@keyframes slide {
+    0% {
+              transform: translateX(-1000px);
+      opacity: 0;
+    }
+    100% {
+              transform: translateX(0);
+      opacity: 1;
+    }
+  }

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Zouzoo - Ajouter un lien de parenté</title>
+    <link rel="icon" type="image/png" href="../img/logo.png"/>
 </head>
 <body>
     <?php include_once("../includes/pourchaquepage.php")
