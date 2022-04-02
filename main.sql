@@ -150,8 +150,7 @@ create view NombreTotalAnimauxZoo as
 	select count(1) as nombre
 	from Animal
 ;
-
--- pour la page 'Animaux' ok 2
+-- pour la page 'Animaux'
 create view NombreEspecesParTypeEnclos as
 	select id_type_enclos, count(1) as nombre
 	from Espece natural join TypeEnclos
@@ -163,13 +162,15 @@ create view NombreAnimauxParTypeEnclos as
 	from TypeEnclos natural join Enclos natural join Animal
 	group by id_type_enclos
 ;
-
--- pour la page soigneur ok 3
+-- pour la page 'Soigneur'
 create view ListeAnimalPourSoigneur as
 	select id_soign, nom
 	from Soigneur natural join Animal
 ;
-
+create view ListeAnimationPourSoigneur as 
+	select nom_soign, prenom_soign, description_anim
+	from Soigneur natural join Animation
+;
 -- pour triggers
 create view RaceParEnclos as
     select distinct id_enclos, race
@@ -184,11 +185,6 @@ create view NourritureParCategorie as
 	select id_categorie, id_plat
 	from Convenir natural join Nourriture
 ;
-
-
-
-
-
 -- pour la page d'un animal
 create view EnfantsDuZoo as
 	select distinct enfant as noms
@@ -198,6 +194,7 @@ create view ParentsDuZoo as
 	select distinct parent as noms
 	from AvoirParent
 ;
+
 
 
 
@@ -459,7 +456,6 @@ end;
 
 
 -- insertions
-
 insert into CategorieNourriture values
     ('o',"Omnivore", "Mange des aliments d'origines végétale et animale"),
     ('h',"Herbivore", "Se nourrit d'herbes et de plantes basses"),
@@ -501,25 +497,25 @@ insert into Espece (race, espe_vie, espe_poids_adulte, dangerosite, menace_extin
 	("Méduse dorée", "1 à 2 ans", "inconnu", 0, -1, "0", 'c','aq','medusedoree.jpg'),
 	("Boto", "12 à 15 ans", "100 à 150 kg", 0, 3, "0", 'p','aq','boto.jpeg'),
 -- tr
--- fait :  menace_extinction, photo
--- à faire : espe_vie, espe_poids_adulte, dangerosite, habitat_nat, id_categorie, id_type_enclos, nourriture
-	("Python royal", "Environ 30 ans", "1 à 2 kg", 2, 1, "Territoire allant du Sénégal jusqu'à l'ouest de l'Ouganda et au nord de la République démocratique du Congo.", 'c','tr', 'pythonroyal.jpg'),
-    ("Rainette jaguar", "5 à 10 ans", "3g en moyenne", 4, 0, "Forêts tropicales humides de basse altitude", 'i','tr', 'rainettejaguar.jpg'),
-	("Rainette verte d'Amérique", "5 à 10 ans", "3g en moyenne", 4, 0, "Forêts tropicales humides de basse altitude", 'i','tr', 'rainetteverte.jpg'),
-	("Rainette criarde", "5 à 10 ans", "3g en moyenne", 4, 0, "Forêts tropicales humides de basse altitude", 'i','tr', 'rainettecriarde.jpg'),
-	("Tortue géante des Seychelles", "0", "0", 0, 2, "0", 'h','tr', 'tortuegeante.jpg'),
+-- fait :  menace_extinction, photo, espe_vie, espe_poids_adulte, id_type_enclos,id_categorie, 
+-- à faire :  dangerosite, habitat_nat,  nourriture
+	("Python royal", "30 ans en captivité", "1 à 2 kg", 2, 1, "Territoire allant du Sénégal jusqu'à l'ouest de l'Ouganda et au nord de la République démocratique du Congo.", 'c','tr', 'pythonroyal.jpg'),
+    ("Rainette jaguar", "entre 5 et 10 ans", "3 g en moyenne", 4, 0, "Forêts tropicales humides de basse altitude", 'i','tr', 'rainettejaguar.jpg'),
+	("Rainette verte d'Amérique", "4 à 5 ans", "3 à 8 g environ", 4, 0, "Forêts tropicales humides de basse altitude", 'i','tr', 'rainetteverte.jpg'),
+	("Rainette criarde", "inconnue", "entre 3 et 14 g", 4, 0, "Forêts tropicales humides de basse altitude", 'i','tr', 'rainettecriarde.jpg'),
+	("Tortue géante des Seychelles", "plus de 150 ans", "environ 250 kg pour les mâles, 160 kg pour les femelles", 0, 2, "0", 'h','tr', 'tortuegeante.jpg'),
 -- ex
--- fait : menace_extinction, photo
--- à faire : espe_vie, espe_poids_adulte, dangerosite, habitat_nat, id_categorie, id_type_enclos, nourriture
+-- fait : menace_extinction, photo, espe_vie, espe_poids_adulte, id_type_enclos, id_categorie,
+-- à faire :   dangerosite, habitat_nat, nourriture
     ("Panda géant", "20 à 25 ans", "70 à 120 kg", 3, 2, "Forets de bambous", 'h', 'ex', 'pandageant.jpg'),
-    ("Hérisson du désert", "3 à 5 ans", "280 à 510 g", 1, 0, "Deserts", 'i', 'ex', 'herisson.jpg'),
-    ("Girafe", "10 à 15 ans", "550 à 1 200 kg", 0, 2, "Savanes", 'h', 'ex', 'girafe.jpg'),
+    ("Hérisson du désert", "10 ans", "280 à 510 g", 1, 0, "Déserts", 'i', 'ex', 'herisson.jpg'),
+    ("Girafe", "10 à 15 ans", "750 à 2 000 kg", 0, 2, "Savanes", 'h', 'ex', 'girafe.jpg'),
 	("Eléphant de forêt d'Afrique", "60 à 70 ans", "2 700 à 6 000 kg", 1, 4, "Forêt dense d'Afrique centrale et d'Afrique de l'Ouest", 'h', 'ex', 'elephant.jpg'),
-    ("Panda roux", "8 à 18 ans", "3 à 6 kg", 3, 3, "Présent en Asie, dans la chaîne de l’Himalaya", 'o','ex', 'pandaroux.jpg'),
-	("Hippopotame", "8 à 18 ans", "3 à 6 kg", 3, 2, "Présent en Asie, dans la chaîne de l’Himalaya", 'o','ex', 'hippopotame.jpg'),
-	("Manchot empereur", "8 à 18 ans", "3 à 6 kg", 3, 1, "Présent en Asie, dans la chaîne de l’Himalaya", 'o','ex', 'manchot.jpg'),
-	("Paresseux", "8 à 18 ans", "3 à 6 kg", 3, 1, "Présent en Asie, dans la chaîne de l’Himalaya", 'o','ex', 'paresseux.jpg'),
-	("Maki catta", "8 à 18 ans", "3 à 6 kg", 3, 3, "Présent en Asie, dans la chaîne de l’Himalaya", 'o','ex', 'maki.jpg'),
+    ("Panda roux", "8 à 10 ans", "3 à 6 kg", 3, 3, "Présent en Asie, dans la chaîne de l’Himalaya", 'o','ex', 'pandaroux.jpg'),
+	("Hippopotame", "40 à 50 ans", "1 300 à 1 800 kg", 3, 2, "Présent en Asie, dans la chaîne de l’Himalaya", 'h','ex', 'hippopotame.jpg'),
+	("Manchot empereur", "15 à 20 ans", "23 kg", 3, 1, "Présent en Asie, dans la chaîne de l’Himalaya", 'p','ex', 'manchot.jpg'),
+	("Paresseux", "30 à 50 ans", "4 à 8 kg", 3, 1, "Présent en Asie, dans la chaîne de l’Himalaya", 'o','ex', 'paresseux.jpg'),
+	("Maki catta", "16 à 19 ans", "2,3 à 3,5 kg", 3, 3, "Présent en Asie, dans la chaîne de l’Himalaya", 'o','ex', 'maki.jpg'),
 -- cg
 -- fait :  menace_extinction, photo
 -- à faire : espe_vie, espe_poids_adulte, dangerosite, habitat_nat, id_categorie, id_type_enclos, nourriture    
@@ -741,11 +737,39 @@ insert into Nourriture values
 	('Tortue de rivière'),
     ('Piranha'),
 	('Larves de hareng'),
-    ('Zooplancton')
-;
+    ('Zooplancton'),
+
+	('Rat'),
+	('Souris'),
+	('Oise')
+,
+	('Fourmi'),
+	('Termite'),
+	('Araignée'),
+	('Mouche'),
+	('Ver'),
+	('Herbe'),
+	('Carex'),
+	('Feuille'),
+	('Tige'),
+	('OEuf'),
+	('Insecte'),
+	('Scorpion'),
+	('Fleur'),
+	('Jeune pousse'),
+	('Fruit'),
+	('Écorce'),
+	('Branche'),
+	('Bourgeon'),
+	('Calamar'),
+	('Poisson'),
+	('Racine'),
+	('Graminée'),
+	('Bambou'),
+	('Plante');
 
 insert into Convenir values
-    ('Hareng','p'),
+   u ('Hareng','p'),
     ('Maquereau','p'),
 	('Esturgeon','p'),
     ('Saumon','p'),
@@ -759,9 +783,35 @@ insert into Convenir values
     ('Crabe','p'),
 	('Tortue de rivière','p'),
     ('Piranha','p'),
-
 	('Larves de hareng','c'),
-    ('Zooplancton','c')
+    ('Zooplancton','c')),
+	('Rat','c'),
+	('Souris','c'),
+	('Oiseau','c'),
+	('Fourmi','i'),
+	('Termite','i'),
+	('Araignée','i'),
+	('Mouche','i'),
+	('Ver','i'),
+	('Herbe','h'),
+	('Carex','h'),
+	('Feuille','h'), ('Feuille','o'),
+	('Tige','h'),
+	('OEuf','i'),
+	('Insecte','i'),
+	('Scorpion','i'),
+	('Fleur','o'),('Fleur','h'),
+	('Jeune pousse','o'),
+	('Fruit','o'),('Fruit','h'),
+	('Écorce','o'),('Écorce','h'),
+	('Branche','o'),('Branche','h'),
+	('Bourgeon','o'),('Bourgeon','h'),
+	('Calamar','p'),
+	('Poisson','p'),
+	('Racine','o'),
+	('Graminée','h'),
+	('Bambou','o'),	('Bambou','h'),
+	('Plante','h')
 ;
 
 insert into Manger values 
@@ -788,6 +838,71 @@ insert into Manger values
 	("Boto", 'Piranha'),
 	("Boto", 'Crabe'),
 	("Boto", 'Tortue de rivière')
+,
+
+	("Python royal", "Rat"),
+	("Python royal", "Souris"),
+	("Python royal", "Oiseau"),
+
+ 	("Rainette jaguar", "Fourmi"),
+	("Rainette jaguar", "Termite"),
+	("Rainette jaguar", "Ver"),
+
+	("Rainette verte d'Amérique","Mouche"),
+	("Rainette criarde", "Mouche"),
+	("Rainette verte d'Amérique","Araignée"),
+	("Rainette criarde", "Araignée"),
+	("Rainette verte d'Amérique","Ver"),
+	("Rainette criarde", "Ver"),
+
+	("Tortue géante des Seychelles", "Herbe"),
+	("Tortue géante des Seychelles", "Carex"),
+	("Tortue géante des Seychelles", "Feuille"),
+	("Tortue géante des Seychelles", "Tige"),
+	
+	("Panda géant","Bambou"),
+
+    ("Hérisson du désert", "OEuf"),
+	("Hérisson du désert", "Insecte"),
+	("Hérisson du désert", "Scorpion"),
+
+    ("Girafe", "Feuille"),
+	("Girafe", "Bourgeon"),
+	("Girafe", "Herbe"),
+	("Girafe", "Fleur"),
+	("Girafe", "Fruit"),
+
+	("Eléphant de forêt d'Afrique", "Plante"),
+	("Eléphant de forêt d'Afrique", "Fruit"),
+	("Eléphant de forêt d'Afrique", "Feuille"),
+	("Eléphant de forêt d'Afrique", "Branche"),
+	("Eléphant de forêt d'Afrique", "Écorce"),
+
+    ("Panda roux", "Bambou"),
+	("Panda roux", "Jeune pousse"),
+	("Panda roux", "Fruit"),
+	("Panda roux", "Racine"),
+
+	("Hippopotame", "Herbe"),
+	("Hippopotame", "Graminée"),
+
+	("Manchot empereur", "Mollusques"),
+	("Manchot empereur", "Calamar"),
+	("Manchot empereur", "Crustacés"),
+	("Manchot empereur", "Poisson"),
+
+	("Paresseux", "Feuille"),
+	("Paresseux", "Jeune pousse"),
+	("Paresseux", "Branche"),
+	("Paresseux", "Bourgeon"),
+	("Paresseux", "Fleur"),
+	("Paresseux", "Fruit"),
+	("Paresseux", "Racine"),
+
+	("Maki catta", "Feuille"),
+	("Maki catta", "Fleur"),
+	("Maki catta", "Fruit"),
+	("Maki catta", "Écorce")
 ;
 
 insert into Planning (id_anim, id_enclos, date_anim, heure_debut) values 
