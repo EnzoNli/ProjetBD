@@ -40,8 +40,17 @@
     $("#sep").show();
     $("#titre_animaux").show();
     $("#animaux").html("");
+    $("#animations").html("");
+    $(".sepanimation").show();
+    $("#titre_animations").show();
 
     <?php
+    $nouvreq = $db->query("SELECT * FROM ListeAnimationPourSoigneur WHERE id_soign = $res[0]");
+    while($lig = $nouvreq->fetchArray()){
+    ?>
+    $("#animations").append('<p><?php echo $lig[1] ?></p>');
+    <?php
+    }
 
     $requete = $db->query("SELECT nom FROM ListeAnimalPourSoigneur WHERE id_soign = $res[0]");
     while($ligne = $requete->fetchArray()){

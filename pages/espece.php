@@ -13,6 +13,10 @@
         $q = $db->prepare("SELECT * FROM Espece WHERE race = :get");
         $q->bindValue(':get', $_GET['nom'], SQLITE3_TEXT);
         $res = $q->execute()->fetchArray();
+
+        $mangeur = $db->prepare("SELECT * FROM CategorieNourriture WHERE id_categorie = :get");
+        $mangeur->bindValue(':get', $res['id_categorie'], SQLITE3_TEXT);
+        $cat = $mangeur->execute()->fetchArray();
     ?>
     <div id="presentation">
         <hr id="ligne">
@@ -25,10 +29,13 @@
         <p class="info" id="espe_poids">Espérance de poids : <?php echo $res['espe_poids_adulte'] ?></p>
         <p class="info" id="poids_moyen">Poids moyen dans le zoo : <?php echo $res['poids_moyen_zoo'] ?> kg</p>
         <p class="info" id="habitat_nat">Habitat naturel : <?php echo $res['habitat_nat'] ?></p>
+        <p class="info" id="alimentation">Alimentation : <?php echo $cat['description_cat'] ?></p>
     </div>
 
     <img id="ext" src="../img/extinction/ext<?php echo $res['menace_extinction'] ?>.svg">
     <img id="photo" src="../img/img_zoo/<?php echo $res['photo'] ?>">
+    <p id="txt_dang">Dangerosité : </p>
+    <img id="dang" src="../img/dang/nv<?php echo $res['dangerosite'] ?>.png">
     
 
     <hr id="sep">

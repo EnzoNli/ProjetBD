@@ -90,11 +90,19 @@
                                         $chaqueEnclos = $db->query("SELECT titre_type_enclos,id_enclos FROM Enclos natural join TypeEnclos");
 
                                         while($ligne = $chaqueEnclos->fetchArray()){
+                                            $req = $db->query("SELECT * FROM InfosEnclos WHERE id_enclos = $ligne[1]")->fetchArray();
+                                            if($req){
                                         ?>
 
-                                        <option value=<?php echo $ligne[1] ?>><?php echo $ligne[0]." - ".$ligne[1]?></option>
+                                        <option value=<?php echo $ligne[1] ?>><?php echo $ligne[1]." - ".$ligne[0]." - ".$req[1]." - ".$req[2]-$req[3]. " places disponibles"?></option>
 
                                         <?php
+                                            }else{
+                                        ?>
+                                            <option value=<?php echo $ligne[1] ?>><?php echo $ligne[1]." - ".$ligne[0]." - libre"?></option>
+
+                                        <?php
+                                            }
                                         }
                                         ?>
                                </select>
