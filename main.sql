@@ -168,7 +168,7 @@ create view ListeAnimalPourSoigneur as
 	from Soigneur natural join Animal
 ;
 create view ListeAnimationPourSoigneur as 
-	select nom_soign, prenom_soign, description_anim
+	select id_soign, description_anim
 	from Soigneur natural join Animation
 ;
 -- pour triggers
@@ -497,16 +497,16 @@ insert into Espece (race, espe_vie, espe_poids_adulte, dangerosite, menace_extin
 	("Méduse dorée", "1 à 2 ans", "inconnu", 0, -1, "0", 'c','aq','medusedoree.jpg'),
 	("Boto", "12 à 15 ans", "100 à 150 kg", 0, 3, "0", 'p','aq','boto.jpeg'),
 -- tr
--- fait :  menace_extinction, photo, espe_vie, espe_poids_adulte, id_type_enclos,id_categorie, 
--- à faire :  dangerosite, habitat_nat,  nourriture
+-- fait :  menace_extinction, photo, espe_vie, espe_poids_adulte, id_type_enclos,id_categorie, nourriture
+-- à faire :  dangerosite, habitat_nat, 
 	("Python royal", "30 ans en captivité", "1 à 2 kg", 2, 1, "Territoire allant du Sénégal jusqu'à l'ouest de l'Ouganda et au nord de la République démocratique du Congo.", 'c','tr', 'pythonroyal.jpg'),
     ("Rainette jaguar", "entre 5 et 10 ans", "3 g en moyenne", 4, 0, "Forêts tropicales humides de basse altitude", 'i','tr', 'rainettejaguar.jpg'),
 	("Rainette verte d'Amérique", "4 à 5 ans", "3 à 8 g environ", 4, 0, "Forêts tropicales humides de basse altitude", 'i','tr', 'rainetteverte.jpg'),
 	("Rainette criarde", "inconnue", "entre 3 et 14 g", 4, 0, "Forêts tropicales humides de basse altitude", 'i','tr', 'rainettecriarde.jpg'),
 	("Tortue géante des Seychelles", "plus de 150 ans", "environ 250 kg pour les mâles, 160 kg pour les femelles", 0, 2, "0", 'h','tr', 'tortuegeante.jpg'),
 -- ex
--- fait : menace_extinction, photo, espe_vie, espe_poids_adulte, id_type_enclos, id_categorie,
--- à faire :   dangerosite, habitat_nat, nourriture
+-- fait : menace_extinction, photo, espe_vie, espe_poids_adulte, id_type_enclos, id_categorie, nourriture
+-- à faire :   dangerosite, habitat_nat, 
     ("Panda géant", "20 à 25 ans", "70 à 120 kg", 3, 2, "Forets de bambous", 'h', 'ex', 'pandageant.jpg'),
     ("Hérisson du désert", "10 ans", "280 à 510 g", 1, 0, "Déserts", 'i', 'ex', 'herisson.jpg'),
     ("Girafe", "10 à 15 ans", "750 à 2 000 kg", 0, 2, "Savanes", 'h', 'ex', 'girafe.jpg'),
@@ -517,18 +517,18 @@ insert into Espece (race, espe_vie, espe_poids_adulte, dangerosite, menace_extin
 	("Paresseux", "30 à 50 ans", "4 à 8 kg", 3, 1, "Présent en Asie, dans la chaîne de l’Himalaya", 'o','ex', 'paresseux.jpg'),
 	("Maki catta", "16 à 19 ans", "2,3 à 3,5 kg", 3, 3, "Présent en Asie, dans la chaîne de l’Himalaya", 'o','ex', 'maki.jpg'),
 -- cg
--- fait :  menace_extinction, photo
--- à faire : espe_vie, espe_poids_adulte, dangerosite, habitat_nat, id_categorie, id_type_enclos, nourriture    
-    ("Ouistiti à tête jaune", "10 à 16 ans", "230 à 450 g", 1, 4, "Forêt Atlanque", 'o', 'cg', 'ouistiti.jpg'),
-	("Panthère des neiges", "16 à 18 ans", "40 à 55 kg", 2, 2, "Montagnes escarpées et rocheuses d'Asie", 'o', 'cg', 'panthere.jpg'),
-    ("Chouette forestière", "jusqu'à 16 ans", "160 à 180 g", 0, -1, "Plaines et de collines du sous-continent indien", 'c', 'cg', 'chouette.jpg'),
-    ("Vautour à dos blanc", "10 à 16 ans", "230 à 450 g", 1, 4, "Forêt Atlanque", 'o', 'cg', 'vautour.jpg'),
-	("Chouette lapone", "16 à 18 ans", "40 à 55 kg", 2, 0, "Montagnes escarpées et rocheuses d'Asie", 'o', 'cg', 'chouettelapone.jpg'),
-    ("Harfang des neiges", "jusqu'à 16 ans", "160 à 180 g", 0, 2, "Plaines et de collines du sous-continent indien", 'c', 'cg', 'harfang.jpg'),
-	("Tamarin lion", "10 à 16 ans", "230 à 450 g", 1, 3, "Forêt Atlanque", 'o', 'cg', 'tamarin.jpg'),
-	("Ara militaire", "16 à 18 ans", "40 à 55 kg", 2, 2, "Montagnes escarpées et rocheuses d'Asie", 'o', 'cg', 'aramilitaire.jpg'),
-	("Ara à ailes vertes", "16 à 18 ans", "40 à 55 kg", 2, 0, "Montagnes escarpées et rocheuses d'Asie", 'o', 'cg', 'ara-vertes.jpg'),
-    ("Ara araraunas", "jusqu'à 16 ans", "160 à 180 g", 0, 0, "Plaines et de collines du sous-continent indien", 'c', 'cg', 'arableu.jpg')
+-- fait :  menace_extinction, photo, espe_vie, espe_poids_adulte, id_type_enclos,
+-- à faire :   dangerosite, habitat_nat, id_categorie,  nourriture    
+    ("Ouistiti à tête jaune", "12 ans environ", "230 à 453 g", 1, 4, "Forêt Atlantique au Brésil", 'o', 'cg', 'ouistiti.jpg'),
+	("Panthère des neiges", "16 à 18 ans", "32 kg", 2, 2, "Montagnes escarpées et rocheuses d'Asie", 'o', 'cg', 'panthere.jpg'),
+    ("Chevêche forestière", "9 ans", "moins de 200 g", 0, 3, "Plaines et de collines du sous-continent indien", 'c', 'cg', 'chouette.jpg'),
+    ("Vautour à dos blanc", "19 ans", "4,2 à 7,2 kg", 1, 4, "Forêt Atlanque", 'o', 'cg', 'vautour.jpg'),
+	("Chouette lapone", "7 ans", "800 à 1 700 g", 2, 0, "Montagnes escarpées et rocheuses d'Asie", 'o', 'cg', 'chouettelapone.jpg'),
+    ("Harfang des neiges", "environ 10 ans", "2 kg", 0, 2, "Plaines et de collines du sous-continent indien", 'c', 'cg', 'harfang.jpg'),
+	("Tamarin lion", "10 ans", "350 à 600 g", 1, 3, "Forêts tropicales d'Amérique centrale", 'o', 'cg', 'tamarin.jpg'),
+	("Ara militaire", "45 à 60 ans", "1,1 kg", 2, 2, "Montagnes escarpées et rocheuses d'Asie", 'o', 'cg', 'aramilitaire.jpg'),
+	("Ara à ailes vertes", "50 à 60 ans", "1 à 1,7 kg", 2, 0, "Montagnes escarpées et rocheuses d'Asie", 'o', 'cg', 'ara-vertes.jpg'),
+    ("Ara ararauna", "30 à 35 ans", "90 à 1 500 g", 0, 0, "Plaines et de collines du sous-continent indien", 'c', 'cg', 'arableu.jpg')
 ;
 
 insert into Enclos (nb_max, taille, id_type_enclos) values
@@ -672,7 +672,7 @@ insert into Animal values
 
 	("VAutr", "Vautour à dos blanc", 36, '2000-07-08', 'Femelle', 345.0, null, 2),
 
-	("C1", "Chouette forestière", 30, '2003-07-08', 'Male', 345.0, null, 2),
+	("C1", "Chevêche forestière", 30, '2003-07-08', 'Male', 345.0, null, 2),
 	("C2", "Chouette lapone", 31, '2008-07-08', 'Male', 345.0, null, 2),
 	("C3", "Harfang des neiges", 32, '2003-07-08', 'Male', 345.0, null, 2),
 
@@ -680,9 +680,9 @@ insert into Animal values
 	("AraM2", "Ara militaire", 33, '2003-07-08', 'Male', 345.0, null, 2),
 	("AraM3", "Ara militaire", 33, '2003-07-08', 'Male', 345.0, null, 2),
 
-	("AraA1", "Ara araraunas", 34, '2003-07-08', 'Male', 345.0, null, 2),
-	("AraA2", "Ara araraunas", 34, '2003-07-08', 'Male', 345.0, null, 2),
-	("AraA3", "Ara araraunas", 34, '2003-07-08', 'Male', 345.0, null, 2),
+	("AraA1", "Ara ararauna", 34, '2003-07-08', 'Male', 345.0, null, 2),
+	("AraA2", "Ara ararauna", 34, '2003-07-08', 'Male', 345.0, null, 2),
+	("AraA3", "Ara ararauna", 34, '2003-07-08', 'Male', 345.0, null, 2),
 	
 	("AraV1", "Ara à ailes vertes", 35, '2003-07-08', 'Male', 345.0, null, 2),
 	("AraV2", "Ara à ailes vertes", 35, '2003-07-08', 'Male', 345.0, null, 2),
@@ -704,7 +704,7 @@ insert into Animation(duree, description_anim, id_soign, race) values
 	(20, 'Le Maître des Airs : grande envergure !', 8, 'Vautour à dos blanc'),
 	(20, 'Présentation des oiseaux en vol libre', 6, 'Ara militaire'),
 	(20, 'Présentation des oiseaux en vol libre', 6, 'Ara à ailes vertes'),
-	(20, 'Présentation des oiseaux en vol libre', 6, 'Ara araraunas'),
+	(20, 'Présentation des oiseaux en vol libre', 6, 'Ara ararauna'),
 	(45, 'Jouer avec les singes', 4, "Ouistiti à tête jaune"),
 	(45, 'Jouer avec les singes', 4, "Tamarin lion"),
 
@@ -769,7 +769,7 @@ insert into Nourriture values
 	('Plante');
 
 insert into Convenir values
-   u ('Hareng','p'),
+   u ('Hareng','p'),/*
     ('Maquereau','p'),
 	('Esturgeon','p'),
     ('Saumon','p'),
@@ -790,7 +790,7 @@ insert into Convenir values
 	('Oiseau','c'),
 	('Fourmi','i'),
 	('Termite','i'),
-	('Araignée','i'),
+	('Araignée','i')/*,
 	('Mouche','i'),
 	('Ver','i'),
 	('Herbe','h'),
@@ -801,7 +801,7 @@ insert into Convenir values
 	('Insecte','i'),
 	('Scorpion','i'),
 	('Fleur','o'),('Fleur','h'),
-	('Jeune pousse','o'),
+	('Jeune pousse','o'),/*
 	('Fruit','o'),('Fruit','h'),
 	('Écorce','o'),('Écorce','h'),
 	('Branche','o'),('Branche','h'),
@@ -811,9 +811,10 @@ insert into Convenir values
 	('Racine','o'),
 	('Graminée','h'),
 	('Bambou','o'),	('Bambou','h'),
-	('Plante','h')
+	('Plante','h')*/
 ;
 
+/*
 insert into Manger values 
 	("Lion de mer de Steller", 'Hareng'),
 	("Lion de mer de Steller", 'Maquereau'),
@@ -904,6 +905,7 @@ insert into Manger values
 	("Maki catta", "Fruit"),
 	("Maki catta", "Écorce")
 ;
+*/
 
 insert into Planning (id_anim, id_enclos, date_anim, heure_debut) values 
 	(1, 4, '2022-04-11', '10:40'),
