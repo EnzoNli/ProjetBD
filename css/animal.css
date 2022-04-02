@@ -54,22 +54,22 @@
   top: 27.5vh;
 }
 
-#espe_vie{
+#date{
     top: 40vh;
     animation: slide 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
   }
   
-  #espe_poids{
+  #genre{
     top: 44vh;
     animation: slide 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.3s both;
   }
   
-  #poids_moyen{
+  #poids{
     top: 48vh;
     animation: slide 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.6s both;
   }
   
-  #habitat_nat{
+  #ori{
     top: 52vh;
     animation: slide 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.9s both;
   }
@@ -77,6 +77,16 @@
   #nom_soigneur{
     top: 56vh;
     animation: slide 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.5s both;
+  }
+
+  #parents{
+    top: 64vh;
+    animation: slide 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) 2.0s both;
+  }
+
+  #enfants{
+    top: 68vh;
+    animation: slide 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) 2.0s both;
   }
 
 .info{

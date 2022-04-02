@@ -1,8 +1,14 @@
 html{
-    overflow-x: hidden;
+    overflow: hidden;
 }
 
-
+#animations {
+  text-align: left;
+  padding-left: 15px;
+  position: absolute;
+  line-height: 10px;
+  top: 13.5em;
+}
 .separation {
     border-left: 2px solid black;
     height: 100vh;
@@ -12,8 +18,24 @@ html{
     top: 0;
   }
 
+.sepanimation{
+    border-left: 2px solid black;
+    height: 80em;
+    position: absolute;
+    left: 27vw;
+    margin-left: -3px;
+    top: 8.5em;
+}
+
   #titre_soigneur{
       font-size: 4vh;
+  }
+
+  #titre_animations{
+    margin-top: -50px;
+    position: absolute;
+    padding-left: 15px;
+    text-align: left;
   }
 
   .gauche{

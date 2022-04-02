@@ -16,9 +16,9 @@ create table Espece(
 	race		varchar(30)	primary key,
 	nb_dans_zoo	int		check(nb_dans_zoo>=0) default(0),
 	espe_vie	varchar(30)		not null,
-	espe_poids_adulte	varchar(30)		not null,
+	espe_poids_adulte	varchar(100)		not null,
 	poids_moyen_zoo 	float	check(poids_moyen_zoo>=0) default(0),
-	dangerosite			int		check(0<=dangerosite and dangerosite<=5)	not null,
+	dangerosite			int		check(0<=dangerosite and dangerosite<=4)	not null,
 	menace_extinction	int		check(-1<=menace_extinction and menace_extinction<=5)	not null,
 	habitat_nat			varchar(100),
 	id_categorie		char(1)		references CategorieNourriture(id_categorie),
@@ -30,7 +30,6 @@ create table Enclos(
 	id_enclos	integer		primary key		autoincrement,
 	nb_actuel	int 	check(nb_actuel >= 0 and nb_actuel<=nb_max) default 0,
 	nb_max		int		check(nb_max>0),
-	taille		int		not null,
 	id_type_enclos		char(2)		references TypeEnclos(id_type_enclos)
 );
 
@@ -39,7 +38,7 @@ create table Animal(
 	race 	varchar(30)		references Espece(race),
 	id_enclos	int		references Enclos(id_enclos),
 	date_naissance_animal		date  	not null,
-	genre	varchar(7)	check(genre in ('Male','Femelle'))  not null,
+	genre	varchar(7)	check(genre in ('Mâle','Femelle'))  not null,
 	poids	float		check(poids>0)	not null,
 	origine	varchar(30),
 	id_soign 	int 	references Soigneur(id_soign)
@@ -168,7 +167,7 @@ create view ListeAnimalPourSoigneur as
 	from Soigneur natural join Animal
 ;
 create view ListeAnimationPourSoigneur as 
-	select id_soign, description_anim
+	select DISTINCT id_soign, description_anim
 	from Soigneur natural join Animation
 ;
 -- pour triggers
@@ -193,6 +192,12 @@ create view EnfantsDuZoo as
 create view ParentsDuZoo as 
 	select distinct parent as noms
 	from AvoirParent
+;
+
+create view InfosEnclos as 
+	select id_enclos, race, nb_max, nb_actuel
+	from Enclos natural join Animal
+	group by id_enclos
 ;
 
 
@@ -457,9 +462,9 @@ end;
 
 -- insertions
 insert into CategorieNourriture values
-    ('o',"Omnivore", "Mange des aliments d'origines végétale et animale"),
+    ('o',"Omnivore", "Se nourrit d'aliments d'origines végétale et animale"),
     ('h',"Herbivore", "Se nourrit d'herbes et de plantes basses"),
-    ('c',"Carnivore", "Son régime alimentaire est principalement basé sur la consommation de chairs ou de tissus d'animaux vivants ou morts"),
+    ('c',"Carnivore", "Se nourrit de chairs ou de tissus d'animaux vivants ou morts"),
     ('i',"Insectivore", "Se nourrit d'insectes ou d'autres arthropodes."),
     ('p',"Piscivore", "Se nourrit de poissons.")
 ;
@@ -488,212 +493,245 @@ insert into TypeEnclos values
 ;
 
 insert into Espece (race, espe_vie, espe_poids_adulte, dangerosite, menace_extinction, habitat_nat, id_categorie, id_type_enclos, photo)values
--- aq
--- fait : nourriture, id_categ, id_type_enclos, espe_vie, espe_poids_adulte,menace_ectionction, photo
--- à faire : dangerosite,  habitat_nat
-	("Lion de mer de Steller", "25 ans", "300 à 1 100 kg", 1, 1, "Nord de l'océan Pacifique", 'p', 'aq','lionmer.jpg'),
-	("Béluga", "35 à 50 ans", "Environ 1 400 kg", 0, 4, "Eaux arctiques et subarctiques", 'p','aq','beluga.jpg'),
-	("Grande raie-guitare", "20 ans", "200 kg", 0, 4, "0", 'p','aq','raie.jpg'),
-	("Méduse dorée", "1 à 2 ans", "inconnu", 0, -1, "0", 'c','aq','medusedoree.jpg'),
-	("Boto", "12 à 15 ans", "100 à 150 kg", 0, 3, "0", 'p','aq','boto.jpeg'),
--- tr
--- fait :  menace_extinction, photo, espe_vie, espe_poids_adulte, id_type_enclos,id_categorie, nourriture
--- à faire :  dangerosite, habitat_nat, 
-	("Python royal", "30 ans en captivité", "1 à 2 kg", 2, 1, "Territoire allant du Sénégal jusqu'à l'ouest de l'Ouganda et au nord de la République démocratique du Congo.", 'c','tr', 'pythonroyal.jpg'),
-    ("Rainette jaguar", "entre 5 et 10 ans", "3 g en moyenne", 4, 0, "Forêts tropicales humides de basse altitude", 'i','tr', 'rainettejaguar.jpg'),
-	("Rainette verte d'Amérique", "4 à 5 ans", "3 à 8 g environ", 4, 0, "Forêts tropicales humides de basse altitude", 'i','tr', 'rainetteverte.jpg'),
-	("Rainette criarde", "inconnue", "entre 3 et 14 g", 4, 0, "Forêts tropicales humides de basse altitude", 'i','tr', 'rainettecriarde.jpg'),
-	("Tortue géante des Seychelles", "plus de 150 ans", "environ 250 kg pour les mâles, 160 kg pour les femelles", 0, 2, "0", 'h','tr', 'tortuegeante.jpg'),
--- ex
--- fait : menace_extinction, photo, espe_vie, espe_poids_adulte, id_type_enclos, id_categorie, nourriture
--- à faire :   dangerosite, habitat_nat, 
-    ("Panda géant", "20 à 25 ans", "70 à 120 kg", 3, 2, "Forets de bambous", 'h', 'ex', 'pandageant.jpg'),
-    ("Hérisson du désert", "10 ans", "280 à 510 g", 1, 0, "Déserts", 'i', 'ex', 'herisson.jpg'),
-    ("Girafe", "10 à 15 ans", "750 à 2 000 kg", 0, 2, "Savanes", 'h', 'ex', 'girafe.jpg'),
-	("Eléphant de forêt d'Afrique", "60 à 70 ans", "2 700 à 6 000 kg", 1, 4, "Forêt dense d'Afrique centrale et d'Afrique de l'Ouest", 'h', 'ex', 'elephant.jpg'),
-    ("Panda roux", "8 à 10 ans", "3 à 6 kg", 3, 3, "Présent en Asie, dans la chaîne de l’Himalaya", 'o','ex', 'pandaroux.jpg'),
-	("Hippopotame", "40 à 50 ans", "1 300 à 1 800 kg", 3, 2, "Présent en Asie, dans la chaîne de l’Himalaya", 'h','ex', 'hippopotame.jpg'),
-	("Manchot empereur", "15 à 20 ans", "23 kg", 3, 1, "Présent en Asie, dans la chaîne de l’Himalaya", 'p','ex', 'manchot.jpg'),
-	("Paresseux", "30 à 50 ans", "4 à 8 kg", 3, 1, "Présent en Asie, dans la chaîne de l’Himalaya", 'o','ex', 'paresseux.jpg'),
-	("Maki catta", "16 à 19 ans", "2,3 à 3,5 kg", 3, 3, "Présent en Asie, dans la chaîne de l’Himalaya", 'o','ex', 'maki.jpg'),
--- cg
--- fait :  menace_extinction, photo, espe_vie, espe_poids_adulte, id_type_enclos,
--- à faire :   dangerosite, habitat_nat, id_categorie,  nourriture    
-    ("Ouistiti à tête jaune", "12 ans environ", "230 à 453 g", 1, 4, "Forêt Atlantique au Brésil", 'o', 'cg', 'ouistiti.jpg'),
-	("Panthère des neiges", "16 à 18 ans", "32 kg", 2, 2, "Montagnes escarpées et rocheuses d'Asie", 'o', 'cg', 'panthere.jpg'),
-    ("Chevêche forestière", "9 ans", "moins de 200 g", 0, 3, "Plaines et de collines du sous-continent indien", 'c', 'cg', 'chouette.jpg'),
-    ("Vautour à dos blanc", "19 ans", "4,2 à 7,2 kg", 1, 4, "Forêt Atlanque", 'o', 'cg', 'vautour.jpg'),
-	("Chouette lapone", "7 ans", "800 à 1 700 g", 2, 0, "Montagnes escarpées et rocheuses d'Asie", 'o', 'cg', 'chouettelapone.jpg'),
-    ("Harfang des neiges", "environ 10 ans", "2 kg", 0, 2, "Plaines et de collines du sous-continent indien", 'c', 'cg', 'harfang.jpg'),
-	("Tamarin lion", "10 ans", "350 à 600 g", 1, 3, "Forêts tropicales d'Amérique centrale", 'o', 'cg', 'tamarin.jpg'),
-	("Ara militaire", "45 à 60 ans", "1,1 kg", 2, 2, "Montagnes escarpées et rocheuses d'Asie", 'o', 'cg', 'aramilitaire.jpg'),
-	("Ara à ailes vertes", "50 à 60 ans", "1 à 1,7 kg", 2, 0, "Montagnes escarpées et rocheuses d'Asie", 'o', 'cg', 'ara-vertes.jpg'),
-    ("Ara ararauna", "30 à 35 ans", "90 à 1 500 g", 0, 0, "Plaines et de collines du sous-continent indien", 'c', 'cg', 'arableu.jpg')
+	("Lion de mer de Steller", "25 ans", "300 à 1 100 kg", 1, 1, "Nord de l'océan Pacifique.", 'p', 'aq','lionmer.jpg'),
+	("Béluga", "35 à 50 ans", "Environ 1 400 kg", 0, 4, "Eaux arctiques et subarctiques.", 'p','aq','beluga.jpg'),
+	("Grande raie-guitare", "20 ans", "200 kg", 1, 4, " Les fonds sableux d'Afrique.", 'p','aq','raie.jpg'),
+	("Méduse dorée", "1 à 2 ans", "1 à 10 kg", 3, -1, "Les eaux chaudes.", 'c','aq','medusedoree.jpg'),
+	("Boto", "12 à 15 ans", "100 à 150 kg", 1, 3, "Les eaux douces du bassin de l'Orénoque jusqu'au bassin de l'Amazone.", 'p','aq','boto.jpeg'),
+
+	("Python royal", "30 ans en captivité", "1 à 2 kg", 4, 1, "Territoire allant du Sénégal jusqu'à l'ouest de l'Ouganda et au nord de la République démocratique du Congo.", 'c','tr', 'pythonroyal.jpg'),
+    ("Rainette jaguar", "entre 5 et 10 ans", "3 g en moyenne", 4, 0, "Forêts tropicales humides de basse altitude.", 'i','tr', 'rainettejaguar.jpg'),
+	("Rainette verte d'Amérique", "4 à 5 ans", "3 à 8 g environ", 1, 0, "Forêts tropicales humides de basse altitude.", 'i','tr', 'rainetteverte.jpg'),
+	("Rainette criarde", "inconnue", "entre 3 et 14 g", 2, 0, "Forêts tropicales humides de basse altitude.", 'i','tr', 'rainettecriarde.jpg'),
+	("Tortue géante des Seychelles", "plus de 150 ans", "environ 250 kg pour les mâles, 160 kg pour les femelles", 0, 2, "L'atoll corallien très sec et inhabité d'Aldabra.", 'h','tr', 'tortuegeante.jpg'),
+
+    ("Panda géant", "20 à 25 ans", "70 à 120 kg", 3, 2, "Forets de bambous.", 'h', 'ex', 'pandageant.jpg'),
+    ("Hérisson du désert", "10 ans", "280 à 510 g", 1, 0, "Déserts.", 'i', 'ex', 'herisson.jpg'),
+    ("Girafe", "10 à 15 ans", "750 à 2 000 kg", 0, 2, "Savanes.", 'h', 'ex', 'girafe.jpg'),
+	("Eléphant de forêt d'Afrique", "60 à 70 ans", "2 700 à 6 000 kg", 2, 4, "Forêt dense d'Afrique centrale et d'Afrique de l'Ouest.", 'h', 'ex', 'elephant.jpg'),
+    ("Panda roux", "8 à 10 ans", "3 à 6 kg", 2, 3, "Présent en Asie, dans la chaîne de l’Himalaya.", 'o','ex', 'pandaroux.jpg'),
+	("Hippopotame", "40 à 50 ans", "1 300 à 1 800 kg", 4, 2, "Répandus dans toute l’Afrique subsaharienne.", 'h','ex', 'hippopotame.jpg'),
+	("Manchot empereur", "15 à 20 ans", "23 kg", 3, 1, "Le pourtour du continent antarctique de la limite du pack de glace jusqu'à 200 ou 250 km à l'intérieur des terres.", 'p','ex', 'manchot.jpg'),
+	("Paresseux", "30 à 50 ans", "4 à 8 kg", 1, 1, "Forêts d'Amérique centrale et d'Amérique du sud.", 'o','ex', 'paresseux.jpg'),
+	("Maki catta", "16 à 19 ans", "2,3 à 3,5 kg", 3, 3, "Les fourrés épineux du sud et du sud-ouest de Madagascar.", 'o','ex', 'maki.jpg'),
+
+    ("Ouistiti à tête jaune", "12 ans environ", "230 à 453 g", 3, 4, "Forêt Atlantique au Brésil", 'i', 'cg', 'ouistiti.jpg'),
+	("Panthère des neiges", "16 à 18 ans", "32 kg", 4, 2, "Montagnes escarpées et rocheuses d'Asie", 'c', 'cg', 'panthere.jpg'),
+    ("Chevêche forestière", "9 ans", "moins de 200 g", 2, 3, "Plaines et de collines du sous-continent indien", 'o', 'cg', 'chouette.jpg'),
+    ("Vautour à dos blanc", "19 ans", "4,2 à 7,2 kg", 4, 4, "Forêt Atlanque", 'c', 'cg', 'vautour.jpg'),
+	("Chouette lapone", "7 ans", "800 à 1 700 g", 2, 0, "Les forêts boréales/touffues, les prairies et les champs boisés, les marais de l'Estonie et la Finlande jusqu'au Québec.", 'c', 'cg', 'chouettelapone.jpg'),
+    ("Harfang des neiges", "environ 10 ans", "2 kg", 1, 2, "Il préfère les hautes toundras ondulantes avec des pointes de terre élevées pour se percher et fabriquer son nid à l’extrême nord du Canada.", 'c', 'cg', 'harfang.jpg'),
+	("Tamarin lion", "10 ans", "350 à 600 g", 3, 3, "Forêt tropicale côtière de la Mata Atlântica riche en broméliacées à une altitude comprise entre le niveau de la mer et 300 m d’altitude.", 'o', 'cg', 'tamarin.jpg'),
+	("Ara militaire", "45 à 60 ans", "1,1 kg", 2, 2, "Lontagne, dans les régions tempérées semi-arides et les forêts tropicales, près des cours d'eau.", 'h', 'cg', 'aramilitaire.jpg'),
+	("Ara à ailes vertes", "50 à 60 ans", "1 à 1,7 kg", 3, 0, "Basse et moyenne altitude dans les forêts tropicales dans toute l’Amérique du Sud.", 'h', 'cg', 'ara-vertes.jpg'),
+    ("Ara ararauna", "30 à 35 ans", "90 à 1 500 g", 1, 0, "Trous de palmiers secs du sud-est du Panama à l'État de São Paulo.", 'h', 'cg', 'arableu.jpg')
 ;
 
-insert into Enclos (nb_max, taille, id_type_enclos) values
-    (5, 60, 'aq'), --1 vide
-    (4, 400, 'aq'), --2 Boto
-	(2, 150, 'aq'), --3 Raie
-    (4, 200, 'aq'), --4 Lion Mer
-	(6, 70, 'aq'), --5 Méduse
-    (3, 300, 'aq'), --6 Beluga
-	(5, 300, 'aq'), -- 7 vide
-	(15, 300, 'aq'), -- 8 vide
+insert into Enclos (nb_max, id_type_enclos) values
+    (5,'aq'), --1 vide
+    (4, 'aq'), --2 Boto
+	(2, 'aq'), --3 Raie
+    (4, 'aq'), --4 Lion Mer
+	(6,'aq'), --5 Méduse
+    (3, 'aq'), --6 Beluga
+	(5, 'aq'), -- 7 vide
+	(15, 'aq'), -- 8 vide
 
-	(2, 6,'tr'), --9 Python
-    (2, 3,'tr'), --10 Rainette jaguar
-    (3, 14,'tr'), --11 Tortue
-	(2, 8,'tr'), --12 criarde
-	(3, 10,'tr'), --13 verte d'amérique
-	(1, 10,'tr'), --14 vide
+	(2,'tr'), --9 Python
+    (2,'tr'), --10 Rainette jaguar
+    (3, 'tr'), --11 Tortue
+	(2,'tr'), --12 criarde
+	(3, 'tr'), --13 verte d'amérique
+	(1, 'tr'), --14 vide
 
-	(6, 100,'ex'), --15 Hérisson
-	(3, 150,'ex'), --16 Panda géant
-	(8, 200,'ex'), --17 Panda roux 7
-	(4, 300,'ex'), --18 Girafe 3
-    (3, 500,'ex'), --19 Eléphant 3
-	(2, 300,'ex'), -- 20 Hippopotame
-	(7, 200,'ex'), -- 21 Manchot Empereur
-	(3,40,'ex'),-- 22 paresseux
-	(6,50,'ex'),-- 23 maki catta
-	(5,500,'ex'),-- 24 vide
-	(4,200,'ex'),-- 25 vide
-	(3,400,'ex'),-- 26 vide 
+	(6,'ex'), --15 Hérisson
+	(3,'ex'), --16 Panda géant
+	(8,'ex'), --17 Panda roux 7
+	(4,'ex'), --18 Girafe 3
+    (3,'ex'), --19 Eléphant 3
+	(2,'ex'), -- 20 Hippopotame
+	(7,'ex'), -- 21 Manchot Empereur
+	(3,'ex'),-- 22 paresseux
+	(6,'ex'),-- 23 maki catta
+	(5,'ex'),-- 24 vide
+	(4,'ex'),-- 25 vide
+	(3,'ex'),-- 26 vide 
 
-	(2,50,'cg'), --27 panthere
-	(7,70,'cg'), --28 ouistiti
-	(5,60,'cg'), -- 29 tamarin
-	(2,15,'cg'), -- 30 chouettes
-	(2,15,'cg'), --31 
-	(2,15,'cg'), -- 32
-	(5,80,'cg'), --33 aras
-	(4,80,'cg'), --34
-	(5,80,'cg'), --35
-	(1,60,'cg'), -- 36 vautour
-	(1,15,'ex'), --37vide 
-	(4,60,'ex'), --38vide
-	(3,20,'ex')  --39vide
+	(2,'cg'), --27 panthere
+	(7,'cg'), --28 ouistiti
+	(5,'cg'), -- 29 tamarin
+	(2,'cg'), -- 30 chouettes
+	(2,'cg'), --31 
+	(2,'cg'), -- 32
+	(5,'cg'), --33 aras
+	(4,'cg'), --34
+	(5,'cg'), --35
+	(1,'cg'), -- 36 vautour
+	(1,'cg'), --37 vide 
+	(4,'cg'), --38 vide
+	(3,'cg')  --39 vide
 ;
 
 insert into Animal values
---aquarium
-	("Boto1", "Boto", 2,'2003-07-08', 'Male', 300.0, null,  2),
-	("Boto2", "Boto", 2,'2003-07-08', 'Male', 200.0, null,  2),
-	("Boto3", "Boto", 2,'2003-07-08', 'Male', 800.0, null,  2),
-	("Boto4", "Boto", 2,'2003-07-08', 'Male', 700.0, null,  2),
+	("Marceline", "Boto", 2,'2015-09-01', 'Femelle', 95.0, "née dans le zoo",  1),
+	("Julie", "Boto", 2,'2009-10-11', 'Femelle', 128.0, null,  1),
+	("Antoine", "Boto", 2,'2017-03-23', 'Mâle', 100.0, "né dans le zoo",  1),
+	("Pierre", "Boto", 2,'2010-06-04', 'Mâle', 150.0, null,  1),
 
-	("Raie1", "Grande raie-guitare", 3, '2003-07-08', 'Male', 345.0, null,  2),
-	("Raie2", "Grande raie-guitare", 3, '2003-07-08', 'Male', 345.0, null,  2),
+	("Emeline", "Grande raie-guitare", 3, '2005-05-13', 'Femelle', 182.0, null,  2),
+	("William", "Grande raie-guitare", 3, '2008-02-28', 'Mâle', 194.0, null,  2),
 	
-	("Lion1", "Lion de mer de Steller", 4, '2003-07-08', 'Male', 345.0, null, 2),
-	("Lion2", "Lion de mer de Steller", 4,'2003-07-08', 'Male', 345.0, null, 2),
-	("Lion3", "Lion de mer de Steller", 4,'2003-07-08', 'Male', 345.0, null, 2),
+	("Mathéo", "Lion de mer de Steller", 4, '2008-12-31', 'Mâle', 854.0, null, 3),
+	("James", "Lion de mer de Steller", 4,'2004-07-02', 'Mâle', 1084.0, null, 3),
+	("Gabrielle", "Lion de mer de Steller", 4,'1998-12-16', 'Femelle', 765.0, null, 3),
 
-	("Méduse1", "Méduse dorée", 5,'2003-07-08', 'Male', 345.0, null, 2),
-	("Méduse2", "Méduse dorée", 5,'2003-07-08', 'Male', 345.0, null, 2),
-	("Méduse3", "Méduse dorée", 5,'2003-07-08', 'Male', 345.0, null, 2),
-	("Méduse4", "Méduse dorée", 5,'2003-07-08', 'Male', 345.0, null, 2),
-	("Méduse5", "Méduse dorée", 5,'2003-07-08', 'Male', 345.0, null, 2),
+	("Hugo", "Méduse dorée", 5,'2020-12-09', 'Mâle', 7.4, null, 4),
+	("Said", "Méduse dorée", 5,'2020-08-26', 'Mâle', 6.7, null, 4),
+	("Anne", "Méduse dorée", 5,'2022-11-03', 'Femelle', 1.2, "née dans le zoo", 4),
+	("Christine", "Méduse dorée", 5,'2022-04-02', 'Femelle', 2.5, "née dans le zoo", 4),
+	("Maude", "Méduse dorée", 5,'2020-06-15', 'Femelle', 4.7, null, 4),
 
-	("Beluga1", "Béluga", 6, '2003-07-08', 'Male', 345.0, null, 2),
-	("Beluga2", "Béluga", 6, '2003-07-08', 'Male', 345.0, null, 2),
-	("Beluga3", "Béluga", 6, '2003-07-08', 'Male', 345.0, null, 2),
+	("Nicolas", "Béluga", 6, '1997-09-17', 'Mâle', 1421.0, null, 5),
+	("Alexandre", "Béluga", 6, '2005-11-06', 'Mâle', 1412.0, null, 5),
+	("Hortense", "Béluga", 6, '1995-06-28', 'Femelle', 1368.0, null, 5),
 
---terrarium
-	("Python1", "Python royal", 9, '2003-07-08', 'Male', 345.0, null, 2),
+	("Ramon", "Python royal", 9, '1993-05-16', 'Mâle', 1.6, null, 6),
 
-	("Rainette1", "Rainette jaguar", 10, '2003-07-08', 'Male', 345.0, null, 2),
-	("Rainette2", "Rainette jaguar", 10, '2003-07-08', 'Male', 345.0, null, 2),
+	("Leo", "Rainette jaguar", 10, '2016-02-05', 'Mâle', 0.003, null, 6),
+	("Olivia", "Rainette jaguar", 10, '2018-12-15', 'Femelle', 0.0025, null, 6),
 
-	("RV1", "Rainette verte d'Amérique", 13, '2003-07-08', 'Male', 345.0, null, 2),
+	("Sylvie", "Rainette verte d'Amérique", 13, '2020-03-19', 'Femelle', 0.006, null, 7),
 
-	("RC1", "Rainette criarde", 12, '2003-07-08', 'Male', 345.0, null, 2),
+	("Mélina", "Rainette criarde", 12, '2020-04-09', 'Femelle', 0.011, null, 7),
 
-	("Tortue1", "Tortue géante des Seychelles", 11, '2003-07-08', 'Male', 345.0, null, 2),
-	("Tortue2", "Tortue géante des Seychelles", 11, '2003-07-08', 'Male', 345.0, null, 2),
-	("Tortue3", "Tortue géante des Seychelles", 11, '2003-07-08', 'Male', 345.0, null, 2),
+	("Adèle", "Tortue géante des Seychelles", 11, '1918-11-18', 'Femelle', 145.0, null, 7),
+	("Chouaib", "Tortue géante des Seychelles", 11, '1960-10-08', 'Mâle', 210.0, null, 7),
+	("Louise", "Tortue géante des Seychelles", 11, '1945-08-17', 'Femelle', 139.0, null, 7),
 
--- extérieur
-	("Enzo", "Hérisson du désert", 15, '2003-07-08', 'Male', 345.0, null, 2),
-	("Eric", "Hérisson du désert", 15, '2008-07-08', 'Male', 345.0, null, 2),
-	("Edgar", "Hérisson du désert", 15, '2003-07-08', 'Male', 345.0, null, 2),
-	("Elsa", "Hérisson du désert", 15, '2003-07-08', 'Femelle', 345.0, null, 2),
-	("Emilie", "Hérisson du désert", 15, '2003-07-08', 'Femelle', 345.0, null, 2),
+	("Zoé", "Hérisson du désert", 15, '2013-04-21', 'Femelle', 0.410, null, 8),
+	("Jean", "Hérisson du désert", 15, '2012-06-18', 'Mâle', 0.5, null, 8),
+	("Benjamin", "Hérisson du désert", 15, '2022-01-08', 'Mâle', 0.290, "né dans le zoo", 8),
+	("Elsa", "Hérisson du désert", 15, '2021-11-15', 'Femelle', 0.345, "née dans le zoo", 8),
+	("Matthieu", "Hérisson du désert", 15, '2020-05-01', 'Mâle', 0.687,"né dans le zoo", 8),
 
-	("Ugo", "Panda géant", 16, '2000-07-08', 'Male', 345.0, null, 2),
-	("Ugette", "Panda géant", 16, '2000-07-08', 'Femelle', 345.0, null, 2),
-	("Uta", "Panda géant", 16, '2003-07-08', 'Femelle', 345.0, "née dans le zoo", 2),
+	("Ugo", "Panda géant", 16, '2017-06-02', 'Mâle', 80,"né dans le zoo", 9),
+	("Anis", "Panda géant", 16, '1998-11-18', 'Mâle', 110.0, null, 9),
+	("Blandine", "Panda géant", 16, '2000-03-10', 'Femelle', 105.0, "née dans le zoo", 9),
 
-	("Rémi", "Panda roux", 17, '2003-07-08', 'Male', 345.0, null, 2),
-	("Raoul", "Panda roux", 17, '2003-07-08', 'Male', 345.0, null, 2),
-	("Ron", "Panda roux", 17, '2003-07-08', 'Male', 345.0, null, 2),
-	("Rosie", "Panda roux", 17, '2003-07-08', 'Femelle', 345.0, null, 2),
-	("Roxane", "Panda roux", 17, '2003-07-08', 'Femelle', 345.0, null, 2),
-	("Raymonde", "Panda roux", 17, '2003-07-08', 'Femelle', 345.0, null, 2),
+	("Rémi", "Panda roux", 17, '2013-02-22', 'Mâle', 5.8, null, 10),
+	("Loïs", "Panda roux", 17, '2018-03-15', 'Mâle', 4.1,"né dans le zoo", 10),
+	("Elie", "Panda roux", 17, '2018-03-15', 'Femelle', 3.8, "née dans le zoo", 10),
+	("Yann", "Panda roux", 17, '2014-08-21', 'Mâle', 5.6, null, 11),
+	("Héléna", "Panda roux", 17, '2020-07-01', 'Femelle', 3.9, null, 11),
+	("Alix", "Panda roux", 17, '2015-12-16', 'Femelle', 4.7, null, 11),
 
-    ("Nicolas", "Girafe", 18, '2003-07-08', 'Male', 345.0, null, 2),
-	("Nina", "Girafe", 18, '2003-07-08', 'Femelle', 345.0, null, 2),
-	("Naomi", "Girafe", 18, '2003-07-08', 'Femelle', 345.0, null, 2),
+    ("Caren", "Girafe", 18, '2008-03-07', 'Femelle', 1165.0, null, 12),
+	("Eve", "Girafe", 18, '2013-09-01', 'Femelle', 950.0, null, 12),
+	("Alain", "Girafe", 18, '2018-03-30', 'Mâle', 1895.0, null, 12),
 
-    ("Moussa", "Eléphant de forêt d'Afrique", 19, '1985-04-16', 'Male', 5654.5, null, 1),
-    ("Margot", "Eléphant de forêt d'Afrique", 19, '1988-07-21', 'Femelle', 4378.9, null, 1),
-    ("Milan", "Eléphant de forêt d'Afrique", 19, '2008-03-04', 'Male', 3452.7, "né dans le zoo", 1),
+    ("Augustin", "Eléphant de forêt d'Afrique", 19, '1985-04-16', 'Mâle', 5654.5, null, 2),
+    ("Martine", "Eléphant de forêt d'Afrique", 19, '1988-07-21', 'Femelle', 4378.9, null, 2),
+    ("Milan", "Eléphant de forêt d'Afrique", 19, '2008-03-04', 'Mâle', 3452.7, "né dans le zoo", 3),
 
-	("H1", "Hippopotame", 20, '1985-04-16', 'Male', 5654.5, null, 1),
-    ("H2", "Hippopotame", 20, '1988-07-21', 'Femelle', 4378.9, null, 1),
+	("Mohammed", "Hippopotame", 20, '1995-02-16', 'Mâle', 1756, null, 5),
+    ("Soufiane", "Hippopotame", 20, '2015-03-28', 'Mâle', 1456, "né dans le zoo", 6),
 
-	("M6", "Manchot empereur", 21, '2003-07-08', 'Male', 345.0, null, 2),
-	("M5", "Manchot empereur", 21, '2003-07-08', 'Male', 345.0, null, 2),
-	("M4", "Manchot empereur", 21, '2003-07-08', 'Male', 345.0, null, 2),
-	("M3", "Manchot empereur", 21, '2003-07-08', 'Femelle', 345.0, null, 2),
-	("M2", "Manchot empereur", 21, '2003-07-08', 'Femelle', 345.0, null, 2),
+	("Ginette", "Manchot empereur", 21, '2006-05-13', 'Femelle', 21.5, null, 9),
+	("Lucas", "Manchot empereur", 21, '2021-07-18', 'Mâle', 15.9, "né dans le zoo", 9),
+	("Eloise", "Manchot empereur", 21, '2016-05-20', 'Femelle', 20.3, "née dans le zoo", 10),
+	("Mathis", "Manchot empereur", 21, '2018-10-16', 'Mâle', 21.4, "né dans le zoo", 10),
+	("Manlio", "Manchot empereur", 21, '2008-05-30', 'Mâle', 22.5, null, 11),
 
-	("MK1", "Maki catta", 23, '2003-07-08', 'Male', 345.0, null, 2),
-	("MK2", "Maki catta", 23, '2003-07-08', 'Male', 345.0, null, 2),
-	("MK3", "Maki catta", 23, '2003-07-08', 'Male', 345.0, null, 2),
+	("Jasmine", "Maki catta", 23, '2013-10-19', 'Femelle', 2.5, "née dans le zoo", 12),
+	("Albert", "Maki catta", 23, '2015-04-13', 'Mâle', 3.1, null, 2),
+	("Jérémy", "Maki catta", 23, '2007-11-14', 'Mâle', 3.4, null, 2),
 
-	("par1", "Paresseux", 22, '2003-07-08', 'Male', 345.0, null, 2),
-	("par2", "Paresseux", 22, '2003-07-08', 'Male', 345.0, null, 2),
--- cage
-	("O1", "Ouistiti à tête jaune", 28, '2003-07-08', 'Male', 345.0, null, 2),
-	("O2", "Ouistiti à tête jaune", 28, '2008-07-08', 'Male', 345.0, null, 2),
-	("O3", "Ouistiti à tête jaune", 28, '2003-07-08', 'Male', 345.0, null, 2),
-	("O4", "Ouistiti à tête jaune", 28, '2003-07-08', 'Femelle', 345.0, null, 2),
-	("O5", "Ouistiti à tête jaune", 28, '2003-07-08', 'Femelle', 345.0, null, 2),
+	("Sandra", "Paresseux", 22, '1984-05-09', 'Femelle', 6.8, null, 11),
+	("Fabrice", "Paresseux", 22, '1990-05-10', 'Mâle', 7.4, null, 3),
 
-	("T1", "Tamarin lion", 29, '2003-07-08', 'Male', 345.0, null, 2),
-	("T2", "Tamarin lion", 29, '2008-07-08', 'Male', 345.0, null, 2),
-	("T3", "Tamarin lion", 29, '2003-07-08', 'Male', 345.0, null, 2),
-	("T4", "Tamarin lion", 29, '2003-07-08', 'Femelle', 345.0, null, 2),
+	("Enzo", "Ouistiti à tête jaune", 28, '2020-03-17', 'Mâle', 0.365, "né dans le zoo", 12),
+	("Frédérique", "Ouistiti à tête jaune", 28, '2019-05-25', 'Femelle', 0.448, "née dans le zoo", 11),
+	("Jacqueline", "Ouistiti à tête jaune", 28, '2013-02-02', 'Femelle', 0.398, null, 12),
+	("Martin", "Ouistiti à tête jaune", 28, '2011-11-14', 'Mâle', 0.410, null, 6),
+	("Oscar", "Ouistiti à tête jaune", 28, '2017-09-11', 'Mâle', 0.287, null, 5),
 
-	("P1", "Panthère des neiges", 27, '2000-07-08', 'Male', 345.0, null, 2),
-	("P2", "Panthère des neiges", 27, '2000-07-08', 'Femelle', 345.0, null, 2),
+	("Olga", "Tamarin lion", 29, '2021-02-03', 'Femelle', 0.456, "née dans le zoo", 1),
+	("Carole", "Tamarin lion", 29, '2014-09-28', 'Femelle', 0.589, null, 8),
+	("Claude", "Tamarin lion", 29, '2020-03-17', 'Mâle', 0.397, null, 8),
+	("Ayoub", "Tamarin lion", 29, '2013-12-18', 'Mâle', 0.487, null, 3),
 
-	("VAutr", "Vautour à dos blanc", 36, '2000-07-08', 'Femelle', 345.0, null, 2),
+	("Evelyne", "Panthère des neiges", 27, '2014-01-20', 'Femelle', 31.3, null, 1),
+	("Lucien", "Panthère des neiges", 27, '2016-06-01', 'Mâle', 32.6, null, 5),
 
-	("C1", "Chevêche forestière", 30, '2003-07-08', 'Male', 345.0, null, 2),
-	("C2", "Chouette lapone", 31, '2008-07-08', 'Male', 345.0, null, 2),
-	("C3", "Harfang des neiges", 32, '2003-07-08', 'Male', 345.0, null, 2),
+	("Dominique", "Vautour à dos blanc", 36, '2006-09-19', 'Femelle', 6.8, "née dans le zoo", 7),
 
-	("AraM1", "Ara militaire", 33, '2003-07-08', 'Male', 345.0, null, 2),
-	("AraM2", "Ara militaire", 33, '2003-07-08', 'Male', 345.0, null, 2),
-	("AraM3", "Ara militaire", 33, '2003-07-08', 'Male', 345.0, null, 2),
+	("Hubert", "Chevêche forestière", 30, '2016-08-12', 'Mâle', 0.195, null, 1),
+	("Maurice", "Chouette lapone", 31, '2018-10-16', 'Mâle', 1.478, null, 5),
+	("Marion", "Harfang des neiges", 32, '2017-09-27', 'Femelle', 1.946, null, 3),
 
-	("AraA1", "Ara ararauna", 34, '2003-07-08', 'Male', 345.0, null, 2),
-	("AraA2", "Ara ararauna", 34, '2003-07-08', 'Male', 345.0, null, 2),
-	("AraA3", "Ara ararauna", 34, '2003-07-08', 'Male', 345.0, null, 2),
+	("Marie", "Ara militaire", 33, '1983-11-12', 'Femelle', 1.065, null, 6),
+	("David", "Ara militaire", 33, '2003-08-04', 'Mâle', 1.004, "né dans le zoo", 3),
+	("Nathan", "Ara militaire", 33, '2020-05-28', 'Mâle', 0.935, "né dans le zoo", 2),
+
+	("Françoise", "Ara ararauna", 34, '1993-05-02', 'Femelle', 1.549, null, 1),
+	("Fabienne", "Ara ararauna", 34, '2007-07-19', 'Femelle', 1.694,"née dans le zoo", 9),
+	("Bastien", "Ara ararauna", 34, '2000-01-28', 'Mâle', 1.348, "né dans le zoo", 7),
 	
-	("AraV1", "Ara à ailes vertes", 35, '2003-07-08', 'Male', 345.0, null, 2),
-	("AraV2", "Ara à ailes vertes", 35, '2003-07-08', 'Male', 345.0, null, 2),
-	("AraV3", "Ara à ailes vertes", 35, '2003-07-08', 'Male', 345.0, null, 2)
+	("Emilie", "Ara à ailes vertes", 35, '1981-10-08', 'Femelle', 0.648, null, 6),
+	("Lola", "Ara à ailes vertes", 35, '1985-02-22', 'Femelle', 1.367, null, 2),
+	("Gauthier", "Ara à ailes vertes", 35, '2003-11-11', 'Mâle', 1.182, "né dans le zoo", 5)
 ;
 
 insert into AvoirParent values
-    ("Moussa","Milan"),
-    ("Margot","Milan"),
-	("Ugo","Uta"),
-	("Ugette","Uta")
+    ("Julie","Marceline"),
+	("Pierre","Marceline"),
+	("Julie","Antoine"),
+	("Pierre","Antoine"),
+
+	("Hugo","Anne"),
+	("Maude","Anne"),
+	("Hugo","Christine"),
+	("Maude","Christine"),
+
+	("Zoé","Benjamin"),
+	("Jean","Benjamin"),
+	("Zoé","Elsa"),
+	("Jean","Elsa"),
+	("Zoé","Matthieu"),
+	("Jean","Matthieu"),
+
+	("Anis","Ugo"),
+	("Blandine","Ugo"),
+
+	("Alix","Loïs"),
+	("Rémi","Loïs"),
+	("Alix","Elie"),
+	("Rémi","Elie"),
+
+	("Augustin","Milan"),
+	("Martine","Milan"),
+
+	("Mohammed","Soufiane"),
+
+	("Ginette","Lucas"),
+	("Manlio","Lucas"),
+	("Ginette","Eloise"),
+	("Manlio","Eloise"),
+	("Ginette","Mathis"),
+	("Manlio","Mathis"),
+	
+	("Martin","Enzo"),
+	("Jacqueline","Enzo"),
+	("Martin","Frédérique"),
+	("Jacqueline","Frédérique"),
+
+	("Carole","Olga"),
+	("Ayoub","Olga"),
+
+	("David","Nathan"),
+	("Marie","David"),
+
+	("Françoise","Bastien")
 ;
 
 insert into Animation(duree, description_anim, id_soign, race) values
@@ -703,7 +741,7 @@ insert into Animation(duree, description_anim, id_soign, race) values
 
 	(20, 'Le Maître des Airs : grande envergure !', 8, 'Vautour à dos blanc'),
 	(20, 'Présentation des oiseaux en vol libre', 6, 'Ara militaire'),
-	(20, 'Présentation des oiseaux en vol libre', 6, 'Ara à ailes vertes'),
+	(20, 'Présentation des oiseaux en vol libre',11, 'Ara à ailes vertes'),
 	(20, 'Présentation des oiseaux en vol libre', 6, 'Ara ararauna'),
 	(45, 'Jouer avec les singes', 4, "Ouistiti à tête jaune"),
 	(45, 'Jouer avec les singes', 4, "Tamarin lion"),
@@ -711,12 +749,12 @@ insert into Animation(duree, description_anim, id_soign, race) values
 	(15, 'Le goûter des éléphants', 3, "Eléphant de forêt d'Afrique"),
 	(15, 'Le goûter des hippopotames', 9, 'Hippopotame'),
 	(15, 'Le goûter des manchots', 9, 'Manchot empereur'),
-	(40, 'Danser avec les manchots', 9, 'Manchot empereur'),
+	(40, 'Danser avec les manchots', 12, 'Manchot empereur'),
 	(15, 'Le goûter des girafes', 3, "Girafe"),
 	(15, 'Rencontre avec les éléphants', 3, "Eléphant de forêt d'Afrique"),
 
 	(30, 'Terreur au terrarium', 1, "Python royal"),
-	(15, 'Le chant de la rainette', 7, 'Rainette jaguar'),
+	(15, 'Le chant de la rainette', 10, 'Rainette jaguar'),
 	(15, 'Le chant de la rainette', 7, "Rainette verte d'Amérique"),
 	(15, 'Le chant de la rainette', 7, 'Rainette criarde')
 ;
@@ -741,8 +779,7 @@ insert into Nourriture values
 
 	('Rat'),
 	('Souris'),
-	('Oise')
-,
+	('Oiseau'),
 	('Fourmi'),
 	('Termite'),
 	('Araignée'),
@@ -766,10 +803,34 @@ insert into Nourriture values
 	('Racine'),
 	('Graminée'),
 	('Bambou'),
-	('Plante');
+	('Plante'),
+
+	('Champignon'),
+	('Gomme'),
+	('Chèvre sauvage'),
+	('Mouton sauvage'),
+	('Marmotte'),
+	('Lièvre'),
+	('Reptile'),
+	('Sauterelle'),
+	('Coléoptères'),
+	('Carcasse'),
+	('Rongeur'),
+	('Campagnol'),
+	('Musaraigne'),
+	('Taupe'),
+	('Renard'),
+	('Lemming'),
+	('Nectar'),
+	('Graine'),
+	('Noix'),
+	('Baie'),
+	('Granulé'),
+	('Légume')
+;
 
 insert into Convenir values
-   u ('Hareng','p'),/*
+    ('Hareng','p'),
     ('Maquereau','p'),
 	('Esturgeon','p'),
     ('Saumon','p'),
@@ -784,25 +845,25 @@ insert into Convenir values
 	('Tortue de rivière','p'),
     ('Piranha','p'),
 	('Larves de hareng','c'),
-    ('Zooplancton','c')),
+    ('Zooplancton','c'),
 	('Rat','c'),
 	('Souris','c'),
 	('Oiseau','c'),
 	('Fourmi','i'),
 	('Termite','i'),
-	('Araignée','i')/*,
+	('Araignée','i'),
 	('Mouche','i'),
 	('Ver','i'),
 	('Herbe','h'),
 	('Carex','h'),
 	('Feuille','h'), ('Feuille','o'),
 	('Tige','h'),
-	('OEuf','i'),
-	('Insecte','i'),
+	('OEuf','i'),('OEuf','o'),
+	('Insecte','i'),('Insecte','o'),
 	('Scorpion','i'),
 	('Fleur','o'),('Fleur','h'),
-	('Jeune pousse','o'),/*
-	('Fruit','o'),('Fruit','h'),
+	('Jeune pousse','o'),
+	('Fruit','o'),('Fruit','h'),('Fruit','i'),
 	('Écorce','o'),('Écorce','h'),
 	('Branche','o'),('Branche','h'),
 	('Bourgeon','o'),('Bourgeon','h'),
@@ -811,10 +872,32 @@ insert into Convenir values
 	('Racine','o'),
 	('Graminée','h'),
 	('Bambou','o'),	('Bambou','h'),
-	('Plante','h')*/
+	('Plante','h'),
+
+	('Champignon','i'),
+	('Gomme','i'),
+	('Chèvre sauvage','c'),
+	('Mouton sauvage','c'),
+	('Marmotte','c'),
+	('Lièvre','c'),
+	('Reptile','o'),
+	('Sauterelle','o'),
+	('Coléoptères','o'),
+	('Carcasse','c'),
+	('Rongeur','c'),
+	('Campagnol','c'),
+	('Musaraigne','c'),
+	('Taupe','c'),
+	('Renard','c'),
+	('Lemming','c'),
+	('Nectar','o'),
+	('Graine','h'),
+	('Noix','h'),
+	('Baie','h'),
+	('Granulé','h'),
+	('Légume','h')
 ;
 
-/*
 insert into Manger values 
 	("Lion de mer de Steller", 'Hareng'),
 	("Lion de mer de Steller", 'Maquereau'),
@@ -838,74 +921,119 @@ insert into Manger values
 
 	("Boto", 'Piranha'),
 	("Boto", 'Crabe'),
-	("Boto", 'Tortue de rivière')
-,
+	("Boto", 'Tortue de rivière'),
 
-	("Python royal", "Rat"),
-	("Python royal", "Souris"),
-	("Python royal", "Oiseau"),
+	("Python royal", 'Rat'),
+	("Python royal", 'Souris'),
+	("Python royal", 'Oiseau'),
 
- 	("Rainette jaguar", "Fourmi"),
-	("Rainette jaguar", "Termite"),
-	("Rainette jaguar", "Ver"),
+ 	("Rainette jaguar", 'Fourmi'),
+	("Rainette jaguar", 'Termite'),
+	("Rainette jaguar", 'Ver'),
 
-	("Rainette verte d'Amérique","Mouche"),
-	("Rainette criarde", "Mouche"),
-	("Rainette verte d'Amérique","Araignée"),
-	("Rainette criarde", "Araignée"),
-	("Rainette verte d'Amérique","Ver"),
-	("Rainette criarde", "Ver"),
+	("Rainette verte d'Amérique",'Mouche'),
+	("Rainette criarde", 'Mouche'),
+	("Rainette verte d'Amérique",'Araignée'),
+	("Rainette criarde", 'Araignée'),
+	("Rainette verte d'Amérique",'Ver'),
+	("Rainette criarde", 'Ver'),
 
-	("Tortue géante des Seychelles", "Herbe"),
-	("Tortue géante des Seychelles", "Carex"),
-	("Tortue géante des Seychelles", "Feuille"),
-	("Tortue géante des Seychelles", "Tige"),
+	("Tortue géante des Seychelles", 'Herbe'),
+	("Tortue géante des Seychelles", 'Carex'),
+	("Tortue géante des Seychelles", 'Feuille'),
+	("Tortue géante des Seychelles", 'Tige'),
 	
 	("Panda géant","Bambou"),
 
-    ("Hérisson du désert", "OEuf"),
-	("Hérisson du désert", "Insecte"),
-	("Hérisson du désert", "Scorpion"),
+    ("Hérisson du désert", 'OEuf'),
+	("Hérisson du désert", 'Insecte'),
+	("Hérisson du désert", 'Scorpion'),
 
-    ("Girafe", "Feuille"),
-	("Girafe", "Bourgeon"),
-	("Girafe", "Herbe"),
-	("Girafe", "Fleur"),
-	("Girafe", "Fruit"),
+    ("Girafe", 'Feuille'),
+	("Girafe", 'Bourgeon'),
+	("Girafe", 'Herbe'),
+	("Girafe", 'Fleur'),
+	("Girafe", 'Fruit'),
 
-	("Eléphant de forêt d'Afrique", "Plante"),
-	("Eléphant de forêt d'Afrique", "Fruit"),
-	("Eléphant de forêt d'Afrique", "Feuille"),
-	("Eléphant de forêt d'Afrique", "Branche"),
-	("Eléphant de forêt d'Afrique", "Écorce"),
+	("Eléphant de forêt d'Afrique", 'Plante'),
+	("Eléphant de forêt d'Afrique", 'Fruit'),
+	("Eléphant de forêt d'Afrique", 'Feuille'),
+	("Eléphant de forêt d'Afrique", 'Branche'),
+	("Eléphant de forêt d'Afrique", 'Écorce'),
 
-    ("Panda roux", "Bambou"),
-	("Panda roux", "Jeune pousse"),
-	("Panda roux", "Fruit"),
-	("Panda roux", "Racine"),
+    ("Panda roux", 'Bambou'),
+	("Panda roux", 'Jeune pousse'),
+	("Panda roux", 'Fruit'),
+	("Panda roux", 'Racine'),
 
-	("Hippopotame", "Herbe"),
-	("Hippopotame", "Graminée"),
+	("Hippopotame", 'Herbe'),
+	("Hippopotame", 'Graminée'),
 
-	("Manchot empereur", "Mollusques"),
-	("Manchot empereur", "Calamar"),
-	("Manchot empereur", "Crustacés"),
-	("Manchot empereur", "Poisson"),
+	("Manchot empereur", 'Mollusques'),
+	("Manchot empereur", 'Calamar'),
+	("Manchot empereur", 'Crustacés'),
+	("Manchot empereur", 'Poisson'),
 
-	("Paresseux", "Feuille"),
-	("Paresseux", "Jeune pousse"),
-	("Paresseux", "Branche"),
-	("Paresseux", "Bourgeon"),
-	("Paresseux", "Fleur"),
-	("Paresseux", "Fruit"),
-	("Paresseux", "Racine"),
+	("Paresseux", 'Feuille'),
+	("Paresseux", 'Jeune pousse'),
+	("Paresseux", 'Branche'),
+	("Paresseux", 'Bourgeon'),
+	("Paresseux", 'Fleur'),
+	("Paresseux", 'Fruit'),
+	("Paresseux", 'Racine'),
 
-	("Maki catta", "Feuille"),
-	("Maki catta", "Fleur"),
-	("Maki catta", "Fruit"),
-	("Maki catta", "Écorce")
+	("Maki catta", 'Feuille'),
+	("Maki catta", 'Fleur'),
+	("Maki catta", 'Fruit'),
+	("Maki catta", 'Écorce'),
+
+	("Ouistiti à tête jaune", 'Champignon'),
+	("Ouistiti à tête jaune", 'Insecte'),
+	("Ouistiti à tête jaune", 'Gomme'),
+	("Ouistiti à tête jaune", 'Fruit'),
+
+	("Panthère des neiges", 'Chèvre sauvage'),
+	("Panthère des neiges", 'Mouton sauvage'),
+	("Panthère des neiges", 'Marmotte'),
+	("Panthère des neiges", 'Lièvre'),
+
+    ("Chevêche forestière", 'Reptile'),
+	("Chevêche forestière", 'Sauterelle'),
+	("Chevêche forestière", 'Coléoptères'),
+
+    ("Vautour à dos blanc", 'Carcasse'),
+
+	("Chouette lapone", 'Rongeur'),
+	("Chouette lapone", 'Souris'),
+	("Chouette lapone", 'Campagnol'),
+	("Chouette lapone", 'Musaraigne'),
+	("Chouette lapone", 'Taupe'),
+
+    ("Harfang des neiges", 'Lièvre'),
+	("Harfang des neiges", 'Renard'),
+	("Harfang des neiges", 'Lemming'),
+
+	("Tamarin lion", 'Fruit'),
+	("Tamarin lion", 'Fleur'),
+	("Tamarin lion", 'Nectar'),
+	("Tamarin lion", 'OEuf'),
+	("Tamarin lion", 'Insecte'),
+
+	("Ara militaire", 'Graine'),
+	("Ara militaire", 'Noix'),
+	("Ara militaire", 'Fruit'),
+	("Ara militaire", 'Baie'),
+
+	("Ara à ailes vertes", 'Baie'),
+	("Ara à ailes vertes", 'Noix'),
+	("Ara à ailes vertes", 'Graine'),
+
+    ("Ara ararauna", 'Graine'),
+	("Ara ararauna", 'Granulé'),
+	("Ara ararauna", 'Fruit'),
+	("Ara ararauna", 'Légume'),
+	("Ara ararauna", 'Noix')
 ;
-*/
 
 insert into Planning (id_anim, id_enclos, date_anim, heure_debut) values 
 	(1, 4, '2022-04-11', '10:40'),
@@ -1037,8 +1165,6 @@ insert into Planning (id_anim, id_enclos, date_anim, heure_debut) values
 	(19,12,'2022-05-10', '10:05'),
 	(19,12,'2022-05-12', '16:10')
 ;
-	-- <3
-
 
 /*
 TESTS TRIGGERS ANIM

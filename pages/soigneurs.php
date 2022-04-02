@@ -9,7 +9,9 @@
     <script>
         $(document).ready(function() {
             $("#sep").hide();
+            $(".sepanimation").hide();
             $("#titre_animaux").hide();
+            $("#titre_animations").hide();
             $(".liste").on("click", function() {
                 load_new_content(jQuery(this).text());
             });
@@ -37,7 +39,7 @@
             <br>
             <div class="soigneurs">
                 <?php
-                $q = $db->query("SELECT prenom_soign, nom_soign, date_naissance_soign FROM Soigneur");
+                $q = $db->query("SELECT prenom_soign, nom_soign, date_naissance_soign FROM Soigneur ORDER BY nom_soign");
                 while($ligne = $q->fetchArray()){
                 ?>
                 <a href="#" class="liste"><?php echo $ligne[0] . " " . $ligne[1]?></a>
@@ -53,14 +55,18 @@
 
 
     <div class="droite">
+        <div class="sepanimation"></div>
         <h1 id="nomcomp"></h1>
         <p id="genre"></p>
         <h3 id="naissance"></h3>
         <hr id="sep">
         <h1 id="titre_animaux">Animaux soignés :</h1>
+        <h1 id="titre_animations">Animations :</h1>
         <br>
         <div id="animaux">
-            
+        </div>
+
+        <div id="animations">
         </div>
 
     </div>

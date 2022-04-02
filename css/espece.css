@@ -35,6 +35,21 @@ body{
   height: 35vh;
 }
 
+#txt_dang{
+  position: absolute;
+  font-family: race;
+  font-size: 5vh;
+  right: 11vw;
+  top: 50vh;
+}
+
+#dang{
+  position: absolute;
+  right: 5vw;
+  top: 49vh;
+  width: 5vw;
+}
+
 #nourriture{
   position: absolute;
   left: 52vw;
@@ -116,6 +131,11 @@ body{
   top: 42vh;
   width: 70vw;
   animation: slide 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.9s both;
+}
+
+#alimentation{
+  top: 51vh;
+  animation: slide 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.2s both;
 }
 
 
